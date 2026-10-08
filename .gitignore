@@ -7,3 +7,7 @@ deploy.py
 *.bak
 *.tmp
 __pycache__/
+
+# backend secrets (ห้าม push)
+secrets.json
+*.pk
