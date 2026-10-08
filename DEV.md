@@ -1,5 +1,7 @@
 # HZ HUB — เอกสาร dev หลัก (อ่านไฟล์นี้ก่อน ไฟล์เดียวจบ)
 
+> อัปเดตล่าสุด: **2026-10-08** — เกม v2.3 (artifact v261008-1931 b64-wrapped) · worker v2.2.1
+
 โปรเจกต์บอทอัตโนมัติ Roblox — โครง reusable รองรับหลายแมพ คีย์ชุดเดียวใช้ได้ทุกเกม
 repo: `https://github.com/thanadol8821/hzhub` (**public** — เทสเตอร์ loadstring ผ่าน raw URL ได้)
 
