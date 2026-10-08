@@ -45,8 +45,9 @@ repo: `https://github.com/thanadol8821/hzhub` (**public** — เทสเตอ
 
 ## 2. ระบบคีย์ — คีย์เดียวทุกแมพ
 
-- คีย์เทสอยู่ใน `deploy.json → keys` (ตอนนี้ `123` + HZV×3)
+- คีย์เทสอยู่ใน `deploy.json → keys` (ว่าง — ไม่มีคีย์ฝัง public; ใช้คีย์เว็บจากหลังบ้าน + ownerKey ฝังลับ)
 - release.py ฝังคีย์ wrapped เข้า artifact ทุกตัว → เทสเตอร์ใส่คีย์เดียวกันได้ทุกเกม
+- **ไฟล์ release ห่อ b64 ทั้งก้อน** (stub `_d` ~20 บรรทัดถอดแล้ว loadstring) → เปิดไฟล์เห็นมั่วทั้งหมด; ของลับอยู่ใน `PACK.ct` เข้ารหัส PK อีกชั้น · `--no-wrap` = debug อย่าใช้ตอนแจก
 - `keyMode`: `always` ถามทุกครั้ง / `fill` เติมให้ / `auto` จำ+ผ่านเลย
 - `blockOn`: `never`=ปิด env-check (เทสต้องตัวนี้ — executor ทำให้ env เด้งเตือนเอง) | `high`=บล็อกเครื่องมือดักจับจริง (ขาย)
 - logout → เคลียร์คีย์จำ → เด้งกลับหน้าคีย์ (release) / reload สคริปต์ (dev)
@@ -63,7 +64,7 @@ py deploy.py --no-push     # build+commit ไม่ push
 ```
 
 ทำอะไรบ้างต่อเกม:
-1. `release.py` wrap `src` → `releases/hz_<id>.lua` (เข้ารหัส+key gate+FishUI ฝังครบ)
+1. `release.py` wrap `src` → `releases/hz_<id>.lua` (เข้ารหัส payload + key gate + FishUI ฝังครบ + **ห่อ b64 ทั้งไฟล์**)
 2. copy → `%XENO_WS%/hz_<id>_test.lua` (autoexec โหลดชื่อนี้)
 3. อัปเดตตาราง `<!--FILES-->` ใน README อัตโนมัติ
 4. `git add+commit` (ข้ามถ้าไม่มีอะไรเปลี่ยน) → `pull --rebase` → `push`
