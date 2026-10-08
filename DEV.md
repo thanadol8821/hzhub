@@ -188,3 +188,40 @@ cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่า
   → py deploy.py                       (build release+push repo+sync ws)
   → เทสในเกมจริง (watch/เทส.cmd)
 ```
+
+## 11. Backend (Cloudflare Worker) — ตั้งแต่ v261008-telemetry
+
+worker URL: `https://dry-wave-054e.thanadol821.workers.dev` — source อยู่ที่ `backend/worker.js`
+
+### การติดตั้งครั้งแรก (ทำครั้งเดียว)
+
+1. dash.cloudflare.com → Workers → `dry-wave-054e` → **Edit code**
+2. ลบโค้ดเดิม → วางเนื้อ `backend/worker.js` ทั้งไฟล์ → **Deploy**
+3. (แนะนำ) ตั้งรหัสแอดมิน: worker → **Settings → Variables and Secrets** → Add `ADMIN_KEY` = รหัสลับของเรา (ถ้าไม่ตั้ง ใช้ค่า fallback `hz-admin-123` — เปลี่ยนเถอะ อย่าใช้ค่า default จริง)
+4. (แนะนำ — เก็บสถิติถาวร) **Storage → KV** → สร้าง namespace `HZHUB` → worker → Settings → **Bindings** → Add → KV Namespace → Variable name `STATS`
+
+ไม่ผูก KV ก็ทำงานได้ — สถิติอยู่ในหน่วยความจำ worker (รีเซ็ตตอน cold start ~ หลังไม่มีคนใช้สักพัก) + เห็น ping สดในแท็บ logs/observability ของ dashboard อยู่ดี
+
+### ใช้งานประจำวัน
+
+| อยากทำ | ทำไง |
+|---|---|
+| ดูสถิติหลังบ้าน | เปิด `<worker>/admin?key=<ADMIN_KEY>` — จำนวน ping/คน/เครื่อง/ผู้ใช้ล่าสุด + ฟอร์มเปิดปิด |
+| ปิดระบบทั้งหมด (kill-switch) | `/admin/set?key=K&g=all&on=0&msg=กำลังอัปเดต` — ทุก client โดนตัดภายใน 60 วิ |
+| ปิดเฉพาะเกม | `/admin/set?key=K&g=valley&on=0` |
+| เปิดกลับ | `/admin/set?key=K&g=all&on=1` — client เด้งกลับเอง |
+| ดูสถิติดิบ | `/stats?key=K` (JSON) |
+
+### สิ่งที่สคริปต์ทำอัตโนมัติ (release_boot.lua)
+
+- เปิดเกม → `GET /status?g=<id>` → off = หน้าต่าง "ปิดปรับปรุงชั่วคราว" ไม่ถามคีย์
+- ผ่าน status → `POST /ping ev=gate` (นับคนเห็นหน้าคีย์) — ใส่คีย์ผ่าน → `ev=unlock`
+- ทุก 60 วิ เช็ก status ซ้ำ — โดนปิดกลางทาง = ฆ่ารันไทม์ + ขึ้นหน้าบำรุงรักษา / เปิดกลับ = หน้าหายเอง
+- **fail-open**: worker ล่ม/เน็ตดับ/ตอบมั่ว = ไม่บล็อก (เทสเตอร์ไม่หงุดหงิด) — อยาก fail-closed ค่อยปรับ
+- ping ส่ง: event, เกม, tag, @username, displayName, userId, hwid (ย่อใน stats), placeId — ไม่มีรหัสผ่าน/cookie ใดๆ
+
+### ข้อควรรู้
+
+- สคริปต์ใช้ `request`/`http_request`/`syn.request` ของ executor POST — Xeno รองรับ `request`; executor อื่นบางตัวไม่มี → ping เงียบไปเฉยๆ ไม่พัง
+- status เช็กผ่าน `game:HttpGet` — ใช้ได้ทุก executor
+- วิธีเปลี่ยน worker → แก้ `api` ใน deploy.json แล้ว deploy ใหม่
