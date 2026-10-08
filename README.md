@@ -2,21 +2,27 @@
 
 ฮับอัตโนมัติสำหรับ Roblox — **คีย์ชุดเดียวใช้ได้ทุกแมพ**
 
-## ติดตั้ง (เทสเตอร์)
+## ติดตั้ง (เทสเตอร์) — วิธีง่ายสุด
 
-1. เลือกไฟล์ตามแมพที่จะเล่น:
+วางบรรทัดนี้ใน executor แล้วกดรัน (ไม่ต้องโหลดไฟล์):
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/main/releases/hz_valley.lua"))()
+```
+
+→ หน้าคีย์เด้ง → ใส่ **`123`** → กด "ยืนยันคีย์" → เล่น
+
+## ไฟล์ต่อแมพ
+
 <!--FILES-->
 | แมพ | ไฟล์ใน releases/ |
 |---|---|
 | Chicken or Hero (Huss Valley) | `releases/hz_valley.lua` |
 <!--/FILES-->
-2. วางไฟล์ไว้ในโฟลเดอร์ workspace ของ executor (เช่น Xeno: `%LOCALAPPDATA%/Xeno/workspace/`)
-3. เข้าเกม → executor inject → รัน:
-   ```lua
-   loadstring(readfile("hz_valley.lua"))()   -- เปลี่ยนชื่อไฟล์ตามแมพ
-   ```
-   หรือวางใน autoexec ให้รันเอง
-4. หน้าคีย์เด้งขึ้นมา → ใส่คีย์ → กด "ยืนยันคีย์"
+
+(เปลี่ยนชื่อไฟล์ใน URL ตามแมพ — คีย์เดียวกันทุกแมพ)
+
+**วิธีสำรอง** (ถ้า HttpGet ใช้ไม่ได้): โหลดไฟล์จาก `releases/` → วางใน workspace ของ executor → `loadstring(readfile("hz_valley.lua"))()`
 
 ## คีย์เทส (ใช้ได้ทุกแมพ)
 
