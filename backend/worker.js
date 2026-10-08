@@ -153,10 +153,10 @@ async function routeUnlock(req, env) {
   if (!rec) { rl.n++; await kvPut(env, "rl:" + ip, rl); return bad("no-key"); }
   if (rec.st === "off") return bad("banned", 403);
   if (rec.exp && Date.now() > rec.exp) return bad("expired", 403);
-  if (rec.hw && rec.hw !== hw) return bad("bound", 403);
+  if (rec.bind && rec.hw && rec.hw !== hw) return bad("bound", 403);
   const pkdoc = await kvGet(env, "pk:" + g, null);
   if (!pkdoc || !pkdoc.pk) return bad("no-pk", 503);
-  if (!rec.hw) rec.hw = hw;
+  if (rec.bind && !rec.hw) rec.hw = hw; // ผูกเครื่องเฉพาะคีย์ที่ติ๊ก bind
   rec.uses = (rec.uses || 0) + 1; rec.last = Date.now(); rec.u = b.u || ""; rec.uid = b.uid || 0;
   keys[key] = rec;
   await kvPut(env, "keys", keys);
