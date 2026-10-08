@@ -104,7 +104,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/ma
 
 ---
 
-## 4. ระบบใน `hz_valley.lua` (สคริปต์หลัก ~1900 บรรทัด)
+## 4. ระบบใน `hz_valley.lua` (สคริปต์หลัก ~1950 บรรทัด)
 
 | ระบบ | หลักการ |
 |---|---|
@@ -112,7 +112,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/ma
 | Catcher AI | เลือกเหยื่อใกล้สุด → chase → tackle → melee → BearTrap → ยืนยัน |
 | GOD dodge | Heartbeat 0ms อ่าน attr telegraph ของ catcher → หลบทัน windup |
 | RescueKit | โดนจับ → ชุบตัวเอง → กลับ Active ต่อ |
-| ESP | Highlight (AlwaysOnTop) parent เข้า char ตรง — แดง=ไล่/น้ำเงิน=หนี — per-player pcall + respawn-guard |
+| ESP | Highlight + Billboard ชื่อ/ระยะ (AlwaysOnTop) parent เข้า char ตรง — แดง=ไล่/น้ำเงิน=หนี — per-player pcall + respawn-guard |
 | Auto-claim/vote/hero/gear | remote fire ตอนจบแมตช์ + equip เกียร์ตาม tier (buy cooldown 45s/ไอเทมกัน spam) |
 | Config | `hz_valley_cfg.json` (state เกม) + `FishUI/hz_valley.json` (ธีม/keybind — FishUI autosave) |
 | Log | buffer → `writefile` flush ทุก 1.5s → `hz_valley_log.txt` |
@@ -173,9 +173,9 @@ cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่า
 
 ## 9. ของที่ยังไม่ทำ/ข้อจำกัด
 
-- แบ็กเอนด์จริงยังไม่มี — release ใช้คีย์ฝัง (keyMode auto); ถ้าจะทำ server จริงดู `Ui/Ux/SPEC_BACKEND.md` + `hz_loader.lua` mode release
-- ESP ไม่มีชื่อ/ระยะแล้ว (ตัดออกตามสั่ง — เหลือแค่กรอบสี)
-- `blockOn:never` เฉพาะ build เทส — build ขายต้องเปลี่ยน
+- ~~แบ็กเอนด์จริงยังไม่มี~~ — **ทำแล้ว** ดู §11 (worker v2.2.1 + hz_system แยกโฟลเดอร์): คีย์เว็บ/kill-switch/telemetry/autoban/snapshot ครบ
+- `blockOn:"never"` ตอนนี้ตั้งใจให้เทสเตอร์เข้าได้ทุก executor — ถ้าขายจริง/กันดั้มหนักเปลี่ยนเป็น `"high"` ใน `hz_system/deploy/deploy.json` แล้ว deploy ใหม่
+- คนที่มีคีย์จริงยัง dump payload จากหน่วยความจำได้ (เพดานฝั่ง client ของทุกสคริปต์) — กันทางอ้อมด้วย wm ตามล่า + แบนคีย์รั่ว + anti-share autoban
 - เกม dice/ubg/warz/mart ยังใช้ UI ตัวเอง (ไม่ใช่ FishUI) — ถ้าจะย้ายเข้าระบบเดียวกันต้องเขียนใหม่ผ่าน `Games/_template/`
 
 ## 10. เวิร์กโฟลว์มาตรฐานทุกครั้งที่แก้
@@ -195,7 +195,7 @@ cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่า
 
 **URL:** `https://dry-wave-054e.thanadol821.workers.dev` (account: thanadol821)
 **หลังบ้าน:** `https://<worker>/<ADMIN_PATH>/admin` (ค่าจริงใน `hz_system/secrets/`) — admin path ลับอยู่ใน env `ADMIN_PATH` บน CF (ไม่มีใน repo ใดๆ) + หน้า SSR รับ `?key=` ตรงๆ (ฟอร์ม login = GET ธรรมดา ไม่พึ่ง JS/storage) — ทุก path อื่น = fake 404 ขาว
-**Source:** `../hz_system/backend/worker.js` v2.2 (นอก repo, สะอาด) → ตัว deploy จริง `../hz_system/secrets/worker_deploy.js` (local-only, ฝัง ADMIN_KEY/ADMIN_PATH/AUDIT_KEY fallback)
+**Source:** `../hz_system/backend/worker.js` **v2.2.1** (นอก repo, สะอาด) → ตัว deploy จริง `../hz_system/secrets/worker_deploy.js` (local-only, ฝัง ADMIN_KEY/ADMIN_PATH/AUDIT_KEY/HMAC_SECRET fallback)
 **กำกับ release ตั้งแต่:** v261008-keysys เป็นต้นไป — boot ฝัง `API` URL + status-watch + serverUnlock
 
 ### 11.1 สถาปัตยกรรม
@@ -297,7 +297,7 @@ JSON API รับ `x-admin-key` **เท่านั้น** (ไม่รั�
 1. `../hz_system/backend/worker.js` → copy เป็น `../hz_system/secrets/worker_deploy.js` → แทน `env.ADMIN_KEY || ""` ด้วย `|| "<รหัสที่อยากได้>"` (หรือตั้ง env ADMIN_KEY ใน CF Variables)
 2. วาง `../hz_system/secrets/worker_deploy.js` ลง Cloudflare editor → Deploy
 3. KV: สร้าง namespace → worker Settings→Bindings→KV → Variable `STATS`
-4. `../hz_system/secrets/secrets.json`: `{"adminKey":"<รหัส>","adminPath":"<path-ลับ>","ownerKey":"<owner-key-ลับ>"}` — deploy.py ใช้ header auth setpk + merge ownerKey เป็นคีย์ฝังลับ
+4. `../hz_system/secrets/secrets.json`: `{"adminKey","adminPath","ownerKey","auditKey","hmacSecret"}` — deploy.py ใช้ adminKey auth setpk + merge ownerKey เป็นคีย์ฝังลับ; auditKey = ช่องอ่านอย่างเดียว; hmacSecret = กุญแจเซ็น sig แยกจาก adminKey (regen deploy.js ฝังทั้งหมด — ดู `../hz_system/secrets/README.md`)
    - **`deploy.json → keys` ว่างแล้ว** — ไม่มีคีย์ฝัง public; คีย์ฝังเดิม (`123`, HZV×3) ถูก ban ใน worker → wm เข้า `/status.banned`
    - `releases/*.keys.json` ไม่ push (gitignore) — รายการคีย์+wm เก็บ local เท่านั้น
 5. ครั้งแรก: `deploy.py` หรือ manual `…/admin/setpk?key=<k>&g=<id>&pk=<ไฟล์ .pk>`
@@ -321,11 +321,12 @@ JSON API รับ `x-admin-key` **เท่านั้น** (ไม่รั�
 - `API = @@API@@` ← release.py `--api` ← `deploy.json→api`
 - `fetchStatus()` — GET /status ทุก 60วิ · `STATUS.banned` set → unwrap เช็ก wm ก่อน
 - `serverUnlock(key)` — fallback หลัง wraps ไม่ผ่าน → POST /unlock → ตรวจ tag เหมือน wrap
-- `ping("gate"|"unlock")` — POST /ping (executor request/http_request — ไม่มีก็เงียบ)
+- `ping(ev)` — POST /ping throttle ≥2s/ครั้ง ≤45/10นาที (executor request/http_request — ไม่มีก็เงียบ) — ev = gate · unlock · loaded · win/lost:<map> · kill:<kind> · perfect · warn(:staff) · err:<ระบบ> · alive · role:<role> (tag = `build|wm` → หลังบ้านเห็นจากคีย์ไหน)
 - `showMaint()/killRuntime()` — หน้าบำรุงรักษา + เคาะ runtime (`getgenv().HZ_VALLEY()` = KILL flag)
 
 ### 11.8 ข้อจำกัด/จุดที่ยังไม่ทำ
 
 - คีย์ฝังทำงาน offline (เจตนา — owner keys ไม่ควรตายตาม server) → แบนคีย์ฝังมีผลเฉพาะตอน client เช็ก status ได้ (เน็ตดับ+คีย์ฝัง = เข้าได้ — ยอมรับไว้สำหรับเทส)
 - stats ปลอมได้ (ping ไม่มี auth — ข้อมูลสาธารณะไม่สำคัญ)
-- ไม่มี session heartbeat (รู้แค่เข้า ไม่รู้เลิกเล่นเมื่อไหร่ — ping ev เพิ่มได้ถ้าอยาก)
+- session heartbeat = `alive` ping ทุก 4นาทีในแมตช์ (รู้แอคทีฟอยู่ แต่ไม่รู้ "เลิก" เป๊ะๆ — executor ไม่มี on-close hook)
+- คนที่มีคีย์จริง dump payload จากหน่วยความจำได้ (เพดาน client-side ของทุกสคริปต์) → กันทางอ้อม: wm ใน telemetry ทุก event + แบนคีย์รั่ว + anti-share autoban
