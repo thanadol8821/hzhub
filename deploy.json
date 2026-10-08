@@ -4,6 +4,7 @@
   "keys": ["123", "HZV-AFB322-339C92", "HZV-8B7985-C74C1A", "HZV-C21D68-D034D1"],
   "keyMode": "auto",
   "blockOn": "never",
+  "api": "https://dry-wave-054e.thanadol821.workers.dev",
   "outDir": "releases",
   "games": [
     {
