@@ -192,6 +192,7 @@ cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่า
 ## 11. Backend — Cloudflare Worker (ระบบคีย์ + telemetry + kill-switch)
 
 **URL:** `https://dry-wave-054e.thanadol821.workers.dev` (account: thanadol821)
+**หลังบ้าน:** `https://dry-wave-054e.thanadol821.workers.dev/x7k2-hz/admin` — path ลับอยู่ใน env `ADMIN_PATH` (repo/worker.js ไม่มี) + login gate (รหัสอยู่ sessionStorage ไม่อยู่ใน URL) — ทุก path อื่น = fake 404 ขาว
 **Source:** `backend/worker.js` (repo, สะอาด) → ตัว deploy จริง `worker_deploy.js` (local-only, ฝัง ADMIN_KEY fallback)
 **กำกับ release ตั้งแต่:** v261008-keysys เป็นต้นไป — boot ฝัง `API` URL + status-watch + serverUnlock
 
