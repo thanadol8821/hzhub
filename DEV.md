@@ -193,7 +193,7 @@ cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่า
 
 **URL:** `https://dry-wave-054e.thanadol821.workers.dev` (account: thanadol821)
 **หลังบ้าน:** `https://dry-wave-054e.thanadol821.workers.dev/x7k2-hz/admin` — path ลับอยู่ใน env `ADMIN_PATH` (repo/worker.js ไม่มี) + login gate (รหัสอยู่ sessionStorage ไม่อยู่ใน URL) — ทุก path อื่น = fake 404 ขาว
-**Source:** `backend/worker.js` (repo, สะอาด) → ตัว deploy จริง `worker_deploy.js` (local-only, ฝัง ADMIN_KEY fallback)
+**Source:** `../hz_system/backend/worker.js` (นอก repo) (repo, สะอาด) → ตัว deploy จริง `worker_deploy.js` (local-only, ฝัง ADMIN_KEY fallback)
 **กำกับ release ตั้งแต่:** v261008-keysys เป็นต้นไป — boot ฝัง `API` URL + status-watch + serverUnlock
 
 ### 11.1 สถาปัตยกรรม
@@ -260,7 +260,7 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 
 ### 11.5 Setup checklist (ทำครั้งเดียว)
 
-1. `backend/worker.js` → copy เป็น `secrets/worker_deploy.js` → แทน `env.ADMIN_KEY || ""` ด้วย `|| "<รหัสที่อยากได้>"` (หรือตั้ง env ADMIN_KEY ใน CF Variables)
+1. `../hz_system/backend/worker.js` → copy เป็น `../hz_system/secrets/worker_deploy.js` → แทน `env.ADMIN_KEY || ""` ด้วย `|| "<รหัสที่อยากได้>"` (หรือตั้ง env ADMIN_KEY ใน CF Variables)
 2. วาง `secrets/worker_deploy.js` ลง Cloudflare editor → Deploy
 3. KV: สร้าง namespace → worker Settings→Bindings→KV → Variable `STATS`
 4. `secrets/secrets.json` (local, gitignored): `{"adminKey":"<รหัส>","adminPath":"/x7k2-hz","ownerKey":"HZO-…"}` — deploy.py ใช้ header auth setpk + merge ownerKey เป็นคีย์ฝังลับ
