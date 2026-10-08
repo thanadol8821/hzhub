@@ -220,8 +220,21 @@ worker URL: `https://dry-wave-054e.thanadol821.workers.dev` — source อยู
 - **fail-open**: worker ล่ม/เน็ตดับ/ตอบมั่ว = ไม่บล็อก (เทสเตอร์ไม่หงุดหงิด) — อยาก fail-closed ค่อยปรับ
 - ping ส่ง: event, เกม, tag, @username, displayName, userId, hwid (ย่อใน stats), placeId — ไม่มีรหัสผ่าน/cookie ใดๆ
 
+### ระบบคีย์บนเว็บ (v261008-keyserver+)
+
+คีย์มี 2 ชนิดทำงานคู่กัน:
+
+- **คีย์ฝัง** (`deploy.json → keys` — `123`, `HZV-…`): unwrap ในเครื่อง ใช้ได้แม้ worker ล่ม — แบนได้ด้วยการสร้าง record ชื่อคีย์นั้นในหลังบ้านแล้วกด "แบน" (server ส่ง wm ใน `/status.banned` → client ปฏิเสธทันที)
+- **คีย์เว็บ** (สร้างใน `/admin`): ไม่ได้ฝังในไฟล์ — client ส่ง `/unlock` → server ตรวจ (active? hwid? exp?) → คืน PK → ปลดล็อก; ลบ/แบน = ตายทันที
+
+กลไก: `release.py` เขียน `<artifact>.pk` (b64, gitignore) → `deploy.py` อ่าน `secrets.json{"adminKey"}` (gitignore, local เท่านั้น) → `GET /admin/setpk?key=..&g=<id>&pk=<b64>` อัปโหลดขึ้น worker → `/unlock` ใช้ pk นี้ตอบ
+
+- ไฟล์ `secrets.json` อยู่ที่โฟลเดอร์ repo ในเครื่อง — **ห้าม push** (gitignore ครอบแล้ว)
+- ถ้าไม่มี secrets.json/ผิดคีย์ → deploy ยังสำเร็จ แต่เตือน "คีย์เว็บใช้ไม่ได้" — คีย์ฝังทำงานปกติ
+- ลบ record pk หรือไม่เคย setpk → `/unlock` ตอบ `no-pk` → คีย์เว็บทั้งหมดปลดล็อกไม่ได้ (คีย์ฝังไม่กระทบ)
+
 ### ข้อควรรู้
 
-- สคริปต์ใช้ `request`/`http_request`/`syn.request` ของ executor POST — Xeno รองรับ `request`; executor อื่นบางตัวไม่มี → ping เงียบไปเฉยๆ ไม่พัง
+- สคริปต์ใช้ `request`/`http_request`/`syn.request` ของ executor POST — Xeno รองรับ `request`; executor อื่นบางตัวไม่มี → ping/คีย์เว็บเงียบไป ไม่พัง (คีย์ฝังยังเข้าได้)
 - status เช็กผ่าน `game:HttpGet` — ใช้ได้ทุก executor
 - วิธีเปลี่ยน worker → แก้ `api` ใน deploy.json แล้ว deploy ใหม่
