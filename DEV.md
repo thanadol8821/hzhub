@@ -1,7 +1,7 @@
 # HZ HUB — เอกสาร dev หลัก (อ่านไฟล์นี้ก่อน ไฟล์เดียวจบ)
 
 โปรเจกต์บอทอัตโนมัติ Roblox — โครง reusable รองรับหลายแมพ คีย์ชุดเดียวใช้ได้ทุกเกม
-repo: `https://github.com/thanadol8821/hzhub` (ตอนนี้ **private** — ภายนอกเปิดไม่ได้)
+repo: `https://github.com/thanadol8821/hzhub` (**public** — เทสเตอร์ loadstring ผ่าน raw URL ได้)
 
 ---
 
@@ -95,10 +95,12 @@ py deploy.py --no-push     # build+commit ไม่ push
 
 ## วิธีส่งให้เทสเตอร์
 
-repo ตอนนี้ **private** (เปลี่ยนเป็น public ที่ Settings → visibility ถ้าอยากให้ loadstring ใช้ได้):
-- **ถ้า public**: เทสเตอร์รันบรรทัดเดียว —
-  `loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/main/releases/hz_valley.lua"))()`
-- **ถ้า private**: ส่งไฟล์ `releases/hz_<id>.lua` ตรง → วาง workspace → `loadstring(readfile("hz_<id>.lua"))()` → คีย์ `123`
+repo **public** แล้ว — เทสเตอร์รันบรรทัดเดียวจบ (ไม่ต้องโหลดไฟล์):
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/main/releases/hz_valley.lua"))()
+```
+เปลี่ยนชื่อไฟล์ตามแมพ `releases/hz_<id>.lua` — คีย์ `123` ใช้ได้ทุกตัว
+(สำรอง: ส่งไฟล์ตรง → `loadstring(readfile("hz_<id>.lua"))()`)
 
 ---
 
