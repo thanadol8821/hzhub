@@ -1,15 +1,22 @@
-# dev source / เครื่องมือฝั่ง dev — เทสเตอร์ไม่ต้องการ (แจกเฉพาะ release ที่เข้ารหัส)
-hz_valley.lua
+# repo public = docs + releases + backend เท่านั้น — ที่เหลือ dev-only (local)
+
+# เครื่องมือ build+push
+deploy/
+
+# ความลับ — secrets.json / worker_deploy.js (มีรหัสแอดมิน)
+secrets/
+
+# source dev
+src/
+
+# dump แมพ + เครื่องมือเฝ้าเกม
 dump/
 watch/
-deploy.py
-ดีพอย.cmd
+
+# payload keys + รายการคีย์ (ห้ามขึ้น repo)
+*.pk
+releases/*.keys.json
+
 *.bak
 *.tmp
 __pycache__/
-
-# backend secrets (ห้าม push)
-secrets.json
-*.pk
-worker_deploy.js
-releases/*.keys.json
