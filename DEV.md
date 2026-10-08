@@ -216,13 +216,20 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 
 ### 11.2 KV schema (namespace `hzhub`, binding `STATS`)
 
-| doc key | เนื้อ | เขียนโดย |
+| doc key | เนื้อ | เจ้าของ (ใครเขียนได้) |
 |---|---|---|
-| `keys` | `{<key>:{st:"on"\|"off",hw,bind,note,wm,at,exp,uses,last,u,uid}}` | keygen/manage/unlock |
+| `keys` | `{<key>:{st:"on"\|"off",bind,note,wm,at,exp}}` | **admin เท่านั้น** (keygen/manage/หน้าแอดมิน) |
+| `usage` | `{<key>:{uses,last,u,uid,hw}}` | **unlock เท่านั้น** (นับครั้ง + ผูกเครื่อง) |
+| `banned` | `{<key>:{wm,hw}}` index สำรองของ st=off | admin เท่านั้น |
 | `agg` | `{total,games:{},users:{uid:{u,dn,count,hwSet,last}},events:[≤100]}` | ping |
-| `status` | `{global:bool,games:{g:bool},msg,ver}` | system/set |
-| `pk:<g>` | `{pk:"<b64 32B>",at}` | setpk (deploy.py อัตโนมัติ) |
-| `rl:<ip>` | `{n,ts}` rate-limit /unlock (15 ครั้ง/10นาที) | unlock |
+| `status` | `{global:bool,games:{g:bool},msg,ver}` | admin (system) |
+| `pk:<g>` | `{pk:"<b64 32B>",at}` | setpk (deploy.py) |
+| `rl:<ip>` `rl:a:<ip>` | `{n,ts}` rate-limit unlock(15)/admin-fail(20) ต่อ 10นาที | unlock / admin-auth |
+
+**หลักออกแบบ (กัน lost-update):** KV เป็น eventual consistency — read-modify-write ทั้ง doc จาก 2 request พร้อมกันทำให้ตัวหนึ่งหาย
+(เคยทำให้คีย์ที่แบนไว้หายหลัง redeploy เพราะ `/unlock` เขียนทับ `keys` ทั้ง doc ด้วยข้อมูลเก่า) → ตอนนี้ `/unlock` **ไม่แตะ `keys`** เขียนแค่ `usage`;
+ค่าที่ต้องไม่หาย (st/exp/bind/note) อยู่ใน doc ที่ admin เขียนคนเดียว · การอ่าน KV พลาดจะ **throw** (ไม่คืนค่าว่างเงียบๆ) → admin write ไม่ทับข้อมูลด้วย `{}`
+· ข้อมูลเก่าที่ฝัง uses/hw ใน `keys` ยังอ่านได้ (legacy fallback)
 
 ไม่ผูก `STATS` = fallback in-memory → **คีย์/pk/สถิติหายตอน cold start** (ใช้ชั่วคราวได้ ห้ามใช้จริง)
 
@@ -236,18 +243,22 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 | `POST /ping` | `{ev,g,tag,u,dn,uid,hw,place}` | `{ok}` — เก็บสถิติ (รับ alias key/username/hwid/action ด้วย) |
 | `POST /unlock` | `{k|key,hw|hwid,u,dn,uid,g,tag}` | ผ่าน → `{ok,pk(b64),wm,sig}` / ไม่ผ่าน → `{ok:false,why:no-key\|banned\|expired\|bound\|rate\|no-pk}` |
 
-**Admin (`x-admin-key` header หรือ `?key=` — ผิด = 403)**
+**Admin (ทั้งหมดอยู่ใต้ `ADMIN_PATH` ลับ — path อื่น = fake 404)**
 
-| endpoint | ทำอะไร |
-|---|---|
-| `GET /admin?key=` | แดชบอร์ด HTML (auto-refresh 15วิ): kill-switch + สร้างคีย์ + ตารางคีย์ + สถิติ + events |
-| `POST /admin/keygen` `{count,note,custom?,bind?,days?}` | สร้างคีย์ — custom กำหนดเอง / เว้น=สุ่ม `HZ-XXXX-XXXX-XXXX` (Crockford charset) |
-| `GET /admin/keys` | dump คีย์ทั้งหมด |
-| `POST /admin/key/manage` `{key,action}` | action: `ban` `unban` `reset_hwid` `delete` — ban คีย์ฝังได้ด้วย (สร้าง record wm+off) |
-| `POST /admin/system` `{maintenance,msg?,game?,version?}` | kill-switch (body ว่างไม่เปลี่ยนอะไร — กัน poll พลิก) |
-| `GET /admin/set?g&on&msg` | alias GET ของ system (เปิดลิงก์ตรง) |
-| `GET /admin/setpk?g&pk` | อัปโหลด payload key — deploy.py ใช้ |
-| `GET /admin/stats` `GET /stats` | JSON สรุป (pings/users/machines/events/status/kv) |
+| endpoint | auth | ทำอะไร |
+|---|---|---|
+| `GET <AP>/admin` | ไม่มี → ฟอร์มใส่รหัส (GET ธรรมดา ไม่ใช้ JS/storage) | ใส่รหัสแล้วไป `?key=` |
+| `GET <AP>/admin?key=` | query | **แดชบอร์ด server-rendered ไม่มี JS** (CSP `default-src 'none'`): ภาพรวม · kill-switch รายเกม+ข้อความ · สร้างคีย์ (สุ่ม/กำหนดเอง/จำนวน≤50/อายุวัน/ล็อกเครื่อง) · ตารางคีย์+ค้นหา · แบน/ปลดแบน · ปลดเครื่อง · ล็อก/เลิกล็อกเครื่อง · +7/+30วัน · ไม่จำกัดอายุ · แก้หมายเหตุ · ลบ(หน้ายืนยัน) · ผู้ใช้ · events |
+| `POST <AP>/admin?key=` | query + form | act = `newkey` `ban` `unban` `reset_hwid` `delete` `extend` `noexp` `bind` `note` `sys` → 303 กลับพร้อมแถบผลลัพธ์ |
+| `POST /admin/keygen` `{count,note,custom?,bind?,days?}` | header | custom ต้องเป็น `[A-Za-z0-9_-]{3,64}` (dup=409) |
+| `GET /admin/keys` | header | คีย์ทั้งหมด (merge usage) |
+| `POST /admin/key/manage` `{key,action,days?,note?,bind?}` | header | action: `ban` `unban` `reset_hwid` `delete` `extend` `noexp` `bind` `note` (ban คีย์ฝังได้) |
+| `POST /admin/system` `{game?,maintenance\|on,msg?,version?}` | header | kill-switch (body ว่าง = 400 no-op) |
+| `GET /admin/stats` | header | JSON สรุป |
+| `POST /admin/setpk` `{g,pk}` (GET `?g&pk` ยังรองรับ) | header | อัปโหลด payload key — deploy.py ใช้ POST |
+
+JSON API รับ `x-admin-key` **เท่านั้น** (ไม่รับ `?key=`) · หน้าแอดมินรับ `?key=` (ต้องใช้เพราะไม่พึ่ง JS) → ส่ง `referrer-policy: no-referrer` + `no-store`
+· admin พลาด 20 ครั้ง/10นาที/IP → 429 **แม้ใส่ถูก** (เช็ก lockout ก่อนเทียบรหัส) · เทียบรหัสแบบเวลาคงที่
 
 ### 11.4 โมเดลความปลอดภัย
 
@@ -255,7 +266,9 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 - **PK** (payload key): เกิดตอน build ใน `release.py` → อยู่ใน `<artifact>.pk` (gitignore) + KV `pk:<g>` เท่านั้น — ไม่อยู่ใน repo; เปลี่ยนทุก build → pk รั่ว = เปิดได้แค่ build เก่า
 - **unwrap flow**: คีย์ฝังผ่าน crypto ในเครื่อง (ทำงานแม้ worker ตาย) · คีย์เว็บต้อง server คืน pk → แบน/ลบ = ตายทันที · คีย์ฝังโดนแบน = wm ไปใน /status.banned → client ปฏิเสธ
 - **banned ผ่าน wm** (hmac(key,"hzv-id")[:8]hex) — server คำนวณด้วย WebCrypto ตรงฝั่ง client เป๊ะ
-- **rate-limit** `/unlock`: 15/IP/10นาที (`rl:<ip>` doc)
+- **rate-limit** `/unlock`: 15 fail/IP/10นาที (นับทุกเหตุผลที่ไม่ ok) · `/ping`: 60/IP/10นาที (in-memory ไม่เปลือง KV write) · admin: 20 fail/IP/10นาที
+- **KV ล่ม**: `/status` fail-open · `/unlock` fail-closed (503 kv-down) · `/ping` พลาดเงียบ · admin write พลาด = error ไม่ทับข้อมูล
+- **KV Free plan**: 1,000 writes/วัน — unlock/ping/admin แต่ละครั้งใช้ 1-2 writes; ถ้าผู้ใช้เยอะให้อัป Workers Paid
 - **hwid bind**: เฉพาะคีย์ที่ `bind:true` — unlock แรกจำ hw, ต่อมาต้องตรง / admin ปลดด้วย reset_hwid
 - **fail-open โดยเจตนา**: status/เน็ตดับ → ไม่บล็อกเทสเตอร์ (ปรับเป็น fail-closed ได้ใน fetchStatus)
 - **MITM**: pk ต้องผ่าน `hmac(pk,salt..ct)==tag` ฝั่ง client — server ปลอมส่ง pk เทียมไม่ได้ (ได้แค่ของจริงหรือ fail) + TLS
