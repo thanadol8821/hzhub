@@ -219,13 +219,17 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 | doc key | เนื้อ | เจ้าของ (ใครเขียนได้) |
 |---|---|---|
 | `keys` | `{<key>:{st:"on"\|"off",bind,maxHw,note,wm,at,exp}}` | **admin เท่านั้น** (keygen/manage/หน้าแอดมิน) |
-| `usage` | `{<key>:{uses,last,u,uid,hws:[…],hw}}` (hws = เครื่องที่ผูก ≤ maxHw) | **unlock เท่านั้น** (นับครั้ง + ผูกเครื่อง) |
+| `usage` | `{<key>:{uses,last,u,uid,hws:[…],hw,seen:{hw:t},flag?}}` (hws = เครื่องที่ผูก ≤ maxHw; seen = เครื่องที่เคยใช้ใน window) | **unlock เท่านั้น** (นับครั้ง + ผูกเครื่อง + จับแชร์) |
 | `banned` | `{<key>:{wm,hw}}` index สำรองของ st=off | admin เท่านั้น |
+| `autoban` | `{<key>:{wm,hws,t,n,reason}}` คีย์ที่ออโต้แบน (แชร์เกิน limit) | unlock (เพิ่ม) / admin-auto (ปลด) |
+| `auto` | `{shareLimit,shareHours,shareAction:"flag"\|"ban",purgeExpiredDays,dailySnapshot}` การตั้งค่าออโต้ | admin (auto cfg) |
+| `autostate` | `{last,actions:[…]}` ผลรันออโต้ล่าสุด | auto job |
+| `snap:<iso>` | `{at,version,keys,usage,banned,status,autoban}` snapshot รายวัน (เก็บ ≤7 ชุด) | auto job |
 | `alog` | `{items:[{t,who,act,target,detail}≤200]}` บันทึกการกระทำแอดมิน | admin เท่านั้น |
 | `agg` | `{total,games:{},users:{uid:{u,dn,count,hwSet,last}},events:[≤100]}` | ping |
-| `status` | `{global:bool,games:{g:bool},msg,ver}` | admin (system) |
+| `status` | `{global:bool,games:{g:bool},until:{scope:ts},msg,ver}` (until = เปิดเองอัตโนมัติ) | admin (system) |
 | `pk:<g>` | `{pk:"<b64 32B>",at}` | setpk (deploy.py) |
-| `rl:<ip>` `rl:a:<ip>` | `{n,ts}` rate-limit unlock(15)/admin-fail(20) ต่อ 10นาที | unlock / admin-auth |
+| `rl:<ip>` `rl:a:<ip>` | `{n,ts}` rate-limit unlock(15)/admin-fail(20) ต่อ 10นาที (TTL 1 ชม.) | unlock / admin-auth |
 
 **หลักออกแบบ (กัน lost-update):** KV เป็น eventual consistency — read-modify-write ทั้ง doc จาก 2 request พร้อมกันทำให้ตัวหนึ่งหาย
 (เคยทำให้คีย์ที่แบนไว้หายหลัง redeploy เพราะ `/unlock` เขียนทับ `keys` ทั้ง doc ด้วยข้อมูลเก่า) → ตอนนี้ `/unlock` **ไม่แตะ `keys`** เขียนแค่ `usage`;
@@ -249,12 +253,15 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 | endpoint | auth | ทำอะไร |
 |---|---|---|
 | `GET <AP>/admin` | ไม่มี → ฟอร์มใส่รหัส (GET ธรรมดา ไม่ใช้ JS/storage) | ใส่รหัสแล้วไป `?key=` |
-| `GET <AP>/admin?key=` | query | **แดชบอร์ด server-rendered ไม่มี JS** (CSP `default-src 'none'`): ภาพรวม · kill-switch รายเกม+ข้อความ · สร้างคีย์ (สุ่ม/กำหนดเอง/จำนวน≤50/อายุวัน/ล็อกเครื่อง) · ตารางคีย์+ค้นหา · แบน/ปลดแบน · ปลดเครื่อง · ล็อก/เลิกล็อกเครื่อง · กำหนดจำนวนเครื่อง/คีย์ (1-10) · +7/+30วัน · ไม่จำกัดอายุ · แก้หมายเหตุ · ลบ(หน้ายืนยัน) · ผู้ใช้ · events · บันทึกการกระทำแอดมิน · ปุ่ม "ตรวจสุขภาพระบบ" (`?health=1`) |
-| `POST <AP>/admin?key=` | query + form | act = `newkey` `ban` `unban` `reset_hwid` `delete` `extend` `noexp` `bind` `maxhw` `note` `sys` → 303 กลับพร้อมแถบผลลัพธ์ |
+| `GET <AP>/admin?key=` | query | **แดชบอร์ด server-rendered** (ทำงานได้แม้ปิด JS — JS มีแค่ script เดียว nonce'd สำหรับปุ่มคัดลอก): ภาพรวม · kill-switch รายเกม+ข้อความ+**นาทีเปิดเอง** · สร้างคีย์ (สุ่ม/กำหนดเอง/จำนวน≤50/อายุวัน/ล็อกเครื่อง) → คีย์ใหม่แสดงพร้อมปุ่มคัดลอก · ตารางคีย์ (คลิกคีย์=เลือกทั้งดอก + ปุ่มคัดลอก) +ค้นหา · แบน/ปลดแบน · ปลดเครื่อง · ล็อก/เลิกล็อกเครื่อง · กำหนดจำนวนเครื่อง/คีย์ (1-10) · +7/+30วัน · ไม่จำกัดอายุ · แก้หมายเหตุ · ลบ(หน้ายืนยัน) · ผู้ใช้ · events · บันทึกการกระทำแอดมิน · **การ์ด "ระบบออโต้"** (ตั้งค่า/รัน/สำรอง/กู้คืน/ปลดออโต้แบน) · ปุ่ม "ตรวจสุขภาพระบบ" (`?health=1`) |
+| `POST <AP>/admin?key=` | query + form | act = `newkey` `ban` `unban` `reset_hwid` `delete` `extend` `noexp` `bind` `maxhw` `note` `sys` `autocfg` `autorun` `snap` `restore` `unautoban` → 303 กลับพร้อมแถบผลลัพธ์ (newkey ส่ง `nk=` คีย์ใหม่) |
 | `POST /admin/keygen` `{count,note,custom?,bind?,days?}` | header | custom ต้องเป็น `[A-Za-z0-9_-]{3,64}` (dup=409) |
 | `GET /admin/keys` | header | คีย์ทั้งหมด (merge usage) |
 | `POST /admin/key/manage` `{key,action,days?,note?,bind?}` | header | action: `ban` `unban` `reset_hwid` `delete` `extend` `noexp` `bind` `maxhw`(n) `note` (ban คีย์ฝังได้) |
-| `POST /admin/system` `{game?,maintenance\|on,msg?,version?}` | header | kill-switch (body ว่าง = 400 no-op) |
+| `POST /admin/system` `{game?,maintenance\|on,msg?,version?,minutes?}` | header | kill-switch (body ว่าง = 400 no-op) · `minutes>0` = เปิดเองอัตโนมัติเมื่อครบ |
+| `GET /admin/auto` | header (admin หรือ `AUDIT_KEY`) | สถานะออโต้: cfg · last run · snapshots · autoban (คีย์ถูกปิดบัง) |
+| `POST /admin/auto` `{action}` | header (admin) | `cfg`{shareLimit,shareHours,shareAction,purgeExpiredDays,dailySnapshot} · `run`(บังคับรัน) · `snapshot` · `restore`{id,mode,confirm?} · `unautoban`{key} |
+| Cron `scheduled()` | CF Trigger | รันออโต้รายวัน (ตั้งใน CF → Triggers → Cron เช่น `0 * * * *`; ไม่ตั้งก็รัน lazy ตอนเปิดหน้าแอดมิน ห่าง ≥20ชม.) — ทำ: สำรอง · self-heal · ลบคีย์หมดอายุนาน |
 | `GET /admin/stats` | header (admin หรือ `AUDIT_KEY`) | JSON สรุป |
 | `GET /admin/audit` | header (admin หรือ **`AUDIT_KEY` อ่านอย่างเดียว**) | ตรวจสุขภาพ/ความสมบูรณ์ทั้งระบบ: env/KV roundtrip/wm integrity/pk/index แบน/ขนาด doc + admin log 30 รายการล่าสุด — คีย์ถูกปิดบัง ไม่มีรหัส/pk ในผล |
 | `GET /admin/export` · `POST /admin/import` `{keys,usage,status?,mode,confirm?}` | header (admin) | สำรอง/กู้คืน: mode `merge`(เพิ่มที่ขาด) `overwrite`(ไฟล์ชนะ) `replace`(ล้างแล้วใส่ใหม่ ต้อง `confirm:"REPLACE"`); wm คำนวณใหม่เสมอ; ไม่รวม pk |
@@ -272,6 +279,7 @@ JSON API รับ `x-admin-key` **เท่านั้น** (ไม่รั�
 - **rate-limit** `/unlock`: 15 fail/IP/10นาที (นับทุกเหตุผลที่ไม่ ok) · `/ping`: 60/IP/10นาที (in-memory ไม่เปลือง KV write) · admin: 20 fail/IP/10นาที
 - **KV ล่ม**: `/status` fail-open · `/unlock` fail-closed (503 kv-down) · `/ping` พลาดเงียบ · admin write พลาด = error ไม่ทับข้อมูล
 - **KV Free plan**: 1,000 writes/วัน — unlock/ping/admin แต่ละครั้งใช้ 1-2 writes; ถ้าผู้ใช้เยอะให้อัป Workers Paid
+- **ออโต้ (v2.2)**: ทุก mutation ลง `alog` เหมือนแอดมิน · autoban ปลดได้ที่หน้าแอดมิน/`auto unautoban` · snapshot เก็บ 7 ชุดกู้ merge ได้ · `restore` mode `replace` ต้อง `confirm:"REPLACE"` เหมือน import · kill-switch `minutes` ไม่ลบสถานะ — เช็กเวลาตอนอ่าน (KV ล่มไม่ทำให้เปิดเอง)
 - **hwid bind**: เฉพาะคีย์ที่ `bind:true` — unlock จำ hw ได้สูงสุด `maxHw` เครื่อง (ค่าเริ่ม 1) เต็มแล้วเครื่องใหม่ได้ `bound` / admin ปลดด้วย reset_hwid หรือเพิ่ม maxhw · bind แต่ไม่ส่ง hw = `no-hw`
 - **fail-open โดยเจตนา**: status/เน็ตดับ → ไม่บล็อกเทสเตอร์ (ปรับเป็น fail-closed ได้ใน fetchStatus)
 - **MITM**: pk ต้องผ่าน `hmac(pk,salt..ct)==tag` ฝั่ง client — server ปลอมส่ง pk เทียมไม่ได้ (ได้แค่ของจริงหรือ fail) + TLS
