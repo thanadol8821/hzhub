@@ -194,7 +194,7 @@ cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่า
 > **ระบบนี้อยู่นอก repo แล้ว** — อ่าน `../hz_system/README.md` ก่อน (master handbook: deploy flow, registry, secrets, recovery)
 
 **URL:** `https://dry-wave-054e.thanadol821.workers.dev` (account: thanadol821)
-**หลังบ้าน:** `https://dry-wave-054e.thanadol821.workers.dev/x7k2-hz/admin` — path ลับอยู่ใน env `ADMIN_PATH` (repo/worker.js ไม่มี) + login gate (รหัสอยู่ sessionStorage ไม่อยู่ใน URL) — ทุก path อื่น = fake 404 ขาว
+**หลังบ้าน:** `https://<worker>/<ADMIN_PATH>/admin` (ค่าจริงใน `hz_system/secrets/`) — admin path ลับอยู่ใน env `ADMIN_PATH` บน CF (ไม่มีใน repo ใดๆ) + login gate (รหัสอยู่ sessionStorage ไม่อยู่ใน URL) — ทุก path อื่น = fake 404 ขาว
 **Source:** `../hz_system/backend/worker.js` (นอก repo, สะอาด) → ตัว deploy จริง `../hz_system/secrets/worker_deploy.js` (local-only, ฝัง ADMIN_KEY fallback)
 **กำกับ release ตั้งแต่:** v261008-keysys เป็นต้นไป — boot ฝัง `API` URL + status-watch + serverUnlock
 
@@ -251,7 +251,7 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 
 ### 11.4 โมเดลความปลอดภัย
 
-- **ADMIN_KEY**: env secret บน Cloudflare (`hz-a02dfb127d940b94` ณ backup) + fallback ฝังใน `worker_deploy.js` เท่านั้น — **repo/artifact ไม่มี** → หลังบ้านเป็นของเจ้าของคนเดียว คนนอกเจอ 403
+- **ADMIN_KEY**: env secret บน Cloudflare (ค่าอยู่ใน `../hz_system/secrets/secrets.json` เท่านั้น — ห้ามเขียนใน repo) + fallback ฝังใน `worker_deploy.js` เท่านั้น — **repo/artifact ไม่มี** → หลังบ้านเป็นของเจ้าของคนเดียว คนนอกเจอ 403
 - **PK** (payload key): เกิดตอน build ใน `release.py` → อยู่ใน `<artifact>.pk` (gitignore) + KV `pk:<g>` เท่านั้น — ไม่อยู่ใน repo; เปลี่ยนทุก build → pk รั่ว = เปิดได้แค่ build เก่า
 - **unwrap flow**: คีย์ฝังผ่าน crypto ในเครื่อง (ทำงานแม้ worker ตาย) · คีย์เว็บต้อง server คืน pk → แบน/ลบ = ตายทันที · คีย์ฝังโดนแบน = wm ไปใน /status.banned → client ปฏิเสธ
 - **banned ผ่าน wm** (hmac(key,"hzv-id")[:8]hex) — server คำนวณด้วย WebCrypto ตรงฝั่ง client เป๊ะ
@@ -265,7 +265,7 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 1. `../hz_system/backend/worker.js` → copy เป็น `../hz_system/secrets/worker_deploy.js` → แทน `env.ADMIN_KEY || ""` ด้วย `|| "<รหัสที่อยากได้>"` (หรือตั้ง env ADMIN_KEY ใน CF Variables)
 2. วาง `../hz_system/secrets/worker_deploy.js` ลง Cloudflare editor → Deploy
 3. KV: สร้าง namespace → worker Settings→Bindings→KV → Variable `STATS`
-4. `../hz_system/secrets/secrets.json`: `{"adminKey":"<รหัส>","adminPath":"/x7k2-hz","ownerKey":"HZO-…"}` — deploy.py ใช้ header auth setpk + merge ownerKey เป็นคีย์ฝังลับ
+4. `../hz_system/secrets/secrets.json`: `{"adminKey":"<รหัส>","adminPath":"<path-ลับ>","ownerKey":"<owner-key-ลับ>"}` — deploy.py ใช้ header auth setpk + merge ownerKey เป็นคีย์ฝังลับ
    - **`deploy.json → keys` ว่างแล้ว** — ไม่มีคีย์ฝัง public; คีย์ฝังเดิม (`123`, HZV×3) ถูก ban ใน worker → wm เข้า `/status.banned`
    - `releases/*.keys.json` ไม่ push (gitignore) — รายการคีย์+wm เก็บ local เท่านั้น
 5. ครั้งแรก: `deploy.py` หรือ manual `…/admin/setpk?key=<k>&g=<id>&pk=<ไฟล์ .pk>`
