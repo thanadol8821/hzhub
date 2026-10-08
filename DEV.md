@@ -260,10 +260,10 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 
 ### 11.5 Setup checklist (ทำครั้งเดียว)
 
-1. `backend/worker.js` → copy เป็น `worker_deploy.js` → แทน `env.ADMIN_KEY || ""` ด้วย `|| "<รหัสที่อยากได้>"` (หรือตั้ง env ADMIN_KEY ใน CF Variables)
-2. วาง `worker_deploy.js` ลง Cloudflare editor → Deploy
+1. `backend/worker.js` → copy เป็น `secrets/worker_deploy.js` → แทน `env.ADMIN_KEY || ""` ด้วย `|| "<รหัสที่อยากได้>"` (หรือตั้ง env ADMIN_KEY ใน CF Variables)
+2. วาง `secrets/worker_deploy.js` ลง Cloudflare editor → Deploy
 3. KV: สร้าง namespace → worker Settings→Bindings→KV → Variable `STATS`
-4. `secrets.json` (local, gitignored): `{"adminKey":"<รหัส>","adminPath":"/x7k2-hz","ownerKey":"HZO-…"}` — deploy.py ใช้ header auth setpk + merge ownerKey เป็นคีย์ฝังลับ
+4. `secrets/secrets.json` (local, gitignored): `{"adminKey":"<รหัส>","adminPath":"/x7k2-hz","ownerKey":"HZO-…"}` — deploy.py ใช้ header auth setpk + merge ownerKey เป็นคีย์ฝังลับ
    - **`deploy.json → keys` ว่างแล้ว** — ไม่มีคีย์ฝัง public; คีย์ฝังเดิม (`123`, HZV×3) ถูก ban ใน worker → wm เข้า `/status.banned`
    - `releases/*.keys.json` ไม่ push (gitignore) — รายการคีย์+wm เก็บ local เท่านั้น
 5. ครั้งแรก: `deploy.py` หรือ manual `…/admin/setpk?key=<k>&g=<id>&pk=<ไฟล์ .pk>`
