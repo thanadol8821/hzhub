@@ -264,9 +264,9 @@ async function routeSetpk(url, env) {
 
 /* --------------------------- admin dashboard ------------------------------ */
 
-function adminHtml(k) {
+function adminHtml(AB) {
   return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HZ HUB — หลังบ้าน</title><style>
+<title>Admin</title><style>
 body{font-family:system-ui;background:#14101c;color:#e8e4f2;padding:20px;max-width:960px;margin:auto}
 .c{background:#241d33;border:1px solid #443a5e;border-radius:12px;padding:16px;margin:12px 0}
 .b{display:inline-block;padding:8px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:700;margin:2px;color:#fff;font-size:12px;text-decoration:none}
@@ -276,7 +276,16 @@ h1{font-size:22px}h2{font-size:15px;color:#b9aee0}.stat{font-size:28px;font-weig
 input,select{padding:8px;border-radius:6px;border:1px solid #443a5e;background:#1a1526;color:#fff;margin:2px}
 code{background:#1a1526;padding:2px 6px;border-radius:4px}
 #toast{position:fixed;bottom:16px;right:16px;background:#2e7d5b;padding:10px 16px;border-radius:8px;display:none}
+#gate{max-width:340px;margin:80px auto;text-align:center}
+#gate input{width:90%;text-align:center;font-size:15px;padding:10px}
 </style>
+
+<div id="gate"><div class="c"><h2>Locked</h2>
+  <input id="pw" type="password" placeholder="key" autocomplete="off">
+  <button class="b on" onclick="doLogin()">Enter</button>
+  <div id="gateMsg" style="color:#f66;font-size:12px;margin-top:8px"></div></div></div>
+
+<div id="app" style="display:none">
 <h1>HZ HUB — หลังบ้าน</h1>
 <div id="toast"></div>
 
@@ -295,7 +304,7 @@ code{background:#1a1526;padding:2px 6px;border-radius:4px}
   <button class="b on" onclick="keygen()">+ สร้างคีย์</button>
   <div id="kgOut" style="margin-top:8px;font-size:13px"></div></div>
 
-<div class="c"><h2>คีย์ทั้งหมด <button class="b mut" onclick="load()">รีเฟรช</button></h2>
+<div class="c"><h2>คีย์ทั้งหมด <button class="b mut" onclick="load()">รีเฟรช</button> <button class="b off" onclick="logout()">ออก</button></h2>
   <div id="kvNote"></div>
   <table><tr><th>คีย์</th><th>สถานะ</th><th>หมายเหตุ</th><th>ผู้ใช้</th><th>ครั้ง</th><th>เครื่อง</th><th>หมดอายุ</th><th>ล่าสุด</th><th></th></tr>
   <tbody id="krows"></tbody></table></div>
@@ -303,11 +312,25 @@ code{background:#1a1526;padding:2px 6px;border-radius:4px}
 <div class="c"><h2>สถิติ</h2><div id="stats">…</div></div>
 <div class="c"><h2>ผู้ใช้ล่าสุด</h2><table><tr><th>ผู้เล่น</th><th>ชื่อแสดง</th><th>ครั้ง</th><th>เครื่อง</th><th>ล่าสุด</th></tr><tbody id="urows"></tbody></table></div>
 <div class="c"><h2>เหตุการณ์ล่าสุด</h2><table><tr><th>เวลา</th><th>ev</th><th>เกม</th><th>ผู้เล่น</th><th>ver</th></tr><tbody id="erows"></tbody></table></div>
+</div>
 
 <script>
-const K="${k}";
-const api=(p,o)=>fetch(p,{headers:{"x-admin-key":K,"content-type":"application/json"},...o}).then(r=>r.json());
-const toast=(m,ok)=>{const t=document.getElementById("toast");t.textContent=m;t.style.background=ok===false?"#b33":"#2e7d5b";t.style.display="block";setTimeout(()=>t.style.display="none",2500)};
+const PRE="${AB}"; // secret admin prefix — API ทั้งหมดอยู่ใต้นี้
+const SK="hzk";
+let K=sessionStorage.getItem(SK)||"";
+{ // migrate ?key= → sessionStorage แล้วลบออกจาก URL (ไม่ให้รหัสค้างใน history/link)
+  const u=new URL(location.href), qk=u.searchParams.get("key");
+  if(qk){K=qk;sessionStorage.setItem(SK,K);u.search="";history.replaceState(0,"",u.pathname);}
+}
+const $=id=>document.getElementById(id);
+async function api(p,o){
+  const r=await fetch(PRE+p,{headers:{"x-admin-key":K,"content-type":"application/json"},...o});
+  if(r.status===403||r.status===401){$("gate").style.display="block";$("app").style.display="none";if(K)$("gateMsg").textContent="key ผิด";throw 403;}
+  return r.json();
+}
+function doLogin(){K=$("pw").value.trim();sessionStorage.setItem(SK,K);$("gateMsg").textContent="";load();}
+function logout(){sessionStorage.removeItem(SK);K="";location.reload();}
+const toast=(m,ok)=>{const t=$("toast");t.textContent=m;t.style.background=ok===false?"#b33":"#2e7d5b";t.style.display="block";setTimeout(()=>t.style.display="none",2500)};
 const fdt=t=>t?new Date(t).toLocaleString("th-TH"):"-";
 
 async function sysSet(){
@@ -318,7 +341,7 @@ async function keygen(){
   const body={count:1,note:kgNote.value,custom:kgCustom.value||undefined,bind:kgBind.checked,days:parseFloat(kgDays.value)||0};
   const r=await api("/admin/keygen",{method:"POST",body:JSON.stringify(body)});
   if(r.ok){kgOut.innerHTML="คีย์ใหม่: <code>"+r.keys[0]+"</code> (copy ส่งให้เทสเตอร์ได้เลย)";kgCustom.value="";}
-  else kgOut.textContent="ล้มเหลว: "+r.why;
+  else kgOut.textContent="ล้มเหลว: "+(r.why||"?");
   load();
 }
 async function manage(k,a){
@@ -326,58 +349,80 @@ async function manage(k,a){
   toast(r.ok?a+" "+k:"ล้มเหลว",r.ok); load();
 }
 async function load(){
-  const [kl,ss]=await Promise.all([api("/admin/keys"),api("/admin/stats")]);
-  sysStat.innerHTML="สถานะ: <b style='color:"+(ss.status&&ss.status.on===false?"#f66":"#6f6")+"'>"+(ss.status&&ss.status.on===false?"ปิดอยู่":"เปิดอยู่")+"</b>";
-  kvNote.innerHTML=ss.kv?"":'<b style="color:#f96">KV ไม่ได้ผูก — คีย์/สถิติรีเซ็ตตอน cold start (Settings→Bindings→STATS)</b>';
-  const ks=kl.keys||{};
-  krows.innerHTML=Object.entries(ks).sort((a,b)=>(b[1].at||0)-(a[1].at||0)).map(([k2,r])=>
-    "<tr><td><code>"+k2+"</code></td><td style='color:"+(r.st==="off"?"#f66":"#6f6")+"'>"+(r.st==="off"?"แบน":"ใช้ได้")+"</td><td>"+(r.note||"")+"</td><td>"+(r.u?("@"+r.u):"-")+"</td><td>"+(r.uses||0)+"</td><td>"+(r.hw?"ล็อก":"-")+"</td><td>"+(r.exp?fdt(r.exp):"-")+"</td><td>"+fdt(r.last)+"</td>"+
-    "<td><button class='b "+(r.st==="off"?"on":"off")+"' onclick=\\"manage('"+k2+"','"+(r.st==="off"?"unban":"ban")+"')\\">"+(r.st==="off"?"ปลดแบน":"แบน")+"</button>"+
-    "<button class='b mut' onclick=\\"manage('"+k2+"','reset_hwid')\\">ปลดเครื่อง</button>"+
-    "<button class='b off' onclick=\\"if(confirm('ลบ?'))manage('"+k2+"','delete')\\">ลบ</button></td></tr>").join("")
-    || "<tr><td colspan=9>ยังไม่มีคีย์บนเว็บ — คีย์ฝังใน build ใช้ได้ปกติ</td></tr>";
-  stats.innerHTML="<span class=stat>"+(ss.total_pings||0)+"</span> ping · <span class=stat>"+(ss.unique_users||0)+"</span> คน · <span class=stat>"+(ss.unique_machines||0)+"</span> เครื่อง";
-  urows.innerHTML=(ss.users||[]).map(x=>"<tr><td>@"+x.u+"</td><td>"+(x.dn||"")+"</td><td>"+x.count+"</td><td>"+x.machines+"</td><td>"+fdt(x.last)+"</td></tr>").join("")||"<tr><td colspan=5>ยังไม่มี</td></tr>";
-  erows.innerHTML=(ss.events_tail||[]).map(e=>"<tr><td>"+new Date(e.t).toLocaleTimeString("th-TH")+"</td><td>"+e.ev+"</td><td>"+e.g+"</td><td>@"+e.u+"</td><td>"+e.tag+"</td></tr>").join("")||"<tr><td colspan=5>ยังไม่มี</td></tr>";
+  try{
+    const [kl,ss]=await Promise.all([api("/admin/keys"),api("/admin/stats")]);
+    $("gate").style.display="none";$("app").style.display="block";
+    sysStat.innerHTML="สถานะ: <b style='color:"+(ss.status&&ss.status.on===false?"#f66":"#6f6")+"'>"+(ss.status&&ss.status.on===false?"ปิดอยู่":"เปิดอยู่")+"</b>";
+    kvNote.innerHTML=ss.kv?"":'<b style="color:#f96">KV ไม่ได้ผูก — คีย์/สถิติรีเซ็ตตอน cold start (Settings→Bindings→STATS)</b>';
+    const ks=kl.keys||{};
+    krows.innerHTML=Object.entries(ks).sort((a,b)=>(b[1].at||0)-(a[1].at||0)).map(([k2,r])=>
+      "<tr><td><code>"+k2+"</code></td><td style='color:"+(r.st==="off"?"#f66":"#6f6")+"'>"+(r.st==="off"?"แบน":"ใช้ได้")+"</td><td>"+(r.note||"")+"</td><td>"+(r.u?("@"+r.u):"-")+"</td><td>"+(r.uses||0)+"</td><td>"+(r.hw?"ล็อก":"-")+"</td><td>"+(r.exp?fdt(r.exp):"-")+"</td><td>"+fdt(r.last)+"</td>"+
+      "<td><button class='b "+(r.st==="off"?"on":"off")+"' onclick=\\"manage('"+k2+"','"+(r.st==="off"?"unban":"ban")+"')\\">"+(r.st==="off"?"ปลดแบน":"แบน")+"</button>"+
+      "<button class='b mut' onclick=\\"manage('"+k2+"','reset_hwid')\\">ปลดเครื่อง</button>"+
+      "<button class='b off' onclick=\\"if(confirm('ลบ?'))manage('"+k2+"','delete')\\">ลบ</button></td></tr>").join("")
+      || "<tr><td colspan=9>ไม่มีคีย์ในระบบ</td></tr>";
+    stats.innerHTML="<span class=stat>"+(ss.total_pings||0)+"</span> ping · <span class=stat>"+(ss.unique_users||0)+"</span> คน · <span class=stat>"+(ss.unique_machines||0)+"</span> เครื่อง";
+    urows.innerHTML=(ss.users||[]).map(x=>"<tr><td>@"+x.u+"</td><td>"+(x.dn||"")+"</td><td>"+x.count+"</td><td>"+x.machines+"</td><td>"+fdt(x.last)+"</td></tr>").join("")||"<tr><td colspan=5>ยังไม่มี</td></tr>";
+    erows.innerHTML=(ss.events_tail||[]).map(e=>"<tr><td>"+new Date(e.t).toLocaleTimeString("th-TH")+"</td><td>"+e.ev+"</td><td>"+e.g+"</td><td>@"+e.u+"</td><td>"+e.tag+"</td></tr>").join("")||"<tr><td colspan=5>ยังไม่มี</td></tr>";
+  }catch(e){/* 403 → gate แสดงอยู่แล้ว */}
 }
-load(); setInterval(load, 15000);
+$("pw").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
+load(); setInterval(()=>{if(K)load().catch(()=>{})},15000);
 </script>`;
 }
 
 /* ------------------------------- router ----------------------------------- */
 
+// secret admin prefix — deploy copy ฝังค่าไว้; repo ตัวเปล่าใช้ "" = admin อยู่ที่ /admin ตรงๆ (ยังต้อง ADMIN_KEY)
+const ADMIN_BASE = (env) => env.ADMIN_PATH || "";
+// หน้าขาว 404 เหมือนไม่มีอะไรอยู่เลย — คนนอกสแกนเจอแค่นี้
+const FAKE404 = new Response(
+  `<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><center><h1>404 Not Found</h1></center><hr><center>cloudflare</center></body></html>`,
+  { status: 404, headers: { "content-type": "text/html" } });
+
 export default {
   async fetch(req, env) {
     try {
       const url = new URL(req.url);
-      const p = url.pathname;
+      let p = url.pathname;
       if (req.method === "OPTIONS") return new Response(null, { headers: JSON_HEADERS });
 
-      // public
+      // ── public (สคริปต์เรียก — path ต้องคงเดิมเพราะฝังใน release artifact) ──
       if (p === "/status" && req.method === "GET") return routeStatus(url, env);
       if (p === "/ping" && req.method === "POST") return routePing(req, env);
       if (p === "/unlock" && req.method === "POST") return routeUnlock(req, env);
 
-      // admin (ทุกตัวต้องมี ADMIN_KEY)
-      if (p.startsWith("/admin") || p === "/stats") {
-        if (!isAdmin(req, env)) return new Response("forbidden", { status: 403 });
-        if (p === "/admin/keygen" && req.method === "POST") return routeKeygen(req, env);
-        if (p === "/admin/key/new") return routeKeygen(req, env); // alias GET
-        if (p === "/admin/keys") return routeKeyList(env);
-        if (p === "/admin/key/manage" && req.method === "POST") return routeKeyManage(req, env);
-        if (p === "/admin/key/set" || p === "/admin/key/del") { // alias GET เก่า
-          const st = url.searchParams.get("st");
-          const a = p.endsWith("del") ? "delete" : st === "off" ? "ban" : "unban";
-          return routeKeyManage(new Request(req.url, { method: "POST", body: JSON.stringify({ key: url.searchParams.get("k"), action: a }) }), env);
+      // ── admin — อยู่ใต้ secret prefix เท่านั้น (ตั้ง ADMIN_PATH → /admin ตรงๆ = 404 นิ่ง) ──
+      const AB = ADMIN_BASE(env);
+      const isAdminZone = AB ? p.startsWith(AB + "/") : (p.startsWith("/admin") || p === "/stats");
+      if (isAdminZone) {
+        const ap = AB ? p.slice(AB.length) : p; // strip prefix → route เหมือนเดิม
+
+        if (ap === "/admin" || ap === "/admin/")
+          return new Response(adminHtml(AB), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "referrer-policy": "no-referrer", "x-content-type-options": "nosniff" } });
+
+        // auth: header x-admin-key หรือ ?key= — ผิด = นับ fail, เกิน 20/10นาที = 429
+        if (!isAdmin(req, env)) {
+          const ip = req.headers.get("cf-connecting-ip") || "?";
+          const rl = await kvGet(env, "rl:a:" + ip, { n: 0, ts: 0 });
+          if (rl.ts < Date.now() - 600e3) { rl.n = 0; rl.ts = Date.now(); }
+          rl.n++; await kvPut(env, "rl:a:" + ip, rl);
+          if (rl.n > 20) return new Response("slow down", { status: 429 });
+          return new Response("forbidden", { status: 403 });
         }
-        if (p === "/admin/system" && req.method === "POST") return routeSystem(req, env);
-        if (p === "/admin/set") return routeSystem(req, env); // alias GET
-        if (p === "/admin/stats" || p === "/stats") return routeStats(env);
-        if (p === "/admin/setpk") return routeSetpk(url, env);
-        if (p === "/admin") return new Response(adminHtml(url.searchParams.get("key") || ""), { headers: { "content-type": "text/html; charset=utf-8" } });
+
+        if (ap === "/admin/keygen" && req.method === "POST") return routeKeygen(req, env);
+        if (ap === "/admin/key/new") return routeKeygen(req, env); // alias GET
+        if (ap === "/admin/keys") return routeKeyList(env);
+        if (ap === "/admin/key/manage" && req.method === "POST") return routeKeyManage(req, env);
+        if (ap === "/admin/system" && req.method === "POST") return routeSystem(req, env);
+        if (ap === "/admin/set") return routeSystem(req, env); // alias GET
+        if (ap === "/admin/stats" || ap === "/stats") return routeStats(env);
+        if (ap === "/admin/setpk") return routeSetpk(url, env);
+        return FAKE404.clone();
       }
 
-      return new Response("HZ HUB backend ok — /status /ping /unlock | admin ต้องมี ADMIN_KEY", { headers: JSON_HEADERS });
+      return FAKE404.clone(); // ทุกอย่างอื่น = ขาวโล่ง เหมือนไม่มีอะไรเลย
     } catch (e) {
       console.log("FATAL " + (e && e.stack || e));
       return j({ ok: false, why: "server-error" }, 500);

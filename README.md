@@ -10,7 +10,7 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/main/releases/hz_valley.lua"))()
 ```
 
-→ หน้าคีย์เด้ง → ใส่ **`123`** → กด "ยืนยันคีย์" → เล่น
+→ หน้าคีย์เด้ง → ใส่ **คีย์ที่ได้จากแอดมิน** → กด "ยืนยันคีย์" → เล่น
 
 ## ไฟล์ต่อแมพ
 
@@ -24,14 +24,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/ma
 
 **วิธีสำรอง** (ถ้า HttpGet ใช้ไม่ได้): โหลดไฟล์จาก `releases/` → วางใน workspace ของ executor → `loadstring(readfile("hz_valley.lua"))()`
 
-## คีย์เทส (ใช้ได้ทุกแมพ)
+## คีย์เทส
 
-| คีย์ |
-|---|
-| `123` |
-| `HZV-AFB322-339C92` |
-| `HZV-8B7985-C74C1A` |
-| `HZV-C21D68-D034D1` |
+คีย์ออกโดยแอดมินรายคน (ระบบจัดการกลาง — แบน/ล็อกเครื่อง/หมดอายุได้) — **ขอคีย์จากแอดมินก่อนใช้งาน** คีย์จะถูกผูกกับเครื่องเครื่องแรกที่ใช้ (ถ้าแอดมินเปิด bind)
 
 ## ฟีเจอร์ (Huss Valley)
 

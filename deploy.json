@@ -1,7 +1,7 @@
 {
   "brand": "HZ HUB",
   "comment": "ทะเบียนเกมทั้งหมดที่ดีพอยขึ้น repo — คีย์ชุดเดียวใช้ได้ทุกแมพ (เทสเตอร์กรอกครั้งเดียวหลักการเดียวกัน)",
-  "keys": ["123", "HZV-AFB322-339C92", "HZV-8B7985-C74C1A", "HZV-C21D68-D034D1"],
+  "keys": [],
   "keyMode": "auto",
   "blockOn": "never",
   "api": "https://dry-wave-054e.thanadol821.workers.dev",
@@ -42,5 +42,6 @@
       "src": "%XENO_WS%/hz_mart.lua",
       "enabled": false
     }
-  ]
+  ],
+  "note": "keys=[] — คีย์เว็บจัดการบน worker เท่านั้น; ownerKey ลับอยู่ใน secrets.json (deploy.py merge ให้)"
 }

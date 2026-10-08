@@ -12,3 +12,4 @@ __pycache__/
 secrets.json
 *.pk
 worker_deploy.js
+releases/*.keys.json
