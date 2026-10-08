@@ -10,11 +10,14 @@
  *   GET  /admin/set?key=...&g=all|<id>&on=1|0&msg=...  → สลับสถานะ (kill-switch)
  *
  * ตั้งค่า:
- *   ADMIN_KEY — Worker → Settings → Variables → ตั้งเอง (ค่าเริ่มต้น "hz-admin-123" เปลี่ยนเถอะ)
+ *   ADMIN_KEY — Worker → Settings → Variables and Secrets (บังคับ — ไม่ตั้ง = /admin /stats ปิดสนิท)
  *   STATS     — KV namespace binding (ไม่ผูกก็ทำงานได้: สถิติอยู่ในหน่วยความจำ+logs)
+ *
+ * ความเป็นส่วนตัว: หน้า admin/stats/ปิดระบบ ล็อกด้วย ADMIN_KEY ที่อยู่บน Cloudflare เท่านั้น
+ * (ไม่มีใน repo/สคริปต์) — คนนอกเปิดได้แต่เจอ 403; /status+ping เปิดจำเป็นเพราะสคริปต์ต้องเรียก
  */
 
-const ADMIN_FALLBACK = "hz-admin-123"; // ← ตั้ง ADMIN_KEY ใน Worker Variables แล้วเปลี่ยนอันนี้ด้วยก็ได้
+
 
 // สถิติใน-memory (fallback เมื่อไม่มี KV) — รีเซ็ตตอน cold start
 const mem = { agg: null };
@@ -55,8 +58,8 @@ async function setStatus(env, g, on, msg) {
   return doc;
 }
 
-function adminKey(env) { return env.ADMIN_KEY || ADMIN_FALLBACK; }
-function isAdmin(url, env) { return url.searchParams.get("key") === adminKey(env); }
+function adminKey(env) { return env.ADMIN_KEY || ""; } // ไม่มี fallback — บังคับตั้งใน Variables เท่านั้น
+function isAdmin(url, env) { const k = adminKey(env); return k !== "" && url.searchParams.get("key") === k; }
 
 const J = { "content-type": "application/json; charset=utf-8", "access-control-allow-origin": "*" };
 
@@ -156,6 +159,6 @@ export default {
       return new Response(html, { headers: { "content-type": "text/html; charset=utf-8" } });
     }
 
-    return new Response("HZ HUB backend ok — /status /ping /stats /admin", { headers: J });
+    return new Response("HZ HUB backend ok — /status /ping | admin ต้องมี ADMIN_KEY (Settings→Variables)", { headers: J });
   },
 };

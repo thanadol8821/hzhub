@@ -197,7 +197,7 @@ worker URL: `https://dry-wave-054e.thanadol821.workers.dev` — source อยู
 
 1. dash.cloudflare.com → Workers → `dry-wave-054e` → **Edit code**
 2. ลบโค้ดเดิม → วางเนื้อ `backend/worker.js` ทั้งไฟล์ → **Deploy**
-3. (แนะนำ) ตั้งรหัสแอดมิน: worker → **Settings → Variables and Secrets** → Add `ADMIN_KEY` = รหัสลับของเรา (ถ้าไม่ตั้ง ใช้ค่า fallback `hz-admin-123` — เปลี่ยนเถอะ อย่าใช้ค่า default จริง)
+3. (บังคับ) ตั้งรหัสแอดมิน: worker → **Settings → Variables and Secrets** → Add `ADMIN_KEY` = รหัสลับของเรา — **ไม่ตั้ง = /admin /stats ปิดสนิท (403 ทุกคน)**; รหัสอยู่บน Cloudflare เท่านั้น ไม่มีใน repo/สคริปต์ → หลังบ้านเป็นของเราคนเดียว
 4. (แนะนำ — เก็บสถิติถาวร) **Storage → KV** → สร้าง namespace `HZHUB` → worker → Settings → **Bindings** → Add → KV Namespace → Variable name `STATS`
 
 ไม่ผูก KV ก็ทำงานได้ — สถิติอยู่ในหน่วยความจำ worker (รีเซ็ตตอน cold start ~ หลังไม่มีคนใช้สักพัก) + เห็น ping สดในแท็บ logs/observability ของ dashboard อยู่ดี
