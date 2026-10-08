@@ -1,170 +1,188 @@
-# HZ HUB — Chicken or Hero (Huss Valley)
+# HZ HUB — เอกสาร dev หลัก (อ่านไฟล์นี้ก่อน ไฟล์เดียวจบ)
 
-บอทอัตโนมัติเต็มรูปแบบสำหรับเกม "Chicken or Hero" (placeId `107535308163741`)
-โครงสร้างแบบ reusable — เปลี่ยนแมพใหม่ดึง `Ui/Ux` ไปปรับได้เลย
+โปรเจกต์บอทอัตโนมัติ Roblox — โครง reusable รองรับหลายแมพ คีย์ชุดเดียวใช้ได้ทุกเกม
+repo: `https://github.com/thanadol8821/hzhub` (ตอนนี้ **private** — ภายนอกเปิดไม่ได้)
 
 ---
 
-## โครงสร้างไฟล์
-
-### โฟลเดอร์เกมนี้ (`ไก่หรือฮีโร่/`)
-
-| ไฟล์ | บทบาท |
-|---|---|
-| `hz_valley.lua` | **สคริปต์ dev ต้นฉบับ** — ตัวที่รันตรงผ่าน executor / autoexec dev (ไม่ push ขึ้น repo) |
-| `releases/hz_valley.lua` | **release build** (single-file เข้ารหัส + หน้าคีย์) — ผลจาก deploy.py |
-| `releases/hz_valley.lua.keys.json` | คีย์ที่ฝังใน build นั้น |
-| `deploy.json` / `deploy.py` / `ดีพอย.cmd` | ระบบดีพอยอัตโนมัติ multi-game → GitHub |
-| `dump/` | ข้อมูล dump แมพ (remotes/interact/state/GUI/scripts index) — ใช้อ้างอิงทำระบบ |
-| `watch/` | เครื่องมือเฝ้าเกมสด (`เทส.cmd` = daemon+Roblox+log จอเดียว, `watch.py` = tail log สี) |
-
-### Framework (`../Ui/Ux/`)
+## 1. ภาพรวมสถาปัตยกรรม
 
 ```
-Ux/
-├── FishUI/          ← UI library ทั้งก้อน (13 โมดูล)
-│   ├── init.lua         loader + Setup wizard + StandardPages + KeyStore
-│   ├── core.lua         helper เบส: new/corner/tw/label + sfx + font
-│   ├── tokens.lua       สี TH / ข้อความ STR / FT
-│   ├── icons.lua        ไอคอน vector วาดจาก Frame (ไม่ใช้อิโมจิ) 17 แบบ
-│   ├── fx.lua           blur/windowFX/capsule/keycap/pillBtn/kname
-│   ├── window.lua       หน้าต่างหลัก + notify + satellite + config + logout
-│   ├── nav.lua          แท็บ/ซับเมนู/ค้นหาในหน้า
-│   ├── widgets.lua      Toggle/Button/Slider/Dropdown/Input/Keybind/Label/Warn
-│   ├── keyscreen.lua    หน้าใส่คีย์เต็มระบบ
-│   ├── sidebar.lua      แผงซ้ายหน้าคีย์ (avatar/เครื่อง/เกม/เวลา)
-│   └── pages/{games,announce,support,settings}.lua
-├── Core/              ← HZCore: ยูทิลเกม (hub/char/net/loop/store/safety/single/log/janitor/util)
-├── Guard/             ← HZGuard: คีย์/crypto/env/integrity/protocol/session/backend
-├── Games/             ← registry.json + ฮับต่อเกม + _template
-├── tools/
-│   ├── build.py         dist/FishUI.lua + HZCore.lua + HZGuard.lua (single-file)
-│   ├── release.py       build release เข้ารหัสพร้อมหน้าคีย์
-│   ├── release_boot.lua gate/bootstrap ที่ฝังใน release
-│   ├── check.py         static check + unknown-globals
-│   ├── luacheck.py      syntax เท่านั้น
-│   ├── verify.py        เทสครบ 5 เฟส
-│   └── test/run.py      เทสทั้งชุด (mock luau)
-├── dist/              ← ผล build ล่าสุด (single-file)
-└── README.md / AI_GUIDE.md / SPEC_BACKEND.md
+┌─ เทสเตอร์ ──────────────────────────────────────────┐
+│  releases/hz_<id>.lua — ไฟล์เดียวต่อเกม เข้ารหัสเต็ม │
+│  หน้าคีย์เด้ง → ใส่ 123 → ฮับเปิด (คีย์เดียวทุกเกม)  │
+└──────────────────────────────────────────────────────┘
+                ▲ deploy.py build+push
+┌─ โฟลเดอร์นี้ (repo root) ────────────────────────────┐
+│  deploy.json  — registry เกม + คีย์กลาง + policy     │
+│  deploy.py    — pipeline: build→sync→commit→push     │
+│  ดีพอย.cmd    — wrapper ดับเบิลคลิก                   │
+│  releases/    — artifact ที่ push (push เท่านั้นที่ public)│
+│  README.md    — คู่มือเทสเตอร์                        │
+│  DEV.md       — ไฟล์นี้                               │
+│  hz_valley.lua— source dev (gitignore, ไม่ push)     │
+│  dump/ watch/ — เครื่องมือ dev (gitignore)           │
+└──────────────────────────────────────────────────────┘
+                ▲ ใช้ framework เดียวกัน
+┌─ ../Ui/Ux/ (แชร์ทุกเกม — แยก repo ไม่ push) ─────────┐
+│  FishUI/ — UI lib (window/widgets/nav/keyscreen/...) │
+│  Core/   — game utils (char/net/loop/store/safety)   │
+│  Guard/  — key/crypto/env/integrity/session/backend  │
+│  Games/  — registry + _template สำหรับแมพใหม่        │
+│  tools/  — build.py release.py check.py test/run.py  │
+│  dist/   — single-file builds                        │
+└──────────────────────────────────────────────────────┘
+                ▲ runtime
+┌─ %LOCALAPPDATA%/Xeno/workspace/ ─────────────────────┐
+│  hz_valley.lua      dev script (autoexec dev)        │
+│  hz_valley_test.lua artifact ล่าสุด (deploy ซิงก์มา) │
+│  FishUI/*.lua       โมดูลที่ dev script โหลดผ่าน readfile│
+│  hz_valley_log.txt / hz_valley_status.txt / hz_gate_log.txt │
+└──────────────────────────────────────────────────────┘
 ```
 
-### Workspace ที่ executor ใช้จริง (`%LOCALAPPDATA%/Xeno/workspace/`)
+---
 
-- `hz_valley.lua` — copy ของตัว dev (sync ด้วย `tools/sync_xeno.py` หรือ cp)
-- `hz_valley_test.lua` — release artifact (autoexec โหลดตัวนี้)
-- `FishUI/*.lua` — โมดูล dev ที่ `hz_valley.lua` โหลดผ่าน readfile
-- `hz_valley_log.txt` — log บอท (buffer flush ทุก 1.5s)
-- `hz_valley_status.txt` — heartbeat จาก autoexec
-- `hz_valley_cfg.json` / `FishUI/hz_valley.json` — config สองชั้น (เกม/ธีม)
-- `FishUI/key.txt` — คีย์จำ (dev) | `hz_valley_test.lua.keys.json` = catalog release
-- `hz_gate_log.txt` — log หน้าคีย์ของ release
+## 2. ระบบคีย์ — คีย์เดียวทุกแมพ
+
+- คีย์เทสอยู่ใน `deploy.json → keys` (ตอนนี้ `123` + HZV×3)
+- release.py ฝังคีย์ wrapped เข้า artifact ทุกตัว → เทสเตอร์ใส่คีย์เดียวกันได้ทุกเกม
+- `keyMode`: `always` ถามทุกครั้ง / `fill` เติมให้ / `auto` จำ+ผ่านเลย
+- `blockOn`: `never`=ปิด env-check (เทสต้องตัวนี้ — executor ทำให้ env เด้งเตือนเอง) | `high`=บล็อกเครื่องมือดักจับจริง (ขาย)
+- logout → เคลียร์คีย์จำ → เด้งกลับหน้าคีย์ (release) / reload สคริปต์ (dev)
 
 ---
 
-## ระบบใน `hz_valley.lua`
-
-| ระบบ | ทำงานยังไง |
-|---|---|
-| **Runner AI** | เดินทางเข้า safe zone อัตโนมัติ, dash เร่งเมื่อเหยี่ยวใกล้, ปล่อยสกิลหนี |
-| **Catcher AI** | ไล่เหยื่อใกล้สุด → tackle → melee → BearTrap → ยืนยันจับ |
-| **GOD dodge** | อ่าน telegraph attr ของ catcher ทุกเฟรม (Heartbeat 0ms) → ghost/dash/หลบทัน windup |
-| **RescueKit** | โดนจับ → ชุบตัวเองอัตโนมัติ → กลับมาเล่นต่อ |
-| **ESP** | Highlight เฉพาะกรอบสีรอบตัว — แดง=วิ่งไล่ / น้ำเงิน=วิ่งหนี — per-player pcall, เกิดใหม่สร้างใหม่อัตโนมัติ |
-| **Auto-claim** | ขอของฟรีทุก remote ตอนจบแมตช์ |
-| **Auto-vote/HeroChoice/gear** | โหวตแมพ + เลือก hero + ซื้อ/equip เกียร์ (per-item cooldown 45s กัน spam) |
-| **Anti-AFK / stuck / spin** | ครบ loop ทุกตัวห่อ `guard()` (21 จุด) — error ถูก log ไม่ฆ่า thread |
-| **Log** | buffer + writefile flush ทุก 1.5s → `hz_valley_log.txt` |
-| **Config** | `hz_valley_cfg.json` (state เกม) + `FishUI/hz_valley.json` (ธีม/opacity/keybind ของ FishUI) — ไม่ชนกัน |
-
-### ปุ่มควบคุม
-
-- `RightShift` — ซ่อน/แสดงเมนู (เปลี่ยนได้ในหน้าตั้งค่า)
-- `RightAlt` — แผง keybinds ลอย
-- `M` / `K` / `Del` — บอท: เมนู / ปิดด่วน / ปิดถาวร (destroy GUI)
-
-### ESP
-
-- เปิดที่ หมวดฟาร์ม&เสริม → `ESP ผู้เล่น`
-- Highlight `AlwaysOnTop` parent ตรงเข้า character (เสถียรกว่า ScreenGui)
-- สีล้วน 2 ฝั่ง — ไม่มีป้ายชื่อ (คลีนตามสั่ง)
-
-### เสียงปุ่ม (builtin `rbxasset://` — น่ารัก โหลดทันที)
-
-| เหตุ | เสียง |
-|---|---|
-| click (ทุกปุ่ม 29 จุด) | button.wav / snap.wav / electronicpingshort.wav (สุ่ม+เร่งจังหวะ ±10%) |
-| open | swoosh.wav |
-| ok (คีย์ผ่าน/บันทึก) | rubber duck.wav |
-| bad (ผิด/ล็อก) | uuhhh.mp3 |
-| noti | victory.wav |
-
-ปรับระดับได้ในหน้าตั้งค่าเซิร์ฟเวอร์ (ผูก `D.sndVol` เข้า sfx แล้ว)
-
----
-
-## ระบบคีย์ (release)
-
-- build ด้วย `tools/release.py` → ไฟล์เดียวเข้ารหัส + gate หน้าคีย์
-- `keyMode`: `always`=ถามทุกครั้ง / `fill`=เติมให้รอกด / `auto`=จำคีย์ผ่านเลย (build เทสปัจจุบัน = auto)
-- คีย์เทส: `123` + HZV-* สามตัว (ดู `.keys.json`)
-- `blockOn`: เทสต้อง `never` (env-check เจอตัว executor เองจะบล็อกทางเข้า) — build ขายจริงใช้ `high`
-- **logout** → เคลียร์คีย์จำ → เด้งกลับหน้าคีย์ (เทสผ่าน mock) — dev build = reload สคริปต์ตัวเอง
-
-## คำสั่ง build/เทส
+## 3. ไปป์ไลน์ดีพอย (`deploy.py`)
 
 ```bash
-cd Ui/Ux
-py tools/build.py                                        # dist ทั้ง 3 ไฟล์
-py tools/test/run.py                                     # เทส mock ทั้งหมด (ต้องผ่าน 11/11)
-py tools/check.py ../../ไก่หรือฮีโร่/hz_valley.lua       # static check
+py deploy.py               # tag อัตโนมัติ v<yymmdd-HHMM> → build ทุก enabled → commit+push
+py deploy.py "v2.7"        # tag เอง
+py deploy.py --only valley # เกมเดียว
+py deploy.py --no-push     # build+commit ไม่ push
 ```
 
-## ดีพอย (GitHub: thanadol8821/hzhub)
+ทำอะไรบ้างต่อเกม:
+1. `release.py` wrap `src` → `releases/hz_<id>.lua` (เข้ารหัส+key gate+FishUI ฝังครบ)
+2. copy → `%XENO_WS%/hz_<id>_test.lua` (autoexec โหลดชื่อนี้)
+3. อัปเดตตาราง `<!--FILES-->` ใน README อัตโนมัติ
+4. `git add+commit` (ข้ามถ้าไม่มีอะไรเปลี่ยน) → `pull --rebase` → `push`
 
-โครงแบบ multi-game — **คีย์ชุดเดียวใช้ได้ทุกแมพ** ทะเบียนที่ `deploy.json`:
-
+`deploy.json` schema:
 ```json
 {
-  "keys": [...คีย์เทสทั้งหมด...],
-  "keyMode": "auto", "blockOn": "never",
-  "games": [
-    {"id":"valley","name":"...","placeId":107535308163741,"src":"hz_valley.lua","enabled":true},
-    {"id":"dice","src":"%XENO_WS%/hz_dice.lua","enabled":false},  ← เปิดเมื่อพร้อม
-    ...
-  ]
+  "keys": ["123","HZV-..."],   // คีย์เทส — ฝังทุกเกม
+  "keyMode": "auto",           // always|fill|auto
+  "blockOn": "never",          // low|medium|high|never
+  "outDir": "releases",
+  "games": [{
+    "id": "valley",            // → releases/hz_valley.lua + hz_valley_test.lua ใน ws
+    "name": "Chicken or Hero",
+    "placeId": 107535308163741,
+    "src": "hz_valley.lua",    // path สัมพัทธ์โฟลเดอร์นี้ หรือ "%XENO_WS%/x.lua"
+    "enabled": true            // false = ข้าม (ยังไม่พร้อม)
+  }]
 }
 ```
 
-- `src` รองรับ `%XENO_WS%` = workspace ของ Xeno
-- ผล build ลง `releases/hz_<id>.lua` + sync เข้า workspace เป็น `hz_<id>_test.lua` อัตโนมัติ
-- `--only <id>` build เกมเดียว · `--no-push` build อย่างเดียว
-- README ตารางไฟล์ (`<!--FILES-->`) ถูกอัปเดตตามเกมที่ build สำเร็จ
+เกมที่ลงทะเบียนแล้ว: `valley` (เปิด) · `dice` `ubg` `warz` `mart` (`enabled:false` — src ชี้ไป `%XENO_WS%/hz_*.lua` ที่มีอยู่จริง เปิดได้ทุกเมื่อ)
+
+## เพิ่มแมพใหม่
+
+1. เขียนสคริปต์ใหม่ (ใช้ FishUI เหมือนเดิม — ดู `Ui/Ux/Games/_template/` + `hz_valley.lua` เป็นตัวอย่าง)
+2. เพิ่ม entry `{"id":"<id>","name":"...","placeId":<id>,"src":"<ไฟล์>.lua","enabled":true}` ใน `deploy.json`
+3. กด `ดีพอย.cmd` — จบ (คีย์เดิมเปิดได้ทันที)
+
+## วิธีส่งให้เทสเตอร์
+
+repo ตอนนี้ **private** (เปลี่ยนเป็น public ที่ Settings → visibility ถ้าอยากให้ loadstring ใช้ได้):
+- **ถ้า public**: เทสเตอร์รันบรรทัดเดียว —
+  `loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/main/releases/hz_valley.lua"))()`
+- **ถ้า private**: ส่งไฟล์ `releases/hz_<id>.lua` ตรง → วาง workspace → `loadstring(readfile("hz_<id>.lua"))()` → คีย์ `123`
+
+---
+
+## 4. ระบบใน `hz_valley.lua` (สคริปต์หลัก ~1900 บรรทัด)
+
+| ระบบ | หลักการ |
+|---|---|
+| Runner AI | autopilot loop — เดินทางเข้า safe zone, dash+ปล่อยสกิลตอนเหยี่ยวใกล้ |
+| Catcher AI | เลือกเหยื่อใกล้สุด → chase → tackle → melee → BearTrap → ยืนยัน |
+| GOD dodge | Heartbeat 0ms อ่าน attr telegraph ของ catcher → หลบทัน windup |
+| RescueKit | โดนจับ → ชุบตัวเอง → กลับ Active ต่อ |
+| ESP | Highlight (AlwaysOnTop) parent เข้า char ตรง — แดง=ไล่/น้ำเงิน=หนี — per-player pcall + respawn-guard |
+| Auto-claim/vote/hero/gear | remote fire ตอนจบแมตช์ + equip เกียร์ตาม tier (buy cooldown 45s/ไอเทมกัน spam) |
+| Config | `hz_valley_cfg.json` (state เกม) + `FishUI/hz_valley.json` (ธีม/keybind — FishUI autosave) |
+| Log | buffer → `writefile` flush ทุก 1.5s → `hz_valley_log.txt` |
+| Guard | `guard("name",fn)` ห่อ loop/handler ทั้งหมด (21 จุด) — error → log ไม่ฆ่า thread |
+
+ปุ่ม: `RightShift` เมนู · `RightAlt` keybinds · `M/K/Del` เมนู/ปิดด่วน/ปิดถาวร
+
+## 5. FishUI สำหรับ dev/AI ใหม่
+
+```lua
+local FishUI = loadstring(readfile("FishUI.lua"))()   -- หรือ dist/FishUI.lua
+local win = FishUI.Window{title="HZ HUB", w=740,h=560, toggleKey=Enum.KeyCode.RightShift,
+    onLogout=function() ... end}
+win:Config("name")                        -- autosave ธีม/opacity/toggleKey ลง FishUI/name.json
+local pg = win:Page("ภาพรวม","monitor")   -- icon จาก icons.lua (ไม่ใช่อิโมจิ)
+local sub = pg:Sub("สถานะ")
+local gb = sub:Groupbox("กล่อง","Left")   -- Left|Right
+gb:Toggle{label="..",tip="..",key=Enum.KeyCode.X,default=false,cb=function(v) end}
+gb:Slider{label="..",min,max,step,suffix,default,cb}
+gb:Dropdown{label,options,default,cb}
+gb:Input{label,placeholder,cb}            -- cb(text,enterPressed)
+gb:Button{label,danger,hold,cb}           -- danger=true = กดค้างจน fuse เต็ม
+gb:Label("ข้อความ <b>rich</b>")  gb:Divider()
+win:Notify{title,text,dur}
+win:Destroy()  win:Logout()  win:SetTheme(i)  win:SetOpacity(0-40)
+```
+
+เสียง: `sfx("click"|"tick"|"open"|"ok"|"bad"|"noti")` — builtin rbxasset ครบทุก handler แล้ว
+ปรับเสียง: `D.sndVol` (ผูกกับ setup.json → SoundVolume แล้ว)
+
+## 6. Quirks ของ Xeno (สำคัญ — AI/dev ต้องรู้)
+
+| อาการ | ความจริง |
+|---|---|
+| `appendfile` มีแต่เขียนไม่ลง | ใช้ `writefile` + buffer เท่านั้น |
+| `ctl eval`/jobs ส่งได้แต่ writefile/print เงียบ | ดูผลผ่านไฟล์ log ของสคริปต์เอง |
+| autoexec ยิงเฉพาะ Xeno.exe (GUI) | daemon ล้วนไม่ยิง — เปิด GUI ไว้ |
+| client เด้งเป็นบางครั้ง | engine "cannot keep up" — ไม่ใช่บั๊กสคริปต์ รีจอยใหม่ |
+
+## 7. เทส
 
 ```bash
-py deploy.py           # tag อัตโนมัติ v<yymmdd-HHMM> + push
-py deploy.py "v2.7"    # tag เอง
-ดีพอย.cmd              # ดับเบิลคลิก
+cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่าน
 ```
 
-**เพิ่มแมพใหม่**: วางสคริปต์ไว้ที่ไหนก็ได้ → เพิ่ม entry ใน `deploy.json` (`enabled:true`) → กด `ดีพอย.cmd` — คีย์เดิมเปิดได้ทันทีไม่ต้องแจกใหม่
+ครอบ: core loop/net/store/single/safety · FishUI behavior+smoke · guard crypto+session+loader · hub example · valley UI · release gate · **logout→keyscreen regression** · valley full (init→window→เพจ→controls→KILL)
 
-## Quirks ของ Xeno ที่ต้องรู้ (เรียนมาแล้ว)
+## 8. ไฟล์ log/สถานะ (ใน workspace)
 
-- `appendfile` มีฟังก์ชันแต่ **เขียนไม่ลงจริง** → ใช้ `writefile` + buffer เท่านั้น
-- `ctl eval`/jobs ส่ง script ได้แต่ **writefile/print ใน context นั้นเงียบ** → ดูผลผ่าน log ไฟล์ของสคริปต์
-- autoexec ยิงเฉพาะตอน **Xeno.exe (GUI) เปิด** — daemon ล้วนไม่ยิง
-- ตอน attach client อาจเด้งเป็นระยะ ("client cannot keep up") — ปัญหา engine ไม่ใช่สคริปต์
+| ไฟล์ | เนื้อ |
+|---|---|
+| `hz_valley_log.txt` | event เกมทั้งหมด (buffered) |
+| `hz_valley_status.txt` | autoexec heartbeat `OK|เวลา|place` หรือ ERROR |
+| `hz_gate_log.txt` | หน้าคีย์ release (env findings/unlock/logout) |
+| `hz_loader_log.txt` | loader multi-game (ถ้าใช้) |
+| `FishUI/setup.json` | เสียง/ธีม/จำคีย์ ของหน้าคีย์ |
+| `FishUI/key.txt` | คีย์จำ (dev) |
 
-## เฝ้าดูสด
+## 9. ของที่ยังไม่ทำ/ข้อจำกัด
+
+- แบ็กเอนด์จริงยังไม่มี — release ใช้คีย์ฝัง (keyMode auto); ถ้าจะทำ server จริงดู `Ui/Ux/SPEC_BACKEND.md` + `hz_loader.lua` mode release
+- ESP ไม่มีชื่อ/ระยะแล้ว (ตัดออกตามสั่ง — เหลือแค่กรอบสี)
+- `blockOn:never` เฉพาะ build เทส — build ขายต้องเปลี่ยน
+- เกม dice/ubg/warz/mart ยังใช้ UI ตัวเอง (ไม่ใช่ FishUI) — ถ้าจะย้ายเข้าระบบเดียวกันต้องเขียนใหม่ผ่าน `Games/_template/`
+
+## 10. เวิร์กโฟลว์มาตรฐานทุกครั้งที่แก้
 
 ```
-ไก่หรือฮีโร่\watch\เทส.cmd   ← เปิดทุกอย่าง+ดู log จอเดียว
-py watch.py                   ← tail log ทุกช่องพร้อมสี
+แก้ FishUI/* หรือ hz_valley.lua
+  → py tools/build.py                  (อัปเดต dist)
+  → cp FishUI/* "$XENO_WS/FishUI/"     (sync ให้ dev script)
+  → py tools/test/run.py               (ต้อง 11/11)
+  → py deploy.py                       (build release+push repo+sync ws)
+  → เทสในเกมจริง (watch/เทส.cmd)
 ```
-
-## เอาไปใช้กับแมพใหม่
-
-1. คัดลอก `Games/_template/` → `Games/hub_<placeId>/` แก้ `hub.lua`
-2. เพิ่ม `{placeId=..., file="hub_xxx.lua"}` ใน `Games/registry.json`
-3. เกมเฉพาะใส่ใน hub.lua; UI/cfg/key ทั้งหมดได้มาฟรีจาก FishUI/Guard
