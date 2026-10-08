@@ -11,9 +11,10 @@
 
 | ไฟล์ | บทบาท |
 |---|---|
-| `hz_valley.lua` | **สคริปต์ dev ต้นฉบับ** — ตัวที่รันตรงผ่าน executor / autoexec dev |
-| `hz_valley_test.lua` | **release build** (single-file เข้ารหัส + หน้าคีย์) — build จาก `release.py` |
-| `hz_valley_test.lua.keys.json` | คีย์ที่ฝังใน build นั้น |
+| `hz_valley.lua` | **สคริปต์ dev ต้นฉบับ** — ตัวที่รันตรงผ่าน executor / autoexec dev (ไม่ push ขึ้น repo) |
+| `releases/hz_valley.lua` | **release build** (single-file เข้ารหัส + หน้าคีย์) — ผลจาก deploy.py |
+| `releases/hz_valley.lua.keys.json` | คีย์ที่ฝังใน build นั้น |
+| `deploy.json` / `deploy.py` / `ดีพอย.cmd` | ระบบดีพอยอัตโนมัติ multi-game → GitHub |
 | `dump/` | ข้อมูล dump แมพ (remotes/interact/state/GUI/scripts index) — ใช้อ้างอิงทำระบบ |
 | `watch/` | เครื่องมือเฝ้าเกมสด (`เทส.cmd` = daemon+Roblox+log จอเดียว, `watch.py` = tail log สี) |
 
@@ -117,13 +118,36 @@ cd Ui/Ux
 py tools/build.py                                        # dist ทั้ง 3 ไฟล์
 py tools/test/run.py                                     # เทส mock ทั้งหมด (ต้องผ่าน 11/11)
 py tools/check.py ../../ไก่หรือฮีโร่/hz_valley.lua       # static check
-py tools/release.py "../../ไก่หรือฮีโร่/hz_valley.lua" \
-  --out "../../ไก่หรือฮีโร่/hz_valley_test.lua" \
-  --tag "vX.Y-test" --keys "123,HZV-..." --key-mode auto --block-on never
-# sync ไป workspace:
-cp FishUI/* "$LOCALAPPDATA/Xeno/workspace/FishUI/"
-cp hz_valley_test.lua "$LOCALAPPDATA/Xeno/workspace/"
 ```
+
+## ดีพอย (GitHub: thanadol8821/hzhub)
+
+โครงแบบ multi-game — **คีย์ชุดเดียวใช้ได้ทุกแมพ** ทะเบียนที่ `deploy.json`:
+
+```json
+{
+  "keys": [...คีย์เทสทั้งหมด...],
+  "keyMode": "auto", "blockOn": "never",
+  "games": [
+    {"id":"valley","name":"...","placeId":107535308163741,"src":"hz_valley.lua","enabled":true},
+    {"id":"dice","src":"%XENO_WS%/hz_dice.lua","enabled":false},  ← เปิดเมื่อพร้อม
+    ...
+  ]
+}
+```
+
+- `src` รองรับ `%XENO_WS%` = workspace ของ Xeno
+- ผล build ลง `releases/hz_<id>.lua` + sync เข้า workspace เป็น `hz_<id>_test.lua` อัตโนมัติ
+- `--only <id>` build เกมเดียว · `--no-push` build อย่างเดียว
+- README ตารางไฟล์ (`<!--FILES-->`) ถูกอัปเดตตามเกมที่ build สำเร็จ
+
+```bash
+py deploy.py           # tag อัตโนมัติ v<yymmdd-HHMM> + push
+py deploy.py "v2.7"    # tag เอง
+ดีพอย.cmd              # ดับเบิลคลิก
+```
+
+**เพิ่มแมพใหม่**: วางสคริปต์ไว้ที่ไหนก็ได้ → เพิ่ม entry ใน `deploy.json` (`enabled:true`) → กด `ดีพอย.cmd` — คีย์เดิมเปิดได้ทันทีไม่ต้องแจกใหม่
 
 ## Quirks ของ Xeno ที่ต้องรู้ (เรียนมาแล้ว)
 
