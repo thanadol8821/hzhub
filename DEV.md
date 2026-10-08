@@ -212,6 +212,13 @@ keyscreen → unwrap(key):
       └── ไม่ผ่าน → POST /unlock {k,hw…} ─► ตรวจ keys/rl/pk ────────────────► "keys" + "pk:<g>" + "rl:<ip>"
                   ← {ok,pk} → ตรวจ hmac(pk,salt..ct)==tag → decrypt payload → run
 watch loop 60วิ → status off → killRuntime() + หน้าบำรุงรักษา / on → หายเอง
+
+client pings ที่ส่งขึ้น /ping (ev, tag=build|wm → หลังบ้านเห็นจากคีย์ไหน):
+  gate · unlock · loaded (funnel) · win:<map> · lost:<map> · kill:<kind> · perfect ·
+  warn / warn:staff (fair-play ของเกม) · err:<ระบบ> · alive (ทุก 4นาทีในแมตช์) · role:<role>
+  throttle ฝั่ง client: ≥2s/ครั้ง · ≤45/10นาที (worker cap 60) — เกินโควตาตกเงียบ
+unlock ตอบ why → หน้าคีย์แปลเป็นภาษาอ่านง่าย: banned→"ถูกระงับ" expired→"หมดอายุ"
+  bound/no-hw→"ผูกเครื่องอื่น" rate→"เร็วเกิน" no-pk/kv-down→"เน็ต" (ไม่นับเดา)
 ```
 
 ### 11.2 KV schema (namespace `hzhub`, binding `STATS`)
