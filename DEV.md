@@ -189,52 +189,106 @@ cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่า
   → เทสในเกมจริง (watch/เทส.cmd)
 ```
 
-## 11. Backend (Cloudflare Worker) — ตั้งแต่ v261008-telemetry
+## 11. Backend — Cloudflare Worker (ระบบคีย์ + telemetry + kill-switch)
 
-worker URL: `https://dry-wave-054e.thanadol821.workers.dev` — source อยู่ที่ `backend/worker.js`
+**URL:** `https://dry-wave-054e.thanadol821.workers.dev` (account: thanadol821)
+**Source:** `backend/worker.js` (repo, สะอาด) → ตัว deploy จริง `worker_deploy.js` (local-only, ฝัง ADMIN_KEY fallback)
+**กำกับ release ตั้งแต่:** v261008-keysys เป็นต้นไป — boot ฝัง `API` URL + status-watch + serverUnlock
 
-### การติดตั้งครั้งแรก (ทำครั้งเดียว)
+### 11.1 สถาปัตยกรรม
 
-1. dash.cloudflare.com → Workers → `dry-wave-054e` → **Edit code**
-2. ลบโค้ดเดิม → วางเนื้อ `backend/worker.js` ทั้งไฟล์ → **Deploy**
-3. (บังคับ) ตั้งรหัสแอดมิน: worker → **Settings → Variables and Secrets** → Add `ADMIN_KEY` = รหัสลับของเรา — **ไม่ตั้ง = /admin /stats ปิดสนิท (403 ทุกคน)**; รหัสอยู่บน Cloudflare เท่านั้น ไม่มีใน repo/สคริปต์ → หลังบ้านเป็นของเราคนเดียว
-4. (แนะนำ — เก็บสถิติถาวร) **Storage → KV** → สร้าง namespace `HZHUB` → worker → Settings → **Bindings** → Add → KV Namespace → Variable name `STATS`
+```
+client (release_boot.lua)                     worker.js                       KV namespace "hzhub"
+─────────────────────────                     ──────────                      ─────────────────────
+start → GET /status?g&id&hw ────────────────► buildStatus() ────────────────► "status" doc + "keys".banned
+      ← {on,msg,banned:[wm…]}                                                  (banned = wm ของคีย์ off)
+      off → หน้า "ปิดปรับปรุง" + re-check ทุก 60วิ
+      on  → ping("gate") ──────POST /ping──► agg/users/events ─────────────► "agg" doc
+keyscreen → unwrap(key):
+      ├── คีย์ฝัง → unwrap local (wraps)  — offline ได้
+      └── ไม่ผ่าน → POST /unlock {k,hw…} ─► ตรวจ keys/rl/pk ────────────────► "keys" + "pk:<g>" + "rl:<ip>"
+                  ← {ok,pk} → ตรวจ hmac(pk,salt..ct)==tag → decrypt payload → run
+watch loop 60วิ → status off → killRuntime() + หน้าบำรุงรักษา / on → หายเอง
+```
 
-ไม่ผูก KV ก็ทำงานได้ — สถิติอยู่ในหน่วยความจำ worker (รีเซ็ตตอน cold start ~ หลังไม่มีคนใช้สักพัก) + เห็น ping สดในแท็บ logs/observability ของ dashboard อยู่ดี
+### 11.2 KV schema (namespace `hzhub`, binding `STATS`)
 
-### ใช้งานประจำวัน
+| doc key | เนื้อ | เขียนโดย |
+|---|---|---|
+| `keys` | `{<key>:{st:"on"\|"off",hw,bind,note,wm,at,exp,uses,last,u,uid}}` | keygen/manage/unlock |
+| `agg` | `{total,games:{},users:{uid:{u,dn,count,hwSet,last}},events:[≤100]}` | ping |
+| `status` | `{global:bool,games:{g:bool},msg,ver}` | system/set |
+| `pk:<g>` | `{pk:"<b64 32B>",at}` | setpk (deploy.py อัตโนมัติ) |
+| `rl:<ip>` | `{n,ts}` rate-limit /unlock (15 ครั้ง/10นาที) | unlock |
 
-| อยากทำ | ทำไง |
+ไม่ผูก `STATS` = fallback in-memory → **คีย์/pk/สถิติหายตอน cold start** (ใช้ชั่วคราวได้ ห้ามใช้จริง)
+
+### 11.3 Endpoints
+
+**Public (สคริปต์เรียก — ไม่มี auth)**
+
+| endpoint | input | output |
+|---|---|---|
+| `GET /status?g=<id>&hw=<hwid>` | query | `{on,msg,banned:[wm…]}` — banned คือ wm ของคีย์ st=off + เครื่องที่ hw ตรงคีย์โดนแบนจะ on:false |
+| `POST /ping` | `{ev,g,tag,u,dn,uid,hw,place}` | `{ok}` — เก็บสถิติ (รับ alias key/username/hwid/action ด้วย) |
+| `POST /unlock` | `{k|key,hw|hwid,u,dn,uid,g,tag}` | ผ่าน → `{ok,pk(b64),wm,sig}` / ไม่ผ่าน → `{ok:false,why:no-key\|banned\|expired\|bound\|rate\|no-pk}` |
+
+**Admin (`x-admin-key` header หรือ `?key=` — ผิด = 403)**
+
+| endpoint | ทำอะไร |
 |---|---|
-| ดูสถิติหลังบ้าน | เปิด `<worker>/admin?key=<ADMIN_KEY>` — จำนวน ping/คน/เครื่อง/ผู้ใช้ล่าสุด + ฟอร์มเปิดปิด |
-| ปิดระบบทั้งหมด (kill-switch) | `/admin/set?key=K&g=all&on=0&msg=กำลังอัปเดต` — ทุก client โดนตัดภายใน 60 วิ |
-| ปิดเฉพาะเกม | `/admin/set?key=K&g=valley&on=0` |
-| เปิดกลับ | `/admin/set?key=K&g=all&on=1` — client เด้งกลับเอง |
-| ดูสถิติดิบ | `/stats?key=K` (JSON) |
+| `GET /admin?key=` | แดชบอร์ด HTML (auto-refresh 15วิ): kill-switch + สร้างคีย์ + ตารางคีย์ + สถิติ + events |
+| `POST /admin/keygen` `{count,note,custom?,bind?,days?}` | สร้างคีย์ — custom กำหนดเอง / เว้น=สุ่ม `HZ-XXXX-XXXX-XXXX` (Crockford charset) |
+| `GET /admin/keys` | dump คีย์ทั้งหมด |
+| `POST /admin/key/manage` `{key,action}` | action: `ban` `unban` `reset_hwid` `delete` — ban คีย์ฝังได้ด้วย (สร้าง record wm+off) |
+| `POST /admin/system` `{maintenance,msg?,game?,version?}` | kill-switch (body ว่างไม่เปลี่ยนอะไร — กัน poll พลิก) |
+| `GET /admin/set?g&on&msg` | alias GET ของ system (เปิดลิงก์ตรง) |
+| `GET /admin/setpk?g&pk` | อัปโหลด payload key — deploy.py ใช้ |
+| `GET /admin/stats` `GET /stats` | JSON สรุป (pings/users/machines/events/status/kv) |
 
-### สิ่งที่สคริปต์ทำอัตโนมัติ (release_boot.lua)
+### 11.4 โมเดลความปลอดภัย
 
-- เปิดเกม → `GET /status?g=<id>` → off = หน้าต่าง "ปิดปรับปรุงชั่วคราว" ไม่ถามคีย์
-- ผ่าน status → `POST /ping ev=gate` (นับคนเห็นหน้าคีย์) — ใส่คีย์ผ่าน → `ev=unlock`
-- ทุก 60 วิ เช็ก status ซ้ำ — โดนปิดกลางทาง = ฆ่ารันไทม์ + ขึ้นหน้าบำรุงรักษา / เปิดกลับ = หน้าหายเอง
-- **fail-open**: worker ล่ม/เน็ตดับ/ตอบมั่ว = ไม่บล็อก (เทสเตอร์ไม่หงุดหงิด) — อยาก fail-closed ค่อยปรับ
-- ping ส่ง: event, เกม, tag, @username, displayName, userId, hwid (ย่อใน stats), placeId — ไม่มีรหัสผ่าน/cookie ใดๆ
+- **ADMIN_KEY**: env secret บน Cloudflare (`hz-a02dfb127d940b94` ณ backup) + fallback ฝังใน `worker_deploy.js` เท่านั้น — **repo/artifact ไม่มี** → หลังบ้านเป็นของเจ้าของคนเดียว คนนอกเจอ 403
+- **PK** (payload key): เกิดตอน build ใน `release.py` → อยู่ใน `<artifact>.pk` (gitignore) + KV `pk:<g>` เท่านั้น — ไม่อยู่ใน repo; เปลี่ยนทุก build → pk รั่ว = เปิดได้แค่ build เก่า
+- **unwrap flow**: คีย์ฝังผ่าน crypto ในเครื่อง (ทำงานแม้ worker ตาย) · คีย์เว็บต้อง server คืน pk → แบน/ลบ = ตายทันที · คีย์ฝังโดนแบน = wm ไปใน /status.banned → client ปฏิเสธ
+- **banned ผ่าน wm** (hmac(key,"hzv-id")[:8]hex) — server คำนวณด้วย WebCrypto ตรงฝั่ง client เป๊ะ
+- **rate-limit** `/unlock`: 15/IP/10นาที (`rl:<ip>` doc)
+- **hwid bind**: เฉพาะคีย์ที่ `bind:true` — unlock แรกจำ hw, ต่อมาต้องตรง / admin ปลดด้วย reset_hwid
+- **fail-open โดยเจตนา**: status/เน็ตดับ → ไม่บล็อกเทสเตอร์ (ปรับเป็น fail-closed ได้ใน fetchStatus)
+- **MITM**: pk ต้องผ่าน `hmac(pk,salt..ct)==tag` ฝั่ง client — server ปลอมส่ง pk เทียมไม่ได้ (ได้แค่ของจริงหรือ fail) + TLS
 
-### ระบบคีย์บนเว็บ (v261008-keyserver+)
+### 11.5 Setup checklist (ทำครั้งเดียว)
 
-คีย์มี 2 ชนิดทำงานคู่กัน:
+1. `backend/worker.js` → copy เป็น `worker_deploy.js` → แทน `env.ADMIN_KEY || ""` ด้วย `|| "<รหัสที่อยากได้>"` (หรือตั้ง env ADMIN_KEY ใน CF Variables)
+2. วาง `worker_deploy.js` ลง Cloudflare editor → Deploy
+3. KV: สร้าง namespace → worker Settings→Bindings→KV → Variable `STATS`
+4. `secrets.json` (local, gitignored): `{"adminKey":"<รหัสเดียวกัน>"}` — deploy.py จะ setpk อัตโนมัติ
+5. ครั้งแรก: `deploy.py` หรือ manual `…/admin/setpk?key=<k>&g=<id>&pk=<ไฟล์ .pk>`
 
-- **คีย์ฝัง** (`deploy.json → keys` — `123`, `HZV-…`): unwrap ในเครื่อง ใช้ได้แม้ worker ล่ม — แบนได้ด้วยการสร้าง record ชื่อคีย์นั้นในหลังบ้านแล้วกด "แบน" (server ส่ง wm ใน `/status.banned` → client ปฏิเสธทันที)
-- **คีย์เว็บ** (สร้างใน `/admin`): ไม่ได้ฝังในไฟล์ — client ส่ง `/unlock` → server ตรวจ (active? hwid? exp?) → คืน PK → ปลดล็อก; ลบ/แบน = ตายทันที
+### 11.6 Playbook ปฏิบัติการ
 
-กลไก: `release.py` เขียน `<artifact>.pk` (b64, gitignore) → `deploy.py` อ่าน `secrets.json{"adminKey"}` (gitignore, local เท่านั้น) → `GET /admin/setpk?key=..&g=<id>&pk=<b64>` อัปโหลดขึ้น worker → `/unlock` ใช้ pk นี้ตอบ
+| อยาก | ทำ |
+|---|---|
+| สร้างคีย์เทสเตอร์ | `/admin` → ช่องสร้างคีย์ (กำหนดเอง/สุ่ม + note + อายุวัน + ล็อกเครื่อง) → +สร้างคีย์ |
+| แบนคน | ปุ่ม "แบน" ข้างคีย์ → unlock= banned + wm เข้า status.banned (คีย์ฝังก็ตาย) |
+| แบนทั้งเครื่อง | แบนคีย์ที่ผูก hw นั้น → status?hw= จะ on:false |
+| ปิดระบบทั้งหมด | kill-switch "ปิด" + msg → ทุก client ขึ้นหน้าบำรุงรักษาใน ≤60วิ |
+| ปิดเฉพาะเกม | เลือก game ในฟอร์ม → g=<id> |
+| ดูใครใช้ | `/admin` ตารางผู้ใช้/เครื่อง/เหตุการณ์ หรือ `/admin/stats` |
+| คีย์หมดอายุ | ตั้ง `days` ตอนสร้าง → exp เกิน unlock= expired |
+| worker ตาย/หาย | สร้างใหม่ + วาง worker_deploy.js + ผูก KV ใหม่ + setpk ซ้ำ (ดู _backups/*/BACKUP.md) |
+| เปลี่ยน URL worker | `deploy.json→api` → `py deploy.py` |
 
-- ไฟล์ `secrets.json` อยู่ที่โฟลเดอร์ repo ในเครื่อง — **ห้าม push** (gitignore ครอบแล้ว)
-- ถ้าไม่มี secrets.json/ผิดคีย์ → deploy ยังสำเร็จ แต่เตือน "คีย์เว็บใช้ไม่ได้" — คีย์ฝังทำงานปกติ
-- ลบ record pk หรือไม่เคย setpk → `/unlock` ตอบ `no-pk` → คีย์เว็บทั้งหมดปลดล็อกไม่ได้ (คีย์ฝังไม่กระทบ)
+### 11.7 จุดที่ client ผูกกับ backend (release_boot.lua)
 
-### ข้อควรรู้
+- `API = @@API@@` ← release.py `--api` ← `deploy.json→api`
+- `fetchStatus()` — GET /status ทุก 60วิ · `STATUS.banned` set → unwrap เช็ก wm ก่อน
+- `serverUnlock(key)` — fallback หลัง wraps ไม่ผ่าน → POST /unlock → ตรวจ tag เหมือน wrap
+- `ping("gate"|"unlock")` — POST /ping (executor request/http_request — ไม่มีก็เงียบ)
+- `showMaint()/killRuntime()` — หน้าบำรุงรักษา + เคาะ runtime (`getgenv().HZ_VALLEY()` = KILL flag)
 
-- สคริปต์ใช้ `request`/`http_request`/`syn.request` ของ executor POST — Xeno รองรับ `request`; executor อื่นบางตัวไม่มี → ping/คีย์เว็บเงียบไป ไม่พัง (คีย์ฝังยังเข้าได้)
-- status เช็กผ่าน `game:HttpGet` — ใช้ได้ทุก executor
-- วิธีเปลี่ยน worker → แก้ `api` ใน deploy.json แล้ว deploy ใหม่
+### 11.8 ข้อจำกัด/จุดที่ยังไม่ทำ
+
+- คีย์ฝังทำงาน offline (เจตนา — owner keys ไม่ควรตายตาม server) → แบนคีย์ฝังมีผลเฉพาะตอน client เช็ก status ได้ (เน็ตดับ+คีย์ฝัง = เข้าได้ — ยอมรับไว้สำหรับเทส)
+- stats ปลอมได้ (ping ไม่มี auth — ข้อมูลสาธารณะไม่สำคัญ)
+- ไม่มี session heartbeat (รู้แค่เข้า ไม่รู้เลิกเล่นเมื่อไหร่ — ping ev เพิ่มได้ถ้าอยาก)
