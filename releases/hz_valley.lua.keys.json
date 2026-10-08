@@ -1,7 +1,7 @@
 {
-  "id": "hzvalley",
-  "tag": "v2.6-test",
-  "built": "2026-10-08 10:39:12",
+  "id": "valley",
+  "tag": "v261008-1104",
+  "built": "2026-10-08 11:04:34",
   "src": "hz_valley.lua",
   "sha256": "8fd9780caae8a3a072c43de4891c5ca70e73173509a68bfbacc388696d09a013",
   "keys": [

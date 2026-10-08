@@ -1,0 +1,45 @@
+{
+  "brand": "HZ HUB",
+  "comment": "ทะเบียนเกมทั้งหมดที่ดีพอยขึ้น repo — คีย์ชุดเดียวใช้ได้ทุกแมพ (เทสเตอร์กรอกครั้งเดียวหลักการเดียวกัน)",
+  "keys": ["123", "HZV-AFB322-339C92", "HZV-8B7985-C74C1A", "HZV-C21D68-D034D1"],
+  "keyMode": "auto",
+  "blockOn": "never",
+  "outDir": "releases",
+  "games": [
+    {
+      "id": "valley",
+      "name": "Chicken or Hero (Huss Valley)",
+      "placeId": 107535308163741,
+      "src": "hz_valley.lua",
+      "enabled": true
+    },
+    {
+      "id": "dice",
+      "name": "Anime Dice",
+      "placeId": 113290951185459,
+      "src": "%XENO_WS%/hz_dice.lua",
+      "enabled": false
+    },
+    {
+      "id": "ubg",
+      "name": "UBG/Deimos (สนามต่อสู้)",
+      "placeId": 13621938427,
+      "src": "%XENO_WS%/hz_ubg.lua",
+      "enabled": false
+    },
+    {
+      "id": "warz",
+      "name": "WarZ PvP",
+      "placeId": 0,
+      "src": "%XENO_WS%/hz_warz.lua",
+      "enabled": false
+    },
+    {
+      "id": "mart",
+      "name": "MorrowMart",
+      "placeId": 0,
+      "src": "%XENO_WS%/hz_mart.lua",
+      "enabled": false
+    }
+  ]
+}
