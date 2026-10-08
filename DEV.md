@@ -236,6 +236,7 @@ unlock ตอบ why → หน้าคีย์แปลเป็นภาษ�
 | `agg` | `{total,games:{},users:{uid:{u,dn,count,hwSet,last}},events:[≤100]}` | ping |
 | `status` | `{global:bool,games:{g:bool},until:{scope:ts},msg,ver}` (until = เปิดเองอัตโนมัติ) | admin (system) |
 | `pk:<g>` | `{pk:"<b64 32B>",at}` | setpk (deploy.py) |
+| `games` | `{<g>:{at}}` ทะเบียนเกมที่ deploy — audit เช็ก pk เฉพาะเกมนี้ (id เก่าค้างใน agg ไม่ฟ้อง) | setpk |
 | `rl:<ip>` `rl:a:<ip>` | `{n,ts}` rate-limit unlock(15)/admin-fail(20) ต่อ 10นาที (TTL 1 ชม.) | unlock / admin-auth |
 
 **หลักออกแบบ (กัน lost-update):** KV เป็น eventual consistency — read-modify-write ทั้ง doc จาก 2 request พร้อมกันทำให้ตัวหนึ่งหาย
