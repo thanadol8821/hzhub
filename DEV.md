@@ -112,7 +112,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/ma
 | Catcher AI | เลือกเหยื่อใกล้สุด → chase → tackle → melee → BearTrap → ยืนยัน |
 | GOD dodge | Heartbeat 0ms อ่าน attr telegraph ของ catcher → หลบทัน windup |
 | RescueKit | โดนจับ → ชุบตัวเอง → กลับ Active ต่อ |
-| ESP | Highlight + Billboard ชื่อ/ระยะ (AlwaysOnTop) parent เข้า char ตรง — แดง=ไล่/น้ำเงิน=หนี — per-player pcall + respawn-guard |
+| ~~ESP~~ | ถอดออกใน v2.3 ตามคำสั่งเจ้าของ (เคยมี Highlight+Billboard — โค้ดอยู่ใน git history) |
 | Auto-claim/vote/hero/gear | remote fire ตอนจบแมตช์ + equip เกียร์ตาม tier (buy cooldown 45s/ไอเทมกัน spam) |
 | Config | `hz_valley_cfg.json` (state เกม) + `FishUI/hz_valley.json` (ธีม/keybind — FishUI autosave) |
 | Log | buffer → `writefile` flush ทุก 1.5s → `hz_valley_log.txt` |
