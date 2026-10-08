@@ -218,9 +218,10 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 
 | doc key | เนื้อ | เจ้าของ (ใครเขียนได้) |
 |---|---|---|
-| `keys` | `{<key>:{st:"on"\|"off",bind,note,wm,at,exp}}` | **admin เท่านั้น** (keygen/manage/หน้าแอดมิน) |
-| `usage` | `{<key>:{uses,last,u,uid,hw}}` | **unlock เท่านั้น** (นับครั้ง + ผูกเครื่อง) |
+| `keys` | `{<key>:{st:"on"\|"off",bind,maxHw,note,wm,at,exp}}` | **admin เท่านั้น** (keygen/manage/หน้าแอดมิน) |
+| `usage` | `{<key>:{uses,last,u,uid,hws:[…],hw}}` (hws = เครื่องที่ผูก ≤ maxHw) | **unlock เท่านั้น** (นับครั้ง + ผูกเครื่อง) |
 | `banned` | `{<key>:{wm,hw}}` index สำรองของ st=off | admin เท่านั้น |
+| `alog` | `{items:[{t,who,act,target,detail}≤200]}` บันทึกการกระทำแอดมิน | admin เท่านั้น |
 | `agg` | `{total,games:{},users:{uid:{u,dn,count,hwSet,last}},events:[≤100]}` | ping |
 | `status` | `{global:bool,games:{g:bool},msg,ver}` | admin (system) |
 | `pk:<g>` | `{pk:"<b64 32B>",at}` | setpk (deploy.py) |
@@ -248,13 +249,15 @@ watch loop 60วิ → status off → killRuntime() + หน้าบำรุ�
 | endpoint | auth | ทำอะไร |
 |---|---|---|
 | `GET <AP>/admin` | ไม่มี → ฟอร์มใส่รหัส (GET ธรรมดา ไม่ใช้ JS/storage) | ใส่รหัสแล้วไป `?key=` |
-| `GET <AP>/admin?key=` | query | **แดชบอร์ด server-rendered ไม่มี JS** (CSP `default-src 'none'`): ภาพรวม · kill-switch รายเกม+ข้อความ · สร้างคีย์ (สุ่ม/กำหนดเอง/จำนวน≤50/อายุวัน/ล็อกเครื่อง) · ตารางคีย์+ค้นหา · แบน/ปลดแบน · ปลดเครื่อง · ล็อก/เลิกล็อกเครื่อง · +7/+30วัน · ไม่จำกัดอายุ · แก้หมายเหตุ · ลบ(หน้ายืนยัน) · ผู้ใช้ · events |
-| `POST <AP>/admin?key=` | query + form | act = `newkey` `ban` `unban` `reset_hwid` `delete` `extend` `noexp` `bind` `note` `sys` → 303 กลับพร้อมแถบผลลัพธ์ |
+| `GET <AP>/admin?key=` | query | **แดชบอร์ด server-rendered ไม่มี JS** (CSP `default-src 'none'`): ภาพรวม · kill-switch รายเกม+ข้อความ · สร้างคีย์ (สุ่ม/กำหนดเอง/จำนวน≤50/อายุวัน/ล็อกเครื่อง) · ตารางคีย์+ค้นหา · แบน/ปลดแบน · ปลดเครื่อง · ล็อก/เลิกล็อกเครื่อง · กำหนดจำนวนเครื่อง/คีย์ (1-10) · +7/+30วัน · ไม่จำกัดอายุ · แก้หมายเหตุ · ลบ(หน้ายืนยัน) · ผู้ใช้ · events · บันทึกการกระทำแอดมิน · ปุ่ม "ตรวจสุขภาพระบบ" (`?health=1`) |
+| `POST <AP>/admin?key=` | query + form | act = `newkey` `ban` `unban` `reset_hwid` `delete` `extend` `noexp` `bind` `maxhw` `note` `sys` → 303 กลับพร้อมแถบผลลัพธ์ |
 | `POST /admin/keygen` `{count,note,custom?,bind?,days?}` | header | custom ต้องเป็น `[A-Za-z0-9_-]{3,64}` (dup=409) |
 | `GET /admin/keys` | header | คีย์ทั้งหมด (merge usage) |
-| `POST /admin/key/manage` `{key,action,days?,note?,bind?}` | header | action: `ban` `unban` `reset_hwid` `delete` `extend` `noexp` `bind` `note` (ban คีย์ฝังได้) |
+| `POST /admin/key/manage` `{key,action,days?,note?,bind?}` | header | action: `ban` `unban` `reset_hwid` `delete` `extend` `noexp` `bind` `maxhw`(n) `note` (ban คีย์ฝังได้) |
 | `POST /admin/system` `{game?,maintenance\|on,msg?,version?}` | header | kill-switch (body ว่าง = 400 no-op) |
-| `GET /admin/stats` | header | JSON สรุป |
+| `GET /admin/stats` | header (admin หรือ `AUDIT_KEY`) | JSON สรุป |
+| `GET /admin/audit` | header (admin หรือ **`AUDIT_KEY` อ่านอย่างเดียว**) | ตรวจสุขภาพ/ความสมบูรณ์ทั้งระบบ: env/KV roundtrip/wm integrity/pk/index แบน/ขนาด doc + admin log 30 รายการล่าสุด — คีย์ถูกปิดบัง ไม่มีรหัส/pk ในผล |
+| `GET /admin/export` · `POST /admin/import` `{keys,usage,status?,mode,confirm?}` | header (admin) | สำรอง/กู้คืน: mode `merge`(เพิ่มที่ขาด) `overwrite`(ไฟล์ชนะ) `replace`(ล้างแล้วใส่ใหม่ ต้อง `confirm:"REPLACE"`); wm คำนวณใหม่เสมอ; ไม่รวม pk |
 | `POST /admin/setpk` `{g,pk}` (GET `?g&pk` ยังรองรับ) | header | อัปโหลด payload key — deploy.py ใช้ POST |
 
 JSON API รับ `x-admin-key` **เท่านั้น** (ไม่รับ `?key=`) · หน้าแอดมินรับ `?key=` (ต้องใช้เพราะไม่พึ่ง JS) → ส่ง `referrer-policy: no-referrer` + `no-store`
@@ -269,7 +272,7 @@ JSON API รับ `x-admin-key` **เท่านั้น** (ไม่รั�
 - **rate-limit** `/unlock`: 15 fail/IP/10นาที (นับทุกเหตุผลที่ไม่ ok) · `/ping`: 60/IP/10นาที (in-memory ไม่เปลือง KV write) · admin: 20 fail/IP/10นาที
 - **KV ล่ม**: `/status` fail-open · `/unlock` fail-closed (503 kv-down) · `/ping` พลาดเงียบ · admin write พลาด = error ไม่ทับข้อมูล
 - **KV Free plan**: 1,000 writes/วัน — unlock/ping/admin แต่ละครั้งใช้ 1-2 writes; ถ้าผู้ใช้เยอะให้อัป Workers Paid
-- **hwid bind**: เฉพาะคีย์ที่ `bind:true` — unlock แรกจำ hw, ต่อมาต้องตรง / admin ปลดด้วย reset_hwid
+- **hwid bind**: เฉพาะคีย์ที่ `bind:true` — unlock จำ hw ได้สูงสุด `maxHw` เครื่อง (ค่าเริ่ม 1) เต็มแล้วเครื่องใหม่ได้ `bound` / admin ปลดด้วย reset_hwid หรือเพิ่ม maxhw · bind แต่ไม่ส่ง hw = `no-hw`
 - **fail-open โดยเจตนา**: status/เน็ตดับ → ไม่บล็อกเทสเตอร์ (ปรับเป็น fail-closed ได้ใน fetchStatus)
 - **MITM**: pk ต้องผ่าน `hmac(pk,salt..ct)==tag` ฝั่ง client — server ปลอมส่ง pk เทียมไม่ได้ (ได้แค่ของจริงหรือ fail) + TLS
 
