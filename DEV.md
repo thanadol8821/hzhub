@@ -194,8 +194,8 @@ cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่า
 > **ระบบนี้อยู่นอก repo แล้ว** — อ่าน `../hz_system/README.md` ก่อน (master handbook: deploy flow, registry, secrets, recovery)
 
 **URL:** `https://dry-wave-054e.thanadol821.workers.dev` (account: thanadol821)
-**หลังบ้าน:** `https://<worker>/<ADMIN_PATH>/admin` (ค่าจริงใน `hz_system/secrets/`) — admin path ลับอยู่ใน env `ADMIN_PATH` บน CF (ไม่มีใน repo ใดๆ) + login gate (รหัสอยู่ sessionStorage ไม่อยู่ใน URL) — ทุก path อื่น = fake 404 ขาว
-**Source:** `../hz_system/backend/worker.js` (นอก repo, สะอาด) → ตัว deploy จริง `../hz_system/secrets/worker_deploy.js` (local-only, ฝัง ADMIN_KEY fallback)
+**หลังบ้าน:** `https://<worker>/<ADMIN_PATH>/admin` (ค่าจริงใน `hz_system/secrets/`) — admin path ลับอยู่ใน env `ADMIN_PATH` บน CF (ไม่มีใน repo ใดๆ) + หน้า SSR รับ `?key=` ตรงๆ (ฟอร์ม login = GET ธรรมดา ไม่พึ่ง JS/storage) — ทุก path อื่น = fake 404 ขาว
+**Source:** `../hz_system/backend/worker.js` v2.2 (นอก repo, สะอาด) → ตัว deploy จริง `../hz_system/secrets/worker_deploy.js` (local-only, ฝัง ADMIN_KEY/ADMIN_PATH/AUDIT_KEY fallback)
 **กำกับ release ตั้งแต่:** v261008-keysys เป็นต้นไป — boot ฝัง `API` URL + status-watch + serverUnlock
 
 ### 11.1 สถาปัตยกรรม
@@ -203,8 +203,8 @@ cd Ui/Ux && py tools/test/run.py    # mock luau — ต้อง 11/11 ผ่า
 ```
 client (release_boot.lua)                     worker.js                       KV namespace "hzhub"
 ─────────────────────────                     ──────────                      ─────────────────────
-start → GET /status?g&id&hw ────────────────► buildStatus() ────────────────► "status" doc + "keys".banned
-      ← {on,msg,banned:[wm…]}                                                  (banned = wm ของคีย์ off)
+start → GET /status?g&id&hw ────────────────► buildStatus() ────────────────► "status" + "keys".st + "banned" + "autoban"
+      ← {on,msg,banned:[wm…]}                                                  (banned = wm ของคีย์ off/autoban; until→เปิดเอง)
       off → หน้า "ปิดปรับปรุง" + re-check ทุก 60วิ
       on  → ping("gate") ──────POST /ping──► agg/users/events ─────────────► "agg" doc
 keyscreen → unwrap(key):
