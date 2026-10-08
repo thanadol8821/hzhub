@@ -1,0 +1,9 @@
+# dev source / เครื่องมือฝั่ง dev — เทสเตอร์ไม่ต้องการ (แจกเฉพาะ release ที่เข้ารหัส)
+hz_valley.lua
+dump/
+watch/
+deploy.py
+ดีพอย.cmd
+*.bak
+*.tmp
+__pycache__/
