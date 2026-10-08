@@ -267,104 +267,156 @@ async function routeSetpk(url, env) {
 function adminHtml(AB) {
   return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin</title><style>
-body{font-family:system-ui;background:#14101c;color:#e8e4f2;padding:20px;max-width:960px;margin:auto}
-.c{background:#241d33;border:1px solid #443a5e;border-radius:12px;padding:16px;margin:12px 0}
-.b{display:inline-block;padding:8px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:700;margin:2px;color:#fff;font-size:12px;text-decoration:none}
-.on{background:#2e7d5b}.off{background:#b33}.mut{background:#4a3f6b}
-table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:6px;border-bottom:1px solid #332a44;text-align:left}
-h1{font-size:22px}h2{font-size:15px;color:#b9aee0}.stat{font-size:28px;font-weight:800}
-input,select{padding:8px;border-radius:6px;border:1px solid #443a5e;background:#1a1526;color:#fff;margin:2px}
-code{background:#1a1526;padding:2px 6px;border-radius:4px}
-#toast{position:fixed;bottom:16px;right:16px;background:#2e7d5b;padding:10px 16px;border-radius:8px;display:none}
-#gate{max-width:340px;margin:80px auto;text-align:center}
-#gate input{width:90%;text-align:center;font-size:15px;padding:10px}
+:root{--bg:#0f0c1a;--card:#1c1730;--card2:#241d3d;--line:#382f55;--tx:#ece8f7;--mut:#9a8fc0;--grn:#43d17c;--red:#ff5c6c;--amb:#ffc35c;--acc:#7c5cff}
+*{box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);margin:0;padding:0}
+.top{position:sticky;top:0;background:rgba(15,12,26,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;align-items:center;gap:12px;z-index:9}
+.top h1{font-size:17px;margin:0;font-weight:800;letter-spacing:.5px}
+.pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.pill.on{background:rgba(67,209,124,.15);color:var(--grn);border:1px solid rgba(67,209,124,.4)}
+.pill.off{background:rgba(255,92,108,.15);color:var(--red);border:1px solid rgba(255,92,108,.4)}
+.wrap{max-width:1100px;margin:auto;padding:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat .n{font-size:26px;font-weight:800}.stat .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:14px 0}
+.card h2{font-size:14px;color:var(--mut);margin:0 0 12px;text-transform:uppercase;letter-spacing:.8px}
+.b{padding:8px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:700;font-size:12px;color:#fff;transition:.15s}
+.b:hover{filter:brightness(1.2)}.b:active{transform:scale(.96)}
+.bp{background:var(--acc)}.bg{background:#2e7d5b}.br{background:#c93a4e}.bm{background:#4a3f6b}
+.b.sm{padding:5px 10px;font-size:11px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{color:var(--mut);font-size:10px;text-transform:uppercase;letter-spacing:.6px}
+td,th{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
+tr:hover td{background:rgba(124,92,255,.05)}
+input,select{padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:#151020;color:var(--tx);margin:3px;font-size:13px}
+input:focus{outline:none;border-color:var(--acc)}
+code{background:#151020;padding:3px 8px;border-radius:5px;font-size:12px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.dot.g{background:var(--grn)}.dot.r{background:var(--red)}
+.tag{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--card2);color:var(--mut)}
+#toast{position:fixed;bottom:18px;right:18px;background:var(--acc);padding:11px 20px;border-radius:10px;display:none;font-weight:700;box-shadow:0 6px 24px rgba(0,0,0,.5);z-index:99}
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center}
+#gate .card{width:320px;text-align:center;padding:32px}
+#gate input{width:100%;text-align:center;font-size:15px;padding:12px;margin:10px 0}
+.mono{font-family:ui-monospace,monospace}
+.search{width:200px}
 </style>
 
-<div id="gate"><div class="c"><h2>Locked</h2>
-  <input id="pw" type="password" placeholder="key" autocomplete="off">
-  <button class="b on" onclick="doLogin()">Enter</button>
-  <div id="gateMsg" style="color:#f66;font-size:12px;margin-top:8px"></div></div></div>
+<div id="gate"><div class="card"><div style="font-size:34px;margin-bottom:6px">LOCKED</div>
+<h2 style="color:var(--tx);font-size:16px">RESTRICTED AREA</h2>
+<input id="pw" type="password" placeholder="admin key" autocomplete="off">
+<button class="b bp" style="width:100%;padding:10px" onclick="doLogin()">Unlock</button>
+<div id="gateMsg" style="color:var(--red);font-size:12px;margin-top:8px"></div></div></div>
 
 <div id="app" style="display:none">
-<h1>HZ HUB — หลังบ้าน</h1>
+<div class="top"><h1>HZ HUB <span style="color:var(--mut);font-weight:400;font-size:12px">admin console</span></h1>
+<span id="sysPill" class="pill on">LIVE</span>
+<span style="flex:1"></span>
+<button class="b bm sm" onclick="load()">Refresh</button>
+<button class="b br sm" onclick="logout()">Logout</button></div>
+<div class="wrap">
 <div id="toast"></div>
 
-<div class="c"><h2>ระบบ (kill-switch)</h2>
-  <div id="sysStat">…</div>
-  <select id="sysG"><option value="all">ทุกเกม</option><option value="valley">valley</option></select>
-  <select id="sysOn"><option value="1">เปิด</option><option value="0">ปิด (kill)</option></select>
-  <input id="sysMsg" placeholder="ข้อความถึงผู้ใช้" size="28">
-  <button class="b on" onclick="sysSet()">ตั้งค่า</button></div>
+<div class="cards" id="cards"></div>
 
-<div class="c"><h2>สร้างคีย์</h2>
-  <input id="kgCustom" placeholder="คีย์ที่กำหนดเอง (เว้น=สุ่ม HZ-xxxx)" size="24">
-  <input id="kgNote" placeholder="หมายเหตุ (ชื่อเทสเตอร์)" size="18">
-  <input id="kgDays" placeholder="อายุ (วัน, เว้น=ไม่หมด)" size="10" type="number">
-  <label><input type="checkbox" id="kgBind"> ล็อกเครื่องแรก</label>
-  <button class="b on" onclick="keygen()">+ สร้างคีย์</button>
-  <div id="kgOut" style="margin-top:8px;font-size:13px"></div></div>
+<div class="card"><h2>KILL-SWITCH</h2>
+<select id="sysG"><option value="all">ทุกเกม</option><option value="valley">valley</option></select>
+<select id="sysOn"><option value="1">เปิดใช้งาน</option><option value="0">ปิดระบบ (kill)</option></select>
+<input id="sysMsg" placeholder="ข้อความถึงผู้ใช้ เช่น กำลังอัปเดต v3" size="30">
+<button class="b bp" onclick="sysSet()">ตั้งค่า</button>
+<span style="font-size:11px;color:var(--mut);margin-left:8px">client เช็กทุก 60 วิ — ปิดแล้วทุกเครื่องขึ้นหน้าบำรุงรักษา</span></div>
 
-<div class="c"><h2>คีย์ทั้งหมด <button class="b mut" onclick="load()">รีเฟรช</button> <button class="b off" onclick="logout()">ออก</button></h2>
-  <div id="kvNote"></div>
-  <table><tr><th>คีย์</th><th>สถานะ</th><th>หมายเหตุ</th><th>ผู้ใช้</th><th>ครั้ง</th><th>เครื่อง</th><th>หมดอายุ</th><th>ล่าสุด</th><th></th></tr>
-  <tbody id="krows"></tbody></table></div>
+<div class="card"><h2>สร้างคีย์</h2>
+<input id="kgCustom" placeholder="คีย์กำหนดเอง (เว้น=สุ่ม HZ-XXXX)" size="22">
+<input id="kgNote" placeholder="หมายเหตุ / ชื่อเทสเตอร์" size="18">
+<input id="kgDays" placeholder="อายุ (วัน)" size="8" type="number" min="0">
+<label style="font-size:12px;color:var(--mut)"><input type="checkbox" id="kgBind"> ล็อกเครื่องแรก</label>
+<button class="b bg" onclick="keygen()">สร้างคีย์</button>
+<div id="kgOut" style="margin-top:10px;font-size:14px"></div></div>
 
-<div class="c"><h2>สถิติ</h2><div id="stats">…</div></div>
-<div class="c"><h2>ผู้ใช้ล่าสุด</h2><table><tr><th>ผู้เล่น</th><th>ชื่อแสดง</th><th>ครั้ง</th><th>เครื่อง</th><th>ล่าสุด</th></tr><tbody id="urows"></tbody></table></div>
-<div class="c"><h2>เหตุการณ์ล่าสุด</h2><table><tr><th>เวลา</th><th>ev</th><th>เกม</th><th>ผู้เล่น</th><th>ver</th></tr><tbody id="erows"></tbody></table></div>
-</div>
+<div class="card"><h2>คีย์ทั้งหมด</h2>
+<div id="kvNote"></div>
+<input class="search" id="kq" placeholder="ค้นหาคีย์/ชื่อเทสเตอร์/ผู้ใช้..." oninput="renderKeys()">
+<table><thead><tr><th>คีย์</th><th>สถานะ</th><th>หมายเหตุ</th><th>ผู้ใช้</th><th>ครั้ง</th><th>เครื่อง</th><th>หมดอายุ</th><th>ล่าสุด</th><th></th></tr></thead>
+<tbody id="krows"></tbody></table></div>
+
+<div class="card"><h2>ผู้ใช้ล่าสุด</h2>
+<table><thead><tr><th>ผู้เล่น</th><th>ชื่อแสดง</th><th>ครั้ง</th><th>เครื่อง</th><th>ล่าสุด</th></tr></thead><tbody id="urows"></tbody></table></div>
+
+<div class="card"><h2>เหตุการณ์ล่าสุด</h2>
+<table><thead><tr><th>เวลา</th><th>event</th><th>เกม</th><th>ผู้เล่น</th><th>build</th></tr></thead><tbody id="erows"></tbody></table></div>
+</div></div>
 
 <script>
-const PRE="${AB}"; // secret admin prefix — API ทั้งหมดอยู่ใต้นี้
-const SK="hzk";
-let K=sessionStorage.getItem(SK)||"";
-{ // migrate ?key= → sessionStorage แล้วลบออกจาก URL (ไม่ให้รหัสค้างใน history/link)
-  const u=new URL(location.href), qk=u.searchParams.get("key");
-  if(qk){K=qk;sessionStorage.setItem(SK,K);u.search="";history.replaceState(0,"",u.pathname);}
-}
+const PRE="${AB}";
+let K=sessionStorage.getItem("hzk")||"";
+{const u=new URL(location.href),qk=u.searchParams.get("key");
+ if(qk){K=qk;sessionStorage.setItem("hzk",K);u.search="";history.replaceState(0,"",u.pathname);}}
 const $=id=>document.getElementById(id);
+let KEYS={};
 async function api(p,o){
   const r=await fetch(PRE+p,{headers:{"x-admin-key":K,"content-type":"application/json"},...o});
-  if(r.status===403||r.status===401){$("gate").style.display="block";$("app").style.display="none";if(K)$("gateMsg").textContent="key ผิด";throw 403;}
+  if(r.status===403||r.status===401){$("gate").style.display="flex";$("app").style.display="none";if(K)$("gateMsg").textContent="key ไม่ถูกต้อง";K="";sessionStorage.removeItem("hzk");throw 403;}
   return r.json();
 }
-function doLogin(){K=$("pw").value.trim();sessionStorage.setItem(SK,K);$("gateMsg").textContent="";load();}
-function logout(){sessionStorage.removeItem(SK);K="";location.reload();}
-const toast=(m,ok)=>{const t=$("toast");t.textContent=m;t.style.background=ok===false?"#b33":"#2e7d5b";t.style.display="block";setTimeout(()=>t.style.display="none",2500)};
+function doLogin(){K=$("pw").value.trim();sessionStorage.setItem("hzk",K);$("gateMsg").textContent="";load();}
+function logout(){sessionStorage.removeItem("hzk");K="";location.reload();}
+const toast=(m,bad)=>{const t=$("toast");t.textContent=m;t.style.background=bad?"#c93a4e":"#7c5cff";t.style.display="block";setTimeout(()=>t.style.display="none",2600)};
 const fdt=t=>t?new Date(t).toLocaleString("th-TH"):"-";
+const cp=t=>{navigator.clipboard.writeText(t).then(()=>toast("copied: "+t))};
 
 async function sysSet(){
   const r=await api("/admin/system",{method:"POST",body:JSON.stringify({game:sysG.value,maintenance:sysOn.value==="0",msg:sysMsg.value})});
-  toast(r.ok?"ตั้งค่าแล้ว":"ล้มเหลว",r.ok); load();
+  toast(r.ok?"ตั้งค่าแล้ว":"ล้มเหลว",!r.ok); load();
 }
 async function keygen(){
   const body={count:1,note:kgNote.value,custom:kgCustom.value||undefined,bind:kgBind.checked,days:parseFloat(kgDays.value)||0};
   const r=await api("/admin/keygen",{method:"POST",body:JSON.stringify(body)});
-  if(r.ok){kgOut.innerHTML="คีย์ใหม่: <code>"+r.keys[0]+"</code> (copy ส่งให้เทสเตอร์ได้เลย)";kgCustom.value="";}
+  if(r.ok){kgOut.innerHTML='คีย์ใหม่: <code class="mono" style="font-size:15px;color:var(--grn)">'+r.keys[0]+'</code> <button class="b bp sm" onclick="cp(\\''+r.keys[0]+'\\')">copy</button>';kgCustom.value="";}
   else kgOut.textContent="ล้มเหลว: "+(r.why||"?");
   load();
 }
 async function manage(k,a){
   const r=await api("/admin/key/manage",{method:"POST",body:JSON.stringify({key:k,action:a})});
-  toast(r.ok?a+" "+k:"ล้มเหลว",r.ok); load();
+  toast(r.ok?a+" "+k:"ล้มเหลว",!r.ok); load();
+}
+function renderKeys(){
+  const q=($("kq").value||"").toLowerCase();
+  const rows=Object.entries(KEYS).filter(([k,r])=>!q||k.toLowerCase().includes(q)||(r.note||"").toLowerCase().includes(q)||(r.u||"").toLowerCase().includes(q))
+    .sort((a,b)=>(b[1].at||0)-(a[1].at||0));
+  $("krows").innerHTML=rows.map(([k,r])=>{
+    const off=r.st==="off",expd=r.exp&&r.exp<Date.now();
+    return "<tr><td><code class='mono'>"+k+"</code> <button class='b bm sm' onclick=\\"cp('"+k+"')\\">copy</button></td>"+
+    "<td><span class='dot "+(off?"r":"g")+"'></span>"+(off?"แบน":expd?"หมดอายุ":"ใช้งาน")+"</td>"+
+    "<td>"+(r.note||"")+"</td><td>"+(r.u?"@"+r.u:"-")+"</td><td>"+(r.uses||0)+"</td>"+
+    "<td>"+(r.bind?(r.hw?"locked":"รอผูก"):"-")+"</td><td>"+(r.exp?fdt(r.exp):"ไม่จำกัด")+"</td><td>"+fdt(r.last)+"</td>"+
+    "<td style='white-space:nowrap'><button class='b "+(off?"bg":"br")+" sm' onclick=\\"manage('"+k+"','"+(off?"unban":"ban")+"')\\">"+(off?"ปลดแบน":"แบน")+"</button>"+
+    "<button class='b bm sm' onclick=\\"manage('"+k+"','reset_hwid')\\">ปลดเครื่อง</button>"+
+    "<button class='b br sm' onclick=\\"if(confirm('ลบ "+k+" ?'))manage('"+k+"','delete')\\">ลบ</button></td></tr>";
+  }).join("")||"<tr><td colspan=9 style='color:var(--mut)'>ไม่มีคีย์ — สร้างจากฟอร์มด้านบน</td></tr>";
 }
 async function load(){
   try{
     const [kl,ss]=await Promise.all([api("/admin/keys"),api("/admin/stats")]);
     $("gate").style.display="none";$("app").style.display="block";
-    sysStat.innerHTML="สถานะ: <b style='color:"+(ss.status&&ss.status.on===false?"#f66":"#6f6")+"'>"+(ss.status&&ss.status.on===false?"ปิดอยู่":"เปิดอยู่")+"</b>";
-    kvNote.innerHTML=ss.kv?"":'<b style="color:#f96">KV ไม่ได้ผูก — คีย์/สถิติรีเซ็ตตอน cold start (Settings→Bindings→STATS)</b>';
-    const ks=kl.keys||{};
-    krows.innerHTML=Object.entries(ks).sort((a,b)=>(b[1].at||0)-(a[1].at||0)).map(([k2,r])=>
-      "<tr><td><code>"+k2+"</code></td><td style='color:"+(r.st==="off"?"#f66":"#6f6")+"'>"+(r.st==="off"?"แบน":"ใช้ได้")+"</td><td>"+(r.note||"")+"</td><td>"+(r.u?("@"+r.u):"-")+"</td><td>"+(r.uses||0)+"</td><td>"+(r.hw?"ล็อก":"-")+"</td><td>"+(r.exp?fdt(r.exp):"-")+"</td><td>"+fdt(r.last)+"</td>"+
-      "<td><button class='b "+(r.st==="off"?"on":"off")+"' onclick=\\"manage('"+k2+"','"+(r.st==="off"?"unban":"ban")+"')\\">"+(r.st==="off"?"ปลดแบน":"แบน")+"</button>"+
-      "<button class='b mut' onclick=\\"manage('"+k2+"','reset_hwid')\\">ปลดเครื่อง</button>"+
-      "<button class='b off' onclick=\\"if(confirm('ลบ?'))manage('"+k2+"','delete')\\">ลบ</button></td></tr>").join("")
-      || "<tr><td colspan=9>ไม่มีคีย์ในระบบ</td></tr>";
-    stats.innerHTML="<span class=stat>"+(ss.total_pings||0)+"</span> ping · <span class=stat>"+(ss.unique_users||0)+"</span> คน · <span class=stat>"+(ss.unique_machines||0)+"</span> เครื่อง";
-    urows.innerHTML=(ss.users||[]).map(x=>"<tr><td>@"+x.u+"</td><td>"+(x.dn||"")+"</td><td>"+x.count+"</td><td>"+x.machines+"</td><td>"+fdt(x.last)+"</td></tr>").join("")||"<tr><td colspan=5>ยังไม่มี</td></tr>";
-    erows.innerHTML=(ss.events_tail||[]).map(e=>"<tr><td>"+new Date(e.t).toLocaleTimeString("th-TH")+"</td><td>"+e.ev+"</td><td>"+e.g+"</td><td>@"+e.u+"</td><td>"+e.tag+"</td></tr>").join("")||"<tr><td colspan=5>ยังไม่มี</td></tr>";
-  }catch(e){/* 403 → gate แสดงอยู่แล้ว */}
+    KEYS=kl.keys||{};
+    const sysOff=ss.status&&ss.status.on===false;
+    $("sysPill").textContent=sysOff?"OFFLINE":"LIVE";$("sysPill").className="pill "+(sysOff?"off":"on");
+    const vals=Object.values(KEYS);
+    const act=vals.filter(r=>r.st!=="off").length, ban=vals.filter(r=>r.st==="off").length;
+    $("cards").innerHTML=
+      '<div class="stat"><div class="n">'+vals.length+'</div><div class="l">คีย์ทั้งหมด</div></div>'+
+      '<div class="stat"><div class="n" style="color:var(--grn)">'+act+'</div><div class="l">ใช้งาน</div></div>'+
+      '<div class="stat"><div class="n" style="color:var(--red)">'+ban+'</div><div class="l">แบน</div></div>'+
+      '<div class="stat"><div class="n">'+(ss.unique_users||0)+'</div><div class="l">ผู้ใช้</div></div>'+
+      '<div class="stat"><div class="n">'+(ss.unique_machines||0)+'</div><div class="l">เครื่อง</div></div>'+
+      '<div class="stat"><div class="n">'+(ss.total_pings||0)+'</div><div class="l">ping</div></div>';
+    $("kvNote").innerHTML=ss.kv?"":'<div style="color:var(--amb);font-size:12px;margin-bottom:8px">KV ไม่ได้ผูก — ข้อมูลรีเซ็ตตอน cold start</div>';
+    renderKeys();
+    $("urows").innerHTML=(ss.users||[]).map(x=>"<tr><td class='mono'>@"+x.u+"</td><td>"+(x.dn||"")+"</td><td>"+x.count+"</td><td>"+x.machines+"</td><td>"+fdt(x.last)+"</td></tr>").join("")||"<tr><td colspan=5 style='color:var(--mut)'>ยังไม่มีผู้ใช้</td></tr>";
+    $("erows").innerHTML=(ss.events_tail||[]).map(e=>"<tr><td>"+new Date(e.t).toLocaleTimeString("th-TH")+"</td><td><span class='tag'>"+e.ev+"</span></td><td>"+e.g+"</td><td class='mono'>@"+e.u+"</td><td>"+e.tag+"</td></tr>").join("")||"<tr><td colspan=5 style='color:var(--mut)'>ยังไม่มี</td></tr>";
+  }catch(e){}
 }
 $("pw").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin()});
 load(); setInterval(()=>{if(K)load().catch(()=>{})},15000);
@@ -376,7 +428,7 @@ load(); setInterval(()=>{if(K)load().catch(()=>{})},15000);
 // secret admin prefix — deploy copy ฝังค่าไว้; repo ตัวเปล่าใช้ "" = admin อยู่ที่ /admin ตรงๆ (ยังต้อง ADMIN_KEY)
 const ADMIN_BASE = (env) => env.ADMIN_PATH || "";
 // หน้าขาว 404 เหมือนไม่มีอะไรอยู่เลย — คนนอกสแกนเจอแค่นี้
-const FAKE404 = new Response(
+const fake404 = () => new Response(
   `<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><center><h1>404 Not Found</h1></center><hr><center>cloudflare</center></body></html>`,
   { status: 404, headers: { "content-type": "text/html" } });
 
@@ -419,10 +471,10 @@ export default {
         if (ap === "/admin/set") return routeSystem(req, env); // alias GET
         if (ap === "/admin/stats" || ap === "/stats") return routeStats(env);
         if (ap === "/admin/setpk") return routeSetpk(url, env);
-        return FAKE404.clone();
+        return fake404();
       }
 
-      return FAKE404.clone(); // ทุกอย่างอื่น = ขาวโล่ง เหมือนไม่มีอะไรเลย
+      return fake404(); // ทุกอย่างอื่น = ขาวโล่ง เหมือนไม่มีอะไรเลย
     } catch (e) {
       console.log("FATAL " + (e && e.stack || e));
       return j({ ok: false, why: "server-error" }, 500);
