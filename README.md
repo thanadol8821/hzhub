@@ -20,6 +20,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/ma
 | แมพ | ไฟล์ใน releases/ |
 |---|---|
 | Sniper Arena (HZ HUB) | `releases/hz_sniper.lua` |
+| Mine Antarctica (เบต้าเทส — ไม่ต้องใส่คีย์) | `releases/hz_mine.lua` |
+| Sniper Arena (เทส — ไม่ต้องใส่คีย์) | `releases/hz_sniper_open.lua` |
 <!--/FILES-->
 
 (เปลี่ยนชื่อไฟล์ใน URL ตามแมพ — คีย์เดียวกันทุกแมพ)
