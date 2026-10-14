@@ -1,0 +1,7 @@
+d00 [BloomEffect] Bloom | par=Lighting
+d00 [Sky] Sky | par=Lighting
+d00 [Atmosphere] Atmosphere | par=Lighting
+d00 [ColorCorrectionEffect] ColorCorrection | par=Lighting
+d00 [BlurEffect] BL_Blur | par=Lighting
+d00 [BlurEffect] AdminRefreshBlur | par=Lighting
+d00 [BlurEffect] MapVoteBlur | par=Lighting

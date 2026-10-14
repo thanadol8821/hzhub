@@ -1,0 +1,14 @@
+[07:23:18] ReplicatedStorage.ChickenOrHero.Presentation.SettingsEvent
+    Loaded | { }
+[07:23:18] ReplicatedStorage.ChickenOrHero.Crates.CrateEvent
+    State | { pending=false studioPreview=false crate=Ember loaded=true gems=229 allowed=true reason= }
+[07:23:18] ReplicatedStorage.ChickenOrHero.Crates.CrateEvent
+    State | { pending=true studioPreview=false crate=Ember loaded=true gems=231 allowed=true reason= }
+[07:23:18] ReplicatedStorage.ChickenOrHero.Crates.CrateEvent
+    State | { pending=true studioPreview=false crate=Ember loaded=true gems=231 allowed=true reason= }
+[07:23:18] ReplicatedStorage.ChickenOrHero.Crates.CrateEvent
+    State | { pending=true studioPreview=false crate=Ember loaded=true gems=235 allowed=true reason= }
+[07:23:20] ReplicatedStorage.ChickenOrHero.Quests.QuestEvent
+    State | { loaded=true mode=Event event={ claimsEnabled=true secondsUntilStart=0 skipProductId=3716136143 phase=Active skipCredits=0 secondsRemaining=315401 id=ComedyCollection2026 endsAt=1791648000 durationDays=7 startsAt=1791010800 available=true activeWeapon=CluckBasher weapons={ 1={ id=CluckBasher name=CLUCK BASHER claimed=false locked=false claimable=true quests={ 1=... 2=... 3=... } bonus={ Trigger=... Currency=... Amount=... } } 2={ id=BananaBlade name=BANANA BLADE claimed=false locked=true claimable=false quests={ 1=... 2=... 3=... } bonus={ Trigger=... Currency=... Amount=... } } 3={ id=PizzaPunisher name=PIZZA PUNISHER claimed=false locked=true claimable=false quests={ 1=... 2=... 3=... } bonus={ Trigger=... Currency=... Amount=... } } } progressReady=true title=QUESTS } serverNow=1791332599 }
+[07:23:21] ReplicatedStorage.ChickenOrHero.Admin.EventHostRemote
+    EventState | false

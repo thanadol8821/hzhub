@@ -1,0 +1,158 @@
+d00 [Folder] ScreenPresentation | par=ReplicatedFirst
+  d01 [ScreenGui] ScreenOverlay | par=ScreenPresentation ATTR{UIReferenceViewport=2130.000,933.000}
+    d02 [Frame] Mask | par=ScreenOverlay
+      d03 [Frame] Sector00 | par=Mask ATTR{Angle=0}
+      d03 [Frame] Sector01 | par=Mask ATTR{Angle=0.07853981633974483}
+      d03 [Frame] Sector02 | par=Mask ATTR{Angle=0.15707963267948966}
+      d03 [Frame] Sector03 | par=Mask ATTR{Angle=0.23561944901923448}
+      d03 [Frame] Sector04 | par=Mask ATTR{Angle=0.3141592653589793}
+      d03 [Frame] Sector05 | par=Mask ATTR{Angle=0.39269908169872414}
+      d03 [Frame] Sector06 | par=Mask ATTR{Angle=0.47123889803846897}
+      d03 [Frame] Sector07 | par=Mask ATTR{Angle=0.5497787143782138}
+      d03 [Frame] Sector08 | par=Mask ATTR{Angle=0.6283185307179586}
+      d03 [Frame] Sector09 | par=Mask ATTR{Angle=0.7068583470577035}
+      d03 [Frame] Sector10 | par=Mask ATTR{Angle=0.7853981633974483}
+      d03 [Frame] Sector11 | par=Mask ATTR{Angle=0.8639379797371932}
+      d03 [Frame] Sector12 | par=Mask ATTR{Angle=0.9424777960769379}
+      d03 [Frame] Sector13 | par=Mask ATTR{Angle=1.0210176124166828}
+      d03 [Frame] Sector14 | par=Mask ATTR{Angle=1.0995574287564276}
+      d03 [Frame] Sector15 | par=Mask ATTR{Angle=1.1780972450961724}
+      d03 [Frame] Sector16 | par=Mask ATTR{Angle=1.2566370614359172}
+      d03 [Frame] Sector17 | par=Mask ATTR{Angle=1.335176877775662}
+      d03 [Frame] Sector18 | par=Mask ATTR{Angle=1.413716694115407}
+      d03 [Frame] Sector19 | par=Mask ATTR{Angle=1.4922565104551517}
+      d03 [Frame] Sector20 | par=Mask ATTR{Angle=1.5707963267948966}
+      d03 [Frame] Sector21 | par=Mask ATTR{Angle=1.6493361431346414}
+      d03 [Frame] Sector22 | par=Mask ATTR{Angle=1.7278759594743864}
+      d03 [Frame] Sector23 | par=Mask ATTR{Angle=1.8064157758141308}
+      d03 [Frame] Sector24 | par=Mask ATTR{Angle=1.8849555921538759}
+      d03 [Frame] Sector25 | par=Mask ATTR{Angle=1.9634954084936207}
+      d03 [Frame] Sector26 | par=Mask ATTR{Angle=2.0420352248333655}
+      d03 [Frame] Sector27 | par=Mask ATTR{Angle=2.1205750411731104}
+      d03 [Frame] Sector28 | par=Mask ATTR{Angle=2.199114857512855}
+      d03 [Frame] Sector29 | par=Mask ATTR{Angle=2.2776546738526}
+      d03 [Frame] Sector30 | par=Mask ATTR{Angle=2.356194490192345}
+      d03 [Frame] Sector31 | par=Mask ATTR{Angle=2.4347343065320897}
+      d03 [Frame] Sector32 | par=Mask ATTR{Angle=2.5132741228718345}
+      d03 [Frame] Sector33 | par=Mask ATTR{Angle=2.5918139392115793}
+      d03 [Frame] Sector34 | par=Mask ATTR{Angle=2.670353755551324}
+      d03 [Frame] Sector35 | par=Mask ATTR{Angle=2.748893571891069}
+      d03 [Frame] Sector36 | par=Mask ATTR{Angle=2.827433388230814}
+      d03 [Frame] Sector37 | par=Mask ATTR{Angle=2.9059732045705586}
+      d03 [Frame] Sector38 | par=Mask ATTR{Angle=2.9845130209103035}
+      d03 [Frame] Sector39 | par=Mask ATTR{Angle=3.0630528372500483}
+      d03 [Frame] Sector40 | par=Mask ATTR{Angle=3.141592653589793}
+      d03 [Frame] Sector41 | par=Mask ATTR{Angle=3.2201324699295375}
+      d03 [Frame] Sector42 | par=Mask ATTR{Angle=3.2986722862692828}
+      d03 [Frame] Sector43 | par=Mask ATTR{Angle=3.3772121026090276}
+      d03 [Frame] Sector44 | par=Mask ATTR{Angle=3.455751918948773}
+      d03 [Frame] Sector45 | par=Mask ATTR{Angle=3.5342917352885173}
+      d03 [Frame] Sector46 | par=Mask ATTR{Angle=3.6128315516282616}
+      d03 [Frame] Sector47 | par=Mask ATTR{Angle=3.691371367968007}
+      d03 [Frame] Sector48 | par=Mask ATTR{Angle=3.7699111843077517}
+      d03 [Frame] Sector49 | par=Mask ATTR{Angle=3.848451000647497}
+      d03 [Frame] Sector50 | par=Mask ATTR{Angle=3.9269908169872414}
+      d03 [Frame] Sector51 | par=Mask ATTR{Angle=4.005530633326986}
+      d03 [Frame] Sector52 | par=Mask ATTR{Angle=4.084070449666731}
+      d03 [Frame] Sector53 | par=Mask ATTR{Angle=4.162610266006475}
+      d03 [Frame] Sector54 | par=Mask ATTR{Angle=4.241150082346221}
+      d03 [Frame] Sector55 | par=Mask ATTR{Angle=4.319689898685965}
+      d03 [Frame] Sector56 | par=Mask ATTR{Angle=4.39822971502571}
+      d03 [Frame] Sector57 | par=Mask ATTR{Angle=4.476769531365456}
+      d03 [Frame] Sector58 | par=Mask ATTR{Angle=4.5553093477052}
+      d03 [Frame] Sector59 | par=Mask ATTR{Angle=4.633849164044945}
+      d03 [Frame] Sector60 | par=Mask ATTR{Angle=4.71238898038469}
+      d03 [Frame] Sector61 | par=Mask ATTR{Angle=4.790928796724434}
+      d03 [Frame] Sector62 | par=Mask ATTR{Angle=4.869468613064179}
+      d03 [Frame] Sector63 | par=Mask ATTR{Angle=4.948008429403924}
+      d03 [Frame] Sector64 | par=Mask ATTR{Angle=5.026548245743669}
+      d03 [Frame] Sector65 | par=Mask ATTR{Angle=5.105088062083414}
+      d03 [Frame] Sector66 | par=Mask ATTR{Angle=5.183627878423159}
+      d03 [Frame] Sector67 | par=Mask ATTR{Angle=5.262167694762904}
+      d03 [Frame] Sector68 | par=Mask ATTR{Angle=5.340707511102648}
+      d03 [Frame] Sector69 | par=Mask ATTR{Angle=5.419247327442394}
+      d03 [Frame] Sector70 | par=Mask ATTR{Angle=5.497787143782138}
+      d03 [Frame] Sector71 | par=Mask ATTR{Angle=5.576326960121882}
+      d03 [Frame] Sector72 | par=Mask ATTR{Angle=5.654866776461628}
+      d03 [Frame] Sector73 | par=Mask ATTR{Angle=5.733406592801372}
+      d03 [Frame] Sector74 | par=Mask ATTR{Angle=5.811946409141117}
+      d03 [Frame] Sector75 | par=Mask ATTR{Angle=5.890486225480862}
+      d03 [Frame] Sector76 | par=Mask ATTR{Angle=5.969026041820607}
+      d03 [Frame] Sector77 | par=Mask ATTR{Angle=6.047565858160352}
+      d03 [Frame] Sector78 | par=Mask ATTR{Angle=6.126105674500097}
+      d03 [Frame] Sector79 | par=Mask ATTR{Angle=6.204645490839842}
+    d02 [Frame] Blackout | par=ScreenOverlay
+    d02 [TextButton] InputBlocker | par=ScreenOverlay
+    d02 [Frame] Loading | par=ScreenOverlay ATTR{UIProportionalGroup=true}
+      d03 [UISizeConstraint] SizeLimits | par=Loading
+      d03 [TextLabel] Eyebrow | par=Loading
+      d03 [TextLabel] Title | par=Loading
+      d03 [TextLabel] Status | par=Loading
+      d03 [Frame] Track | par=Loading
+        d04 [Frame] Fill | par=Track
+          d05 [UIGradient] Shine | par=Fill
+      d03 [UIAspectRatioConstraint] Proportions | par=Loading
+  d01 [ModuleScript] ScreenConfig | par=ScreenPresentation
+  d01 [ModuleScript] IrisController | par=ScreenPresentation
+  d01 [LocalScript] ScreenPresentationClient | par=ScreenPresentation
+  d01 [ModuleScript] LoadingProgress | par=ScreenPresentation
+  d01 [ModuleScript] ReadyHandshake | par=ScreenPresentation
+d00 [Folder] Soundtracks | par=ReplicatedFirst
+  d01 [Sound] JoiningGameMusic | par=Soundtracks ATTR{Enabled=true,Purpose=Theme: plays once on joining, starting during the loading screen. ReplicatedFirst makes it available early.}
+  d01 [ModuleScript] MusicConfig | par=Soundtracks
+  d01 [ModuleScript] MusicController | par=Soundtracks
+  d01 [LocalScript] MusicClient | par=Soundtracks
+d00 [Folder] AdminPresentation | par=ReplicatedFirst
+  d01 [ScreenGui] AdminUI | par=AdminPresentation ATTR{UIReferenceViewport=2130.000,933.000}
+    d02 [TextButton] OpenConsole | par=AdminUI
+      d03 [UICorner] Corner | par=OpenConsole
+      d03 [UIStroke] Border | par=OpenConsole
+    d02 [Frame] Console | par=AdminUI
+      d03 [UICorner] Corner | par=Console
+      d03 [TextLabel] Title | par=Console
+      d03 [TextButton] Close | par=Console
+        d04 [UICorner] Corner | par=Close
+        d04 [UIStroke] Border | par=Close
+      d03 [ScrollingFrame] Scroll | par=Console
+        d04 [TextLabel] Output | par=Scroll
+      d03 [TextBox] Command | par=Console
+        d04 [UICorner] Corner | par=Command
+        d04 [UIPadding] Padding | par=Command
+        d04 [UIStroke] Border | par=Command
+      d03 [TextButton] Send | par=Console
+        d04 [UICorner] Corner | par=Send
+        d04 [UIStroke] Border | par=Send
+      d03 [UIStroke] Border | par=Console
+      d03 [UIScale] Scale | par=Console
+      d03 [TextLabel] Eyebrow | par=Console
+      d03 [TextLabel] Footer | par=Console
+    d02 [CanvasGroup] Refresh | par=AdminUI
+      d03 [UIGradient] Shade | par=Refresh
+      d03 [Frame] Content | par=Refresh ATTR{UIProportionalGroup=true}
+        d04 [TextLabel] Eyebrow | par=Content
+        d04 [TextLabel] Heading | par=Content
+          d05 [UITextSizeConstraint] TextLimit | par=Heading
+        d04 [TextLabel] Body | par=Content
+          d05 [UITextSizeConstraint] TextLimit | par=Body
+        d04 [TextLabel] Status | par=Content
+        d04 [TextButton] Retry | par=Content
+          d05 [UICorner] Corner | par=Retry
+        d04 [TextButton] Dismiss | par=Content
+          d05 [UICorner] Corner | par=Dismiss
+    d02 [TextLabel] Notice | par=AdminUI
+      d03 [UITextSizeConstraint] TextLimit | par=Notice
+  d01 [ScreenGui] AdminTeleportUI | par=AdminPresentation ATTR{UIReferenceViewport=2130.000,933.000}
+    d02 [Frame] Background | par=AdminTeleportUI
+      d03 [Frame] Content | par=Background ATTR{UIProportionalGroup=true}
+        d04 [TextLabel] Heading | par=Content
+          d05 [UITextSizeConstraint] TextLimit | par=Heading
+        d04 [TextLabel] Body | par=Content
+          d05 [UITextSizeConstraint] TextLimit | par=Body
+  d01 [LocalScript] AdminClient | par=AdminPresentation
+  d01 [ModuleScript] AdminAutocomplete | par=AdminPresentation
+  d01 [ModuleScript] AnnouncementComposer | par=AdminPresentation
+d00 [ModuleScript] UIProportions | par=ReplicatedFirst
+d00 [LocalScript] ProportionalUIClient | par=ReplicatedFirst
+d00 [ModuleScript] FFlags | par=ReplicatedFirst
+d00 [LocalScript] GoatAnalyticsClient | par=ReplicatedFirst
+  d01 [ObjectValue] GoatSdk | par=GoatAnalyticsClient

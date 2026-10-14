@@ -1,0 +1,25 @@
+=== 06:50:50 ===
+esihz750 role=Lobby in=false run=Lobby ready=true afk=true tut=nil adm=AFK @(-0.8,31.0,-2.1)
+fyhtjgruruutrtrwr role=Catcher in=true run=Active ready=true afk=false tut=nil adm=Joined @(134.4,23.0,28.5)
+rayandelas_2 role=Catcher in=true run=Active ready=true afk=false tut=nil adm=Joined @(43.2,23.0,38.6)
+davi_lucca100715 role=Catcher in=true run=Active ready=true afk=false tut=nil adm=Joined @(130.2,23.0,32.2)
+Luquinhas_1234685 role=Catcher in=true run=Active ready=true afk=false tut=nil adm=Joined @(179.3,23.0,25.1)
+ryan635808 role=Catcher in=true run=Active ready=true afk=false tut=nil adm=Joined @(194.2,23.0,34.2)
+nutelinhadequarente role=Lobby in=false run=Lobby ready=true afk=true tut=nil adm=AFK @(-84.0,31.0,-16.0)
+kauaUZUMAKY3 role=Lobby in=false run=Lobby ready=true afk=true tut=nil adm=AFK @(-76.0,31.0,24.0)
+Yurialberto5649 role=Runner in=true run=Caught ready=true afk=false tut=nil adm=Joined @(121.0,20.5,34.2)
+mike_trixy8 role=Catcher in=true run=Active ready=true afk=false tut=nil adm=Joined @(93.7,23.0,3.8)
+LAW146523 role=Catcher in=true run=Active ready=true afk=false tut=nil adm=Joined @(122.0,23.0,0.0)
+Neymarl127 role=Runner in=true run=Active ready=true afk=false tut=nil adm=Joined @(181.9,23.0,-42.2)
+nojevimdh role=Runner in=true run=Active ready=true afk=false tut=nil adm=Joined @(177.6,23.0,-18.9)
+RIP_Gongw role=Catcher in=true run=Active ready=true afk=false tut=nil adm=Joined @(73.5,23.0,-54.4)
+belabarbotins role=Runner in=true run=Active ready=true afk=false tut=nil adm=Joined @(149.0,23.0,-7.1)
+Gabexz077 role=Runner in=true run=Active ready=true afk=false tut=nil adm=Joined @(36.0,23.0,-24.8)
+vffggghyy123 role=Runner in=true run=Active ready=true afk=false tut=nil adm=Joined @(36.8,23.0,-18.6)
+rhrhu_ter role=Runner in=true run=Active ready=true afk=false tut=nil adm=Joined @(166.0,23.0,17.0)
+maxvictor12345 role=Catcher in=true run=Active ready=true afk=false tut=nil adm=Joined @(146.1,23.0,8.2)
+ellieekkj role=Lobby in=false run=Lobby ready=true afk=false tut=nil adm=nil @(-17.4,31.0,0.3)
+657gxn role=Lobby in=false run=Lobby ready=true afk=false tut=nil adm=nil @(-61.6,31.3,-44.0)
+  [S] ActiveMapId=Map1 Announcement=RUN! Reach the opposite safe side! ChoiceMoment={"endsAt":1791330637.0298472,"choice":"Hero","name":"Luquinhas_1234685","version":155,"kind":"Chosen","userId":116667965 EndsAt=1791330673.733941 EscapeStreakState={"count":0,"eligible":true,"matchId":"3ca0b54f-4b07-4088-bd1e-82c0b682f28d","version":26,"event":"Reset","goal":3} FriendAvatarBotCount=0 FriendAvatarFailures=0 FriendAvatarPending=0 HeroUserId=0 LeadUserId=5405731917 LobbyBotCount=0 MapChanging=false MatchBuild=late-join-diagnostics-20260917 MatchHealth=Healthy MatchStep=GroupRun MatchStepDeadline=1791330677.733914 Notice=Yurialberto5649 was caught by ana! NoticeSound=false NoticeUntil=1791330650.533301 Phase=GroupRun PublicBotCatcherCount=0 PublicBotCount=0 PublicBotDifficulty=0.55 RunNumber=4 SelectedUserId=0 SpectateAvailable=true StartSide=B
+  [MAP] Workspace.Map1
+

@@ -1,0 +1,692 @@
+[06:51:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=alanpp7999 chasers=19 id=34d142ff-e68b-48de-8409-727a343c3c18:d83b7d6b-366a-491d-9a0a-f4776bfada35 userId=4240467083 issuedAt=1791330607.983784 displayName=bruh }
+[06:51:40] ReplicatedStorage.ChickenOrHero.Audio.Events
+    ChickenChosen
+[06:51:45] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=8897748117 direction=0.19396181404590607, 0, -0.9810090661048889 item=InflatableDecoy position=99.24649810791016, 22.997901916503906, 113.81298065185547 character=orflow9 kind=Use actorId=8897748117 requestId=A98E5DF9-C170-4743-91E6-A08413B16527 }
+[06:51:45] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=8897748117 item=InflatableDecoy position=99.24649810791016, 22.99790382385254, 113.81297302246094 kind=DecoyInflate actorId=-2000003 requestId=A98E5DF9-C170-4743-91E6-A08413B16527 }
+[06:51:45] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4802650534 direction=-0.09572699666023254, 0, -0.9954076409339905 item=OneHitShield position=104.72555541992188, 23, 94.1422119140625 character=Miguel1533504 kind=Use actorId=4802650534 requestId=ea441e65-89eb-4579-85ad-18ddbd09d69f }
+[06:51:46] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4243281790 direction=-0.6455904841423035, 0, 0.7636837959289551 item=BearTrap position=76.71699523925781, 22.297122955322266, 37.29787826538086 character=CalvoSenhor_1 kind=Use actorId=4243281790 requestId=5b4716ee-f96c-42a4-9db8-d2bf73e630de }
+[06:51:46] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4243281790 character=CalvoSenhor_1 item=BearTrap position=76.71699523925781, 22.297122955322266, 37.29787826538086 kind=BearTrapThrow actorId=4243281790 requestId=5b4716ee-f96c-42a4-9db8-d2bf73e630de }
+[06:51:48] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=9682849840 direction=-0.5232831239700317, 0, -0.8521589040756226 item=OneHitShield position=189.3106231689453, 23, -12.132816314697266 character=Tarzanlv99999 kind=Use actorId=9682849840 requestId=7acd7cc3-cefc-4bd5-8a5f-8a5e75450131 }
+[06:51:50] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=1701563179 direction=-0.7136492729187012, -0, -0.7005031704902649 item=BearTrap position=71.20954132080078, 21.955854415893555, 15.61060905456543 character=VINICIUS457L kind=Use actorId=1701563179 requestId=35FCD108-B234-4092-92FF-C3DCB9A9347A }
+[06:51:50] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=1701563179 character=VINICIUS457L item=BearTrap position=71.20954132080078, 21.955854415893555, 15.61060905456543 kind=BearTrapThrow actorId=1701563179 requestId=35FCD108-B234-4092-92FF-C3DCB9A9347A }
+[06:51:52] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { kind=DecoyPop actorId=-2000003 position=134.71578979492188, 22.9999942779541, -65.58135223388672 }
+[06:51:55] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=7803917296 name=Miguelzin catcher=11654451556 }
+[06:51:55] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=7803917296 catcher=11654451556 position=181.88427734375, 23, -105.34375 dive=false skin=BaseDagger }
+[06:51:56] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=10634472250 direction=-0.3354451358318329, 0, -0.9420597553253174 item=OneHitShield position=199.5830078125, 23, -96.11865234375 character=oiiksks6 kind=Use actorId=10634472250 requestId=c67eb447-4340-4723-90f1-2e23f028ac57 }
+[06:52:03] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true loaded=true sessionOnly=false equipped=SecretPencil gems=215 equippedGear=RescueKit gear={ Adrenaline=7 RescueKit=12 } equippedAbility= xpPerCoin=5 abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=JmanRuck chasers=18 id=8538ef1f-f691-4137-be9a-49fd229ef832:c61821cc-338c-4214-a978-a556f6c5fe06 userId=892675907 issuedAt=1791330638.960349 displayName=VazoBlox }
+[06:52:06] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=3692853101 direction=0.7368166446685791, 0, 0.6760926246643066 item=OneHitShield position=62.416259765625, 23, -114.475830078125 character=Jhonykingseven kind=Use actorId=3692853101 requestId=f050c4b4-8513-4b07-9991-e7b4eefcf040 }
+[06:52:26] ReplicatedStorage.ChickenOrHero.Audio.Events
+    HeroChosen
+[06:52:27] ReplicatedStorage.ChickenOrHero.Game.PlayerPreferences
+    AFKResult | true | false | You can join the next match.
+[06:52:27] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:27] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true loaded=true sessionOnly=false equipped=SecretPencil gems=215 equippedGear=RescueKit gear={ Adrenaline=7 RescueKit=12 } equippedAbility= xpPerCoin=5 abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:27] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true loaded=true sessionOnly=false equipped=SecretPencil gems=215 equippedGear=RescueKit gear={ Adrenaline=7 RescueKit=12 } equippedAbility= xpPerCoin=5 abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:27] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8344 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=21 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[06:52:27] ReplicatedStorage.ChickenOrHero.Crates.CrateEvent
+    State | { pending=true studioPreview=false crate=Ember loaded=true gems=215 allowed=true reason= }
+[06:52:28] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:28] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:29] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:29] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true loaded=true sessionOnly=false equipped=SecretPencil gems=215 equippedGear=RescueKit gear={ Adrenaline=7 RescueKit=12 } equippedAbility= xpPerCoin=5 abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:29] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=1 }
+[06:52:29] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:29] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=1 }
+[06:52:30] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:30] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:31] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:31] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:32] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:32] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:33] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:33] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4243281790 direction=0.05021674185991287, -0, -0.9987383484840393 item=BearTrap position=137.544189453125, 22.2633056640625, -10.224746704101562 character=CalvoSenhor_1 kind=Use actorId=4243281790 requestId=6788577a-edb3-48e7-8254-87174b3ffb3d }
+[06:52:33] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4243281790 character=CalvoSenhor_1 item=BearTrap position=137.544189453125, 22.2633056640625, -10.224746704101562 kind=BearTrapThrow actorId=4243281790 requestId=6788577a-edb3-48e7-8254-87174b3ffb3d }
+[06:52:33] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:34] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:34] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true loaded=true sessionOnly=false equipped=SecretPencil gems=215 equippedGear=Adrenaline gear={ Adrenaline=7 RescueKit=12 } equippedAbility= xpPerCoin=5 abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:34] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=1701563179 direction=-0.6493896245956421, 0, 0.760455846786499 item=BearTrap position=112.24534606933594, 22.039560317993164, 22.386890411376953 character=VINICIUS457L kind=Use actorId=1701563179 requestId=DDF3D501-0CDA-477C-983E-B6381CF7FFE9 }
+[06:52:34] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=1701563179 character=VINICIUS457L item=BearTrap position=112.24534606933594, 22.039560317993164, 22.386890411376953 kind=BearTrapThrow actorId=1701563179 requestId=DDF3D501-0CDA-477C-983E-B6381CF7FFE9 }
+[06:52:34] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:35] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Ribkom chasers=19 id=877e8109-6018-4af7-96df-facb2b56b791:ade2de28-b094-40e6-a775-9c910f7d2457 userId=3105498142 issuedAt=1791330672.920527 displayName=Ribkom }
+[06:52:35] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:36] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:36] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:37] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:37] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:38] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:38] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:39] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:39] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true loaded=true sessionOnly=false equipped=SecretPencil gems=215 equippedGear=RescueKit gear={ Adrenaline=7 RescueKit=12 } equippedAbility= xpPerCoin=5 abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:39] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:40] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:40] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:41] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:41] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:41] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4802650534 direction=-0.07547669857740402, -0, 0.9971475601196289 item=OneHitShield position=124.10794067382812, 23, -90.65277099609375 character=Miguel1533504 kind=Use actorId=4802650534 requestId=771e8679-cb16-482f-a02f-bdcae309eb54 }
+[06:52:42] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:42] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:42] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=8897748117 direction=0.08426880091428757, 0, 0.9964431524276733 item=InflatableDecoy position=66.50779724121094, 23, -110.54704284667969 character=orflow9 kind=Use actorId=8897748117 requestId=66642E66-B589-4FDC-8E5E-EEBDC315715C }
+[06:52:42] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=8897748117 item=InflatableDecoy position=66.50779724121094, 23, -110.54703521728516 kind=DecoyInflate actorId=-2000004 requestId=66642E66-B589-4FDC-8E5E-EEBDC315715C }
+[06:52:43] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:43] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=9682849840 direction=-0.07777092605829239, -0, 0.9969712495803833 item=OneHitShield position=143.52444458007812, 23, -72.67727661132812 character=Tarzanlv99999 kind=Use actorId=9682849840 requestId=443d6239-34a4-4ad5-b774-b3299ffbbf1e }
+[06:52:43] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:43] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=3753147812 name=deku catcher=4243281790 }
+[06:52:43] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=3753147812 catcher=4243281790 position=114.537841796875, 23, -20.676025390625 dive=true skin=BaseDagger }
+[06:52:44] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:44] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=1 }
+[06:52:44] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:44] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=1 }
+[06:52:45] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:45] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:46] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:46] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=3753147812 name=deku catcher=4243281790 }
+[06:52:46] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=3753147812 catcher=4243281790 position=114.242919921875, 23, -15.984375 dive=false skin=BaseDagger }
+[06:52:46] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:47] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:47] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:48] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:48] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:49] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:49] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:49] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { kind=DecoyPop actorId=-2000004 position=81.91746520996094, 22.9999942779541, 71.66554260253906 }
+[06:52:50] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:50] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:51] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:51] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:52] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:52] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:53] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:53] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=RescueKit gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Saving your loadout… abilities={ BearTrap=true OneHitShield=true } pending=true gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:54] ReplicatedStorage.ChickenOrHero.Weapons.ArmoryEvent
+    State | { starterProgressPending=false owned={ BalloonDagger=true SecretPencil=true BaseDagger=true } starterPurchased=false coins=6450 starterOfferEndsAt=1791276797 emoteSlots={ 1=IdleSit 2= 3= 4= 5= 6= } equippedAbilities={ Catcher=BearTrap Runner=OneHitShield } starterPresented=true coinBoostEndsAt=1791331250 likeRewardClaimed=true equipped=SecretPencil loaded=true sessionOnly=false equippedGear=Adrenaline gems=215 gear={ Adrenaline=7 RescueKit=12 } xpPerCoin=5 equippedAbility= message=Gear loadout updated. abilities={ BearTrap=true OneHitShield=true } pending=false gemBoostEndsAt=1791303020 emotes={ IdleSit=true } starterFirstMatch=true bonkerBundlePurchased=false }
+[06:52:55] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=4843673582 name=REY_bluezinho catcher=1701563179 }
+[06:52:55] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=4843673582 catcher=1701563179 position=133.73486328125, 23, 100.67626953125 dive=false skin=BaseDagger }
+[06:52:57] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4843673582 character=REY_Bllue item=RescueKit position=127.54475402832031, 20.497817993164062, 101.46809387207031 kind=Rescue actorId=4843673582 requestId=382ab2ee-249b-46fb-bf98-aefb9de34708 }
+[06:52:57] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4843673582 direction=0.019557006657123566, -0, -0.9998087286949158 item=OneHitShield position=127.61357116699219, 22.976411819458008, 101.66510772705078 character=REY_Bllue kind=Use actorId=4843673582 requestId=815505e0-e6bb-4fb9-bdd1-fa61988d9d28 }
+[06:52:59] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=1 }
+[06:52:59] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=1 }
+[06:53:01] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=5689651041 name=O_OJAPONES catcher=4243281790 }
+[06:53:01] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=5689651041 catcher=4243281790 position=48.324462890625, 23, 100.63818359375 dive=true skin=BaseDagger }
+[06:53:03] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=5689651041 character=NINJA_16821 item=RescueKit position=45.41259765625, 20.570859909057617, 102.58203887939453 kind=Rescue actorId=5689651041 requestId=79f0522d-0a2c-495c-ac5f-c0c614116813 }
+[06:53:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=AlrSoZ2 chasers=19 id=9d4c5784-d5df-40ae-b3c7-6a7ffece37df:714ea775-b50e-4f94-8b2f-a217573affe1 userId=7901517745 issuedAt=1791330694.835036 displayName=einstein }
+[06:53:14] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=1 }
+[06:53:15] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 result={ id=2xGems angle=-6 message=2× GEMS FOR 25 MINUTES! } credits=0 }
+[06:53:15] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:53:20] ReplicatedStorage.ChickenOrHero.Audio.Events
+    HeroChosen
+[06:53:29] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=2394612219 name=Azeite catcher=4243281790 }
+[06:53:29] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=2394612219 catcher=4243281790 position=99.7177734375, 23, 10.67431640625 dive=false skin=BaseDagger }
+[06:53:29] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:53:30] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=No spins left yet. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:53:34] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4802650534 direction=-0.2388859987258911, -0, -0.9710476398468018 item=OneHitShield position=105.4880599975586, 23, 50.4835090637207 character=Miguel1533504 kind=Use actorId=4802650534 requestId=6512679f-e8e3-4536-b44f-cbc48897ddd2 }
+[06:53:34] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { kind=ShieldPop character=Miguel1533504 position=101.8611068725586, 23, 31.705135345458984 }
+[06:53:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=fmkfekfefkfe chasers=19 id=d1f95149-b797-4def-85f5-62409069a713:f9630b43-c1a3-4a7e-9b8b-bfc98c11d218 userId=3306836468 issuedAt=1791330741.916336 displayName=xense }
+[06:53:35] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4243281790 direction=0.24149176478385925, -0, 0.9704028367996216 item=BearTrap position=168.9912872314453, 22.129867553710938, 34.71816635131836 character=CalvoSenhor_1 kind=Use actorId=4243281790 requestId=7f537675-1535-4c02-b134-2c9e2b6a8ee4 }
+[06:53:35] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4243281790 character=CalvoSenhor_1 item=BearTrap position=168.9912872314453, 22.129867553710938, 34.71816635131836 kind=BearTrapThrow actorId=4243281790 requestId=7f537675-1535-4c02-b134-2c9e2b6a8ee4 }
+[06:53:36] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=1701563179 direction=-0.46155962347984314, 0, -0.8871092200279236 item=BearTrap position=95.01457977294922, 21.955625534057617, -0.2523839473724365 character=VINICIUS457L kind=Use actorId=1701563179 requestId=6C9FCD12-879A-47EA-A6DB-6EEAB1D9CCFA }
+[06:53:36] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=1701563179 character=VINICIUS457L item=BearTrap position=95.01457977294922, 21.955625534057617, -0.2523839473724365 kind=BearTrapThrow actorId=1701563179 requestId=6C9FCD12-879A-47EA-A6DB-6EEAB1D9CCFA }
+[06:53:37] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=11592928129 direction=-0.3093087673187256, -0, -0.9509616494178772 item=OneHitShield position=199.98020935058594, 23, -6.854156017303467 character=linspcd67 kind=Use actorId=11592928129 requestId=7140182a-bebc-4fef-8149-48e689ba284e }
+[06:53:38] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=10634472250 direction=0.24866065382957458, 0, -0.9685907363891602 item=OneHitShield position=33.04245376586914, 22.999013900756836, -6.146064758300781 character=oiiksks6 kind=Use actorId=10634472250 requestId=92e7ecc7-d87a-4cb5-a0b9-28e2028a9187 }
+[06:53:39] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { kind=ShieldPop character=oiiksks6 position=33.17862319946289, 23, -31.085826873779297 }
+[06:53:42] ReplicatedStorage.ChickenOrHero.Admin.EventHostRemote
+    Announcement | { message=ok i'll leave you all with one final free spin lol authorId=1544858 version=1 authorName=albie scope=Global kind=Message issuedAt=1791330821.520214 id=d298b9b3-c6d4-464d-a997-0beb5d7ae402 }
+[06:53:44] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:53:44] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=9682849840 direction=0.5947748422622681, -0, -0.8038923144340515 item=OneHitShield position=124.316650390625, 23.000001907348633, 84.88783264160156 character=Tarzanlv99999 kind=Use actorId=9682849840 requestId=2c9a5c2c-254d-48a7-beb2-78f789aa38be }
+[06:53:44] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=3692853101 direction=0.8252396583557129, -0, -0.5647827386856079 item=OneHitShield position=131.94656372070312, 23, -51.70948028564453 character=Jhonykingseven kind=Use actorId=3692853101 requestId=7186a995-fe35-4836-b356-f877e347a635 }
+[06:53:44] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:53:45] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { kind=ShieldPop character=Jhonykingseven position=145.7167510986328, 23, -63.91020202636719 }
+[06:53:47] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=2542302072 name=Mnzimm catcher=4243281790 }
+[06:53:47] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=2542302072 catcher=4243281790 position=160.28271484375, 23, -95.56396484375 dive=false skin=BaseDagger }
+[06:53:47] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=4843673582 name=REY_bluezinho catcher=1701563179 }
+[06:53:47] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=4843673582 catcher=1701563179 position=57.64697265625, 23, -94.22412109375 dive=true skin=BaseDagger }
+[06:53:49] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4843673582 character=REY_Bllue item=RescueKit position=54.17811584472656, 20.498266220092773, -88.9483871459961 kind=Rescue actorId=4843673582 requestId=b10f2370-4651-4252-93d4-0cf693f98434 }
+[06:53:49] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4843673582 direction=0.9229122996330261, -0, -0.385010302066803 item=OneHitShield position=54.18981170654297, 22.925853729248047, -88.9892807006836 character=REY_Bllue kind=Use actorId=4843673582 requestId=f3a7e97f-0438-490c-93d6-dd9d60af6084 }
+[06:53:49] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { kind=ShieldPop character=REY_Bllue position=54.9072265625, 23, -90.798828125 }
+[06:53:57] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8344 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=21 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[06:53:57] ReplicatedStorage.ChickenOrHero.Crates.CrateEvent
+    State | { pending=false studioPreview=false crate=Ember loaded=true gems=215 allowed=true reason= }
+[06:53:59] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:54:00] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=No spins left yet. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:54:04] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=An admin gave everyone a free spin! regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=1 }
+[06:54:04] ReplicatedStorage.ChickenOrHero.Audio.Events
+    HeroChosen
+[06:54:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=DEAD_vm chasers=18 id=d2fd04bc-7ceb-4906-a481-986c2e59d959:a58f44e2-6647-4eae-90ef-548bb3419fbb userId=8838317429 issuedAt=1791330757.689908 displayName=Husk }
+[06:54:06] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=8897748117 direction=-0.03412434086203575, -0, 0.9994176626205444 item=InflatableDecoy position=127.21095275878906, 23.00092124938965, -114.67894744873047 character=orflow9 kind=Use actorId=8897748117 requestId=BF564784-FD9C-4A93-9801-50486BF48139 }
+[06:54:06] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=8897748117 item=InflatableDecoy position=127.21092224121094, 23.000919342041016, -114.67893981933594 kind=DecoyInflate actorId=-2000005 requestId=BF564784-FD9C-4A93-9801-50486BF48139 }
+[06:54:10] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { kind=DecoyPop actorId=-2000005 position=123.6177978515625, 22.9999942779541, -9.445960998535156 }
+[06:54:12] ReplicatedStorage.ChickenOrHero.Admin.EventHostRemote
+    Announcement | { message=next event i'll be able to give crates 👀 authorId=1544858 version=1 authorName=albie scope=Global kind=Message issuedAt=1791330851.852206 id=b7388606-e187-4b0b-a730-006e4178d223 }
+[06:54:13] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=8897748117 name=Paranaense catcher=1701563179 }
+[06:54:13] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=8897748117 catcher=1701563179 position=159.47119140625, 23, -22.60009765625 dive=false skin=BaseDagger }
+[06:54:14] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=1 }
+[06:54:15] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 result={ id=2xCoins angle=-69 message=2× COINS FOR 15 MINUTES! } credits=0 }
+[06:54:15] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:54:18] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=4802650534 name=Migueltdr catcher=2394612219 }
+[06:54:18] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=4802650534 catcher=2394612219 position=99.3515625, 23, -58.10595703125 dive=false skin=BaseDagger }
+[06:54:25] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=5689651041 name=O_OJAPONES catcher=1701563179 }
+[06:54:25] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=5689651041 catcher=1701563179 position=114.942626953125, 23, 52.5634765625 dive=false skin=BaseDagger }
+[06:54:26] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=5689651041 character=NINJA_16821 item=RescueKit position=115.52861022949219, 20.57002830505371, 54.62859344482422 kind=Rescue actorId=5689651041 requestId=2bf87807-33ec-42dc-a47e-2ac7088547e6 }
+[06:54:27] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=5689651041 name=O_OJAPONES catcher=1701563179 }
+[06:54:27] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=5689651041 catcher=1701563179 position=106.48193359375, 23, 71.2099609375 dive=false skin=BaseDagger }
+[06:54:27] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4802650534 direction=0.19997741281986237, -0, 0.9798005819320679 item=OneHitShield position=80.46597290039062, 23, -32.979331970214844 character=Miguel1533504 kind=Use actorId=4802650534 requestId=e0e58051-dab3-4726-8526-eb9a2a46a52a }
+[06:54:28] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=4843673582 name=REY_bluezinho catcher=2394612219 }
+[06:54:28] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=4843673582 catcher=2394612219 position=46.44091796875, 23, 113.53515625 dive=false skin=BaseDagger }
+[06:54:29] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:54:29] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=10634472250 direction=-0.9421882629394531, 0, 0.33508390188217163 item=OneHitShield position=199.87649536132812, 23.000001907348633, 106.47660827636719 character=oiiksks6 kind=Use actorId=10634472250 requestId=881a268f-8753-4ae6-93e8-d837d939604d }
+[06:54:30] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=No spins left yet. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:54:30] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4843673582 character=REY_Bllue item=RescueKit position=51.84111404418945, 20.49677085876465, 118.73058319091797 kind=Rescue actorId=4843673582 requestId=b7cf399d-26ec-4a60-8903-13b56ca33c40 }
+[06:54:31] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=9682849840 direction=-0.5085000395774841, 0, 0.8610619306564331 item=OneHitShield position=129.65383911132812, 23, 76.18936157226562 character=Tarzanlv99999 kind=Use actorId=9682849840 requestId=14974767-8a8c-4fe1-ae86-bbabdd547f62 }
+[06:54:32] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { kind=ShieldPop character=Tarzanlv99999 position=122.5961685180664, 23, 83.60356140136719 }
+[06:54:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Rip_Junior2713 chasers=18 id=0d6c32dd-e457-40c9-9775-bd641866102e:ed96bcad-f3a6-464d-bded-d71eb407c2fa userId=4374280087 issuedAt=1791330787.008426 displayName=Patexjunior }
+[06:54:44] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:54:44] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:54:51] ReplicatedStorage.ChickenOrHero.Audio.Events
+    ChickenChosen
+[06:54:55] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=8897748117 direction=0.2561379075050354, -0, 0.966640293598175 item=BearTrap position=105.60980224609375, 22.12481117248535, 8.733382225036621 character=orflow9 kind=Use actorId=8897748117 requestId=FE2DC627-2EA6-4C92-A793-8411FE0959F4 }
+[06:54:55] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=8897748117 character=orflow9 item=BearTrap position=105.60980224609375, 22.12481117248535, 8.733382225036621 kind=BearTrapThrow actorId=8897748117 requestId=FE2DC627-2EA6-4C92-A793-8411FE0959F4 }
+[06:54:57] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=3404445545 character=SAD_Taa item=Adrenaline position=67.70691680908203, 23, 80.28181457519531 kind=Adrenaline actorId=3404445545 requestId=b4da946e-c137-4da2-804d-8ad50f4a7fc4 }
+[06:54:57] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4243281790 direction=-0.30273711681365967, -0, 0.9530740976333618 item=BearTrap position=87.09075164794922, 22.301565170288086, 40.969478607177734 character=CalvoSenhor_1 kind=Use actorId=4243281790 requestId=f61517a5-513c-4bc4-be10-c4ebdd490c00 }
+[06:54:57] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4243281790 character=CalvoSenhor_1 item=BearTrap position=87.09075164794922, 22.301565170288086, 40.969478607177734 kind=BearTrapThrow actorId=4243281790 requestId=f61517a5-513c-4bc4-be10-c4ebdd490c00 }
+[06:54:57] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=4802650534 name=Migueltdr catcher=2394612219 }
+[06:54:57] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=4802650534 catcher=2394612219 position=138.259765625, 23, 53.48583984375 dive=false skin=BaseDagger }
+[06:54:59] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=10634472250 name=Lia catcher=2394612219 }
+[06:54:59] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=10634472250 catcher=2394612219 position=180.97607421875, 23, 79.06396484375 dive=false skin=BaseDagger }
+[06:54:59] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:54:59] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:55:01] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=11592928129 direction=0.46699413657188416, -0, -0.8842604160308838 item=OneHitShield position=158.73712158203125, 23, 38.295806884765625 character=linspcd67 kind=Use actorId=11592928129 requestId=daf10b64-bb24-4356-a152-d9906e9194c3 }
+[06:55:02] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=8893830864 name=missdeath catcher=8897748117 }
+[06:55:02] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=8893830864 catcher=8897748117 position=186.6572265625, 23, -18.18798828125 dive=true skin=BaseDagger }
+[06:55:04] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=8893830864 name=missdeath catcher=8897748117 }
+[06:55:04] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=8893830864 catcher=8897748117 position=186.2646484375, 22.98779296875, -21.84765625 dive=false skin=BaseDagger }
+[06:55:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=BALTR472 chasers=20 id=adfce24b-da54-401e-95d2-282a5ee2c03c:3fbdf3ad-0840-4758-95f1-ac84aa89a212 userId=5790827513 issuedAt=1791330824.319279 displayName=IKERCASILAS }
+[06:55:06] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=9682849840 name=Arthurzx catcher=1701563179 }
+[06:55:06] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=9682849840 catcher=1701563179 position=136.81103515625, 23, -79.0634765625 dive=false skin=BaseDagger }
+[06:55:14] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:55:14] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:55:18] ReplicatedStorage.ChickenOrHero.Audio.Events
+    ChickenChosen
+[06:55:23] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4802650534 direction=-0.10259584337472916, 0, 0.9947232007980347 item=OneHitShield position=109.99787139892578, 23, -92.64173889160156 character=Miguel1533504 kind=Use actorId=4802650534 requestId=6d1317d4-ef6b-4b43-9dd0-611850067bf7 }
+[06:55:24] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=4843673582 direction=-0.2932192087173462, 0, 0.9560452699661255 item=OneHitShield position=70.25081634521484, 23, -69.90999603271484 character=REY_Bllue kind=Use actorId=4843673582 requestId=9d7d4238-e74a-48f4-b766-167b59491870 }
+[06:55:24] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=3404445545 character=SAD_Taa item=Adrenaline position=49.51395034790039, 23, -72.87471771240234 kind=Adrenaline actorId=3404445545 requestId=c57e51e7-2700-4a8f-844d-d5ff86c23840 }
+[06:55:24] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { kind=ShieldPop character=REY_Bllue position=61.66228103637695, 23, -38.16978454589844 }
+[06:55:27] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8344 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=21 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[06:55:28] ReplicatedStorage.ChickenOrHero.Crates.CrateEvent
+    State | { pending=true studioPreview=false crate=Ember loaded=true gems=215 allowed=true reason= }
+[06:55:29] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:55:30] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:55:32] ReplicatedStorage.ChickenOrHero.Admin.EventHostRemote
+    Announcement | { message=we'll see you guys next time, thank you for playing!! authorId=1544858 version=1 authorName=albie scope=Global kind=Message issuedAt=1791330931.382197 id=94eca10d-e535-46c0-a62d-b76bdb6d1b73 }
+[06:55:34] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=11592928129 name=linspcd67 catcher=1701563179 }
+[06:55:34] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=11592928129 catcher=1701563179 position=161.19921875, 23, 64.11279296875 dive=false skin=BaseDagger }
+[06:55:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Curesd_King chasers=19 id=40571c9d-4c55-40c8-b540-840753ce4fa8:75500f2e-8678-4941-a65a-cf9d4c209cf4 userId=6044643498 issuedAt=1791330847.612445 displayName=Curesd_King }
+[06:55:42] ReplicatedStorage.ChickenOrHero.Audio.Events
+    ChickenChosen
+[06:55:44] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:55:45] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=No spins left yet. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:55:48] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=3404445545 character=SAD_Taa item=Adrenaline position=64.67457580566406, 23, 91.85872650146484 kind=Adrenaline actorId=3404445545 requestId=897bbd7f-9262-4f71-99a3-b86f69978354 }
+[06:55:48] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=10634472250 direction=-0.07953482866287231, 0, 0.9968320727348328 item=BearTrap position=135.98521423339844, 22.245227813720703, 56.58892822265625 character=oiiksks6 kind=Use actorId=10634472250 requestId=913ec0ab-5745-4efd-84f7-4e5e3d5a3540 }
+[06:55:48] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=10634472250 character=oiiksks6 item=BearTrap position=135.98521423339844, 22.245227813720703, 56.58892822265625 kind=BearTrapThrow actorId=10634472250 requestId=913ec0ab-5745-4efd-84f7-4e5e3d5a3540 }
+[06:55:48] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=4802650534 name=Migueltdr catcher=10634472250 }
+[06:55:48] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=4802650534 catcher=10634472250 position=144.54345703125, 23, 62.7275390625 dive=false skin=BaseDagger }
+[06:55:51] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=3404445545 name=Miguelito catcher=2542302072 }
+[06:55:51] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=3404445545 catcher=2542302072 position=98.600830078125, 23, 47.908447265625 dive=true skin=BaseDagger }
+[06:55:52] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=3692853101 name=Jhonykingseven catcher=2542302072 }
+[06:55:52] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=3692853101 catcher=2542302072 position=87.70751953125, 23, 47.65869140625 dive=true skin=BaseDagger }
+[06:55:59] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:56:00] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=No spins left yet. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:56:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=booga_bubba chasers=18 id=b74ad251-1e53-4f18-ad1e-dbe9ba176b6e:7d3ed314-aabd-4e8a-8775-b49793458c43 userId=1867020932 issuedAt=1791330874.929897 displayName=Cr4zy }
+[06:56:14] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=4843673582 name=REY_bluezinho catcher=9682849840 }
+[06:56:14] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=4843673582 catcher=9682849840 position=89.7451171875, 23, -22.884521484375 dive=true skin=BalloonDagger }
+[06:56:14] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:56:15] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=No spins left yet. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:56:29] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:56:29] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:56:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=NemoTheRock chasers=20 id=f1a7864d-b4f5-4c23-9182-462b4a129bdc:49161553-b7c9-452b-8f92-4461048d2cbe userId=498892157 issuedAt=1791330908.888699 displayName=NemoTheRock }
+[06:56:44] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[06:56:44] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[06:56:49] ReplicatedStorage.ChickenOrHero.Emotes.EmoteEvent
+    Playing | IdleSit
+[06:56:51] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Close | 475988d0-a1a9-458a-86b4-23b9a144ece0 | Match
+[06:56:53] ReplicatedStorage.ChickenOrHero.Audio.Events
+    SpawnRefresh
+[06:56:53] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Reveal | 475988d0-a1a9-458a-86b4-23b9a144ece0 | 90, 23.04999542236328, -122 | 1
+[06:57:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Tdgcg_49 chasers=22 id=259035f5-35d0-4d90-9646-bcd92dcb0e10:ecf8d786-f148-4fcc-b74f-a7505e8e823c userId=11202095319 issuedAt=1791330947.859714 displayName=Tdgcg_49 }
+[06:57:10] ReplicatedStorage.ChickenOrHero.Emotes.EmoteEvent
+    Playing | IdleSit
+[06:57:13] ReplicatedStorage.ChickenOrHero.Audio.Events
+    ChickenChosen
+[06:57:14] ReplicatedStorage.ChickenOrHero.Audio.Events
+    SpawnRefresh
+[06:57:15] ReplicatedStorage.ChickenOrHero.Emotes.EmoteEvent
+    State | { owned={ IdleSit=true } cursorHintSeen=true loaded=true message=The animation could not load. Please try another emote. }
+[06:57:16] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=da2f313c-7028-4212-9d62-a677bed49912 points={ 1={ id=1 amount=1 position=108.15687561035156, 22.79999542236328, 40.702274322509766 } 2={ id=2 amount=1 position=119.58097076416016, 22.79999542236328, 81.61083984375 } 3={ id=3 amount=1 position=93.0050048828125, 22.79999542236328, -16.483585357666016 } 4={ id=4 amount=6 position=191.6776885986328, 22.79999542236328, -15.394420623779297 } } }
+[06:57:17] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=da2f313c-7028-4212-9d62-a677bed49912 points={ 1={ id=1 amount=1 position=108.15687561035156, 22.79999542236328, 40.702274322509766 } 2={ id=2 amount=1 position=119.58097076416016, 22.79999542236328, 81.61083984375 } 3={ id=3 amount=1 position=93.0050048828125, 22.79999542236328, -16.483585357666016 } 4={ id=4 amount=6 position=191.6776885986328, 22.79999542236328, -15.394420623779297 } } }
+[06:57:20] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Collected | { id=3 token=da2f313c-7028-4212-9d62-a677bed49912 amount=1 }
+[06:57:23] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Collected | { id=1 token=da2f313c-7028-4212-9d62-a677bed49912 amount=1 }
+[06:57:24] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Collected | { id=2 token=da2f313c-7028-4212-9d62-a677bed49912 amount=1 }
+[06:57:25] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=5114526235 name=Young catcher=2542302072 }
+[06:57:25] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=5114526235 catcher=2542302072 position=52.2708740234375, 23, -40.1326904296875 dive=true skin=BaseDagger }
+[06:57:26] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Clear | da2f313c-7028-4212-9d62-a677bed49912
+[06:57:26] ReplicatedStorage.ChickenOrHero.Audio.Events
+    ReachedSafety
+[06:57:26] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8355 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=21 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[06:57:27] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=5114526235 name=Young catcher=2542302072 }
+[06:57:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=tammystorey chasers=18 id=f703cbe6-c187-4505-8546-66eeb574881c:48799e60-5058-4054-bb99-7aa3ed206b48 userId=90466496 issuedAt=1791330969.044871 displayName=MVPDrakeMaye }
+[06:57:58] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=51696a8e-24f4-41c6-86ab-3ea9e3c74a83 points={ } }
+[06:57:58] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=51696a8e-24f4-41c6-86ab-3ea9e3c74a83 points={ } }
+[06:58:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Uptheunited1235 chasers=18 id=0a1c419e-194d-4bf1-ab28-74dd3de483b1:650703c2-5d3e-41f2-879c-9c6aa00a024e userId=11770608765 issuedAt=1791330996.431145 displayName=Uptheunited1235 }
+[06:58:06] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Clear | 51696a8e-24f4-41c6-86ab-3ea9e3c74a83
+[06:58:06] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8368 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=21 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[06:58:36] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Ijp201510kay chasers=18 id=3c7eec40-7a01-4e1e-8bcc-50a21c0b735c:b37e440c-2e22-434e-ac4d-0f4a3803d9ca userId=2274103545 issuedAt=1791331038.341205 displayName=Isaac }
+[06:58:55] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=6e5e7733-6e28-481c-bf3f-d17cc859216d points={ 1={ id=1 amount=1 position=98.36964416503906, 22.79999542236328, -37.66970443725586 } 2={ id=2 amount=3 position=112.48560333251953, 22.79999542236328, 19.60027503967285 } 3={ id=3 amount=1 position=92.23918151855469, 22.79999542236328, 40.98296356201172 } 4={ id=4 amount=1 position=59.12662887573242, 22.79999542236328, 73.3553466796875 } } }
+[06:58:56] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=6e5e7733-6e28-481c-bf3f-d17cc859216d points={ 1={ id=1 amount=1 position=98.36964416503906, 22.79999542236328, -37.66970443725586 } 2={ id=2 amount=3 position=112.48560333251953, 22.79999542236328, 19.60027503967285 } 3={ id=3 amount=1 position=92.23918151855469, 22.79999542236328, 40.98296356201172 } 4={ id=4 amount=1 position=59.12662887573242, 22.79999542236328, 73.3553466796875 } } }
+[06:59:04] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Clear | 6e5e7733-6e28-481c-bf3f-d17cc859216d
+[06:59:04] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8380 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=21 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[06:59:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Padauan223 chasers=20 id=b1d578a3-73eb-4500-b259-e0182b561d3d:6d0055cb-2f05-40cf-a44d-026c39b82440 userId=5002659092 issuedAt=1791331090.794305 displayName=R88X_XxOrionxX }
+[06:59:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=bolsanarium chasers=18 id=12bf82ec-7721-4133-83ac-4e8d03f0d858:8c12e0fe-6452-4aa0-bf40-dea8c9cc48ce userId=2288627709 issuedAt=1791331118.650954 displayName=caramelo }
+[06:59:49] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=55ed03b7-05f2-49a6-bb29-e81ca087cb53 points={ 1={ id=1 amount=1 position=54.130340576171875, 22.79999542236328, -34.15708923339844 } 2={ id=2 amount=1 position=132.29290771484375, 22.79999542236328, -46.014007568359375 } 3={ id=3 amount=6 position=191.5784912109375, 22.79999542236328, 46.34073257446289 } 4={ id=4 amount=1 position=127.33564758300781, 22.79999542236328, 85.75099182128906 } 5={ id=5 amount=1 position=190.45556640625, 22.79999542236328, -100.65511322021484 } 6={ id=6 amount=1 position=176.479736328125, 22.79999542236328, 81.6693344116211 } } }
+[06:59:50] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=55ed03b7-05f2-49a6-bb29-e81ca087cb53 points={ 1={ id=1 amount=1 position=54.130340576171875, 22.79999542236328, -34.15708923339844 } 2={ id=2 amount=1 position=132.29290771484375, 22.79999542236328, -46.014007568359375 } 3={ id=3 amount=6 position=191.5784912109375, 22.79999542236328, 46.34073257446289 } 4={ id=4 amount=1 position=127.33564758300781, 22.79999542236328, 85.75099182128906 } 5={ id=5 amount=1 position=190.45556640625, 22.79999542236328, -100.65511322021484 } 6={ id=6 amount=1 position=176.479736328125, 22.79999542236328, 81.6693344116211 } } }
+[06:59:59] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Clear | 55ed03b7-05f2-49a6-bb29-e81ca087cb53
+[06:59:59] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8395 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=21 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[07:00:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Sheloeray2 chasers=18 id=cbaed966-192d-45a6-9062-ca7f493a1e6f:80d05e0b-c329-47ea-9343-7b0a17165e72 userId=4498273162 issuedAt=1791331130.634115 displayName=MostwantedRay }
+[07:00:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=nose21150 chasers=18 id=cfe79b8d-f749-4244-88ca-a9d4b55f0c80:ddbb205a-4bcf-41f9-8b4e-eecdb491edec userId=5825001199 issuedAt=1791331145.494925 displayName=agusfornite2008 }
+[07:00:47] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=bfefa6fd-092d-49cf-afdd-e39ee33eb634 points={ } }
+[07:00:47] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=bfefa6fd-092d-49cf-afdd-e39ee33eb634 points={ } }
+[07:00:51] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Clear | bfefa6fd-092d-49cf-afdd-e39ee33eb634
+[07:01:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Kofyowo chasers=18 id=c4fccb10-30de-494d-b3cf-853971cfede6:b211275f-b66b-4ff7-908b-067efff6ced9 userId=131183613 issuedAt=1791331184.722756 displayName=NotKofy }
+[07:01:13] ReplicatedStorage.ChickenOrHero.Game.HitReplayEvent
+    Attack | { manual=false direction=0.15025508403778076, -0, 0.9886472821235657 id=e4545893-9e18-435e-b4ad-2470c3d19b18 targets={ 1=GuezuneBR_Game } box={ far=4.3 height=5.6 width=5.3 near=-0.5 overlap=1.9 } character=esihz750 startedAt=1791331272.791756 ends=1791331273.0917559 starts=1791331272.9117558 kind=Melee canonicalId=e4545893-9e18-435e-b4ad-2470c3d19b18 targetIds={ 1=553509594 } }
+[07:01:13] ReplicatedStorage.ChickenOrHero.Game.HitReplayEvent
+    Verdict | { targetId=553509594 source=Server reason=resolved id=e4545893-9e18-435e-b4ad-2470c3d19b18 kind=Melee target=GuezuneBR_Game accepted=true }
+[07:01:13] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8420 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=22 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[07:01:22] ReplicatedStorage.ChickenOrHero.Game.HitReplayEvent
+    Attack | { manual=false direction=0.9987738132476807, -0, 0.04950692877173424 id=e6cac556-d231-408a-98ff-ad9a3e31f386 targets={ 1=oiiksks6 2=linspcd67 3=dudinha_7004 4=sofi234677 5=SAD_Taa 6=Nandaflorista 7=NINJA_16821 } box={ far=4.3 height=5.6 width=5.3 near=-0.5 overlap=1.9 } character=esihz750 startedAt=1791331282.108193 ends=1791331282.4081929 starts=1791331282.2281928 kind=Melee canonicalId=e6cac556-d231-408a-98ff-ad9a3e31f386 targetIds={ 1=10634472250 2=11592928129 3=5449165955 4=2394612219 5=3404445545 6=5750576804 7=5689651041 } }
+[07:01:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Kale14502 chasers=18 id=7615393d-5529-4c45-b656-50817b6287f3:2695352a-a908-4fc8-a725-154f89e5fecb userId=5856641698 issuedAt=1791331208.009926 displayName=Kale14502 }
+[07:02:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=DXSLEZZY10 chasers=18 id=7e2394c7-d5d5-4094-b2dc-9d9127cbf5b8:b24af85b-2b33-4359-ac75-e571b5f77e97 userId=2432434037 issuedAt=1791331236.090609 displayName=DXSLEZZY10 }
+[07:02:24] ReplicatedStorage.ChickenOrHero.Game.HitReplayEvent
+    Attack | { manual=true direction=-0.03997809439897537, -0, -0.9992005825042725 id=E7C39420-637E-4211-8B1F-BCD7EA3FDF1B targets={ 1=oiiksks6 } box={ height=5 far=7.6 near=0 width=6.2 } character=esihz750 startedAt=1791331343.203519 ends=1791331343.5400777 starts=1791331343.203519 kind=Tackle canonicalId=E7C39420-637E-4211-8B1F-BCD7EA3FDF1B targetIds={ 1=10634472250 } }
+[07:02:24] ReplicatedStorage.ChickenOrHero.Game.GameAction
+    TackleResult | E7C39420-637E-4211-8B1F-BCD7EA3FDF1B | true | { speed=35.093520000000005 readyAt=1791331344.303519 startedAt=1791331343.203519 }
+[07:02:24] ReplicatedStorage.ChickenOrHero.Game.GameAction
+    TackleEnded | E7C39420-637E-4211-8B1F-BCD7EA3FDF1B | true
+[07:02:27] ReplicatedStorage.ChickenOrHero.Game.HitReplayEvent
+    Attack | { manual=false direction=0.6141260266304016, 0, 0.7892079949378967 id=19d64d3e-5e06-42b5-a4db-0f0f27fb6a5a targets={ 1=NINJA_16821 } box={ far=4.3 height=5.6 width=5.3 near=-0.5 overlap=1.9 } character=esihz750 startedAt=1791331346.772453 ends=1791331347.072453 starts=1791331346.892453 kind=Melee canonicalId=19d64d3e-5e06-42b5-a4db-0f0f27fb6a5a targetIds={ 1=5689651041 } }
+[07:02:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=IareGio chasers=20 id=d1086496-cb82-464b-ad81-d8f441d7d006:ef64badd-e9d2-44f2-8721-c2e3796a93e4 userId=641680077 issuedAt=1791331267.585219 displayName=IareGio }
+[07:02:46] ReplicatedStorage.ChickenOrHero.Game.HitReplayEvent
+    Attack | { manual=false direction=-0.4010542929172516, -0, 0.9160542488098145 id=62778897-1ac1-4245-8d30-62ef9f1e01a1 targets={ 1=oiiksks6 2=dudinha_7004 3=NINJA_16821 } box={ far=4.3 height=5.6 width=5.3 near=-0.5 overlap=1.9 } character=esihz750 startedAt=1791331366.188002 ends=1791331366.488002 starts=1791331366.308002 kind=Melee canonicalId=62778897-1ac1-4245-8d30-62ef9f1e01a1 targetIds={ 1=10634472250 2=5449165955 3=5689651041 } }
+[07:03:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Dpinkney76 chasers=19 id=d7393805-2d18-4178-ad11-099f60ba1876:8886a38b-daf4-4e4a-a22a-d1b81acffb99 userId=2522673541 issuedAt=1791331306.537577 displayName=00Luminosity_Sonic }
+[07:03:10] ReplicatedStorage.ChickenOrHero.Quests.QuestEvent
+    State | { loaded=true mode=Event event={ claimsEnabled=true secondsUntilStart=0 skipProductId=3716136143 phase=Active skipCredits=0 secondsRemaining=316611 id=ComedyCollection2026 endsAt=1791648000 durationDays=7 startsAt=1791010800 available=true activeWeapon=CluckBasher weapons={ 1={ id=CluckBasher name=CLUCK BASHER claimed=false locked=false claimable=true quests={ 1=... 2=... 3=... } bonus={ Trigger=... Currency=... Amount=... } } 2={ id=BananaBlade name=BANANA BLADE claimed=false locked=true claimable=false quests={ 1=... 2=... 3=... } bonus={ Trigger=... Currency=... Amount=... } } 3={ id=PizzaPunisher name=PIZZA PUNISHER claimed=false locked=true claimable=false quests={ 1=... 2=... 3=... } bonus={ Trigger=... Currency=... Amount=... } } } progressReady=true title=QUESTS } serverNow=1791331389 }
+[07:03:10] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8445 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=22 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[07:03:12] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Close | 061083ac-05ad-4243-8df7-14af49382206 | Lobby
+[07:03:13] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Reveal | 061083ac-05ad-4243-8df7-14af49382206 | -84, 31.05000114440918, 4.999992370605469 | 26
+[07:03:15] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8445 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=22 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[07:03:15] ReplicatedStorage.ChickenOrHero.Crates.CrateEvent
+    State | { pending=true studioPreview=false crate=Ember loaded=true gems=221 allowed=true reason= }
+[07:03:17] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[07:03:18] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=Spin unavailable. Try again shortly. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[07:03:32] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[07:03:33] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=No spins left yet. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[07:03:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Jaseeeeeinthe chasers=19 id=a8c14f95-8b4e-43cc-a90e-2aa2e9198236:b794511f-db91-48b9-8ef3-541da1af2bfb userId=11505823946 issuedAt=1791331337.215405 displayName=Jaseeeeeinthe }
+[07:03:45] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Close | 4242524f-cfaf-442a-9985-34e252235fed | Match
+[07:03:46] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Reveal | 4242524f-cfaf-442a-9985-34e252235fed | 101.99999237060547, 23.04999542236328, -122 | 27
+[07:03:52] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Close | 4521823e-dc00-4cd4-b784-15034864e594 | Lobby
+[07:03:53] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Reveal | 4521823e-dc00-4cd4-b784-15034864e594 | -76, 31.050003051757812, -15.999999046325684 | 29
+[07:03:56] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[07:03:57] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=No spins left yet. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[07:04:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Player2134983 chasers=18 id=ea3cfba6-fb16-473d-86c0-30a6b4fa9e18:24b4f236-0602-4e3f-b78a-4c9ec5581e90 userId=11582901552 issuedAt=1791331357.247926 displayName=Player2134983 }
+[07:04:11] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791331468 discountAvailable=true credits=0 }
+[07:04:12] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791331468 discountAvailable=true message=No spins left yet. regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 credits=0 }
+[07:04:26] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Close | 07e81b91-fcb7-4b65-a368-c4807d5a9d93 | Match
+[07:04:27] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Reveal | 07e81b91-fcb7-4b65-a368-c4807d5a9d93 | 98, 23.04999351501465, -122 | 30
+[07:04:29] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791332368 discountAvailable=true credits=1 }
+[07:04:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=iiworkrankk chasers=18 id=64fcef6e-7915-40ad-a17f-d54b0184cd27:f3f30e0a-4ef6-42a8-86a8-21469e501aca userId=1765254867 issuedAt=1791331398.694282 displayName=Pierced }
+[07:04:52] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=3e0eca27-29b3-44dd-9cce-c9ccdc3ef068 points={ 1={ id=1 amount=1 position=146.66871643066406, 22.79999542236328, 78.84893798828125 } 2={ id=2 amount=1 position=174.35739135742188, 22.79999542236328, -103.88412475585938 } 3={ id=3 amount=1 position=178.8792724609375, 22.79999542236328, 22.82212257385254 } 4={ id=4 amount=1 position=178.58428955078125, 22.79999542236328, 75.61515045166016 } 5={ id=5 amount=1 position=75.31275939941406, 22.79999542236328, 59.34168243408203 } 6={ id=6 amount=1 position=147.14141845703125, 22.79999542236328, 7.5021748542785645 } } }
+[07:04:52] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=3e0eca27-29b3-44dd-9cce-c9ccdc3ef068 points={ 1={ id=1 amount=1 position=146.66871643066406, 22.79999542236328, 78.84893798828125 } 2={ id=2 amount=1 position=174.35739135742188, 22.79999542236328, -103.88412475585938 } 3={ id=3 amount=1 position=178.8792724609375, 22.79999542236328, 22.82212257385254 } 4={ id=4 amount=1 position=178.58428955078125, 22.79999542236328, 75.61515045166016 } 5={ id=5 amount=1 position=75.31275939941406, 22.79999542236328, 59.34168243408203 } 6={ id=6 amount=1 position=147.14141845703125, 22.79999542236328, 7.5021748542785645 } } }
+[07:04:59] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Collected | { id=1 token=3e0eca27-29b3-44dd-9cce-c9ccdc3ef068 amount=1 }
+[07:05:00] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Clear | 3e0eca27-29b3-44dd-9cce-c9ccdc3ef068
+[07:05:00] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8456 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=22 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[07:05:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=PapaHares chasers=21 id=e2ef239c-0a35-42a4-93a5-f905a2664e86:8428e03d-2bf5-4284-93a9-13a40c8d6e76 userId=8218000853 issuedAt=1791331416.698292 displayName=PapaHares }
+[07:05:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=jusdevv chasers=19 id=8e185cc1-190f-4b5a-80d8-e777344d1b7d:90f5523f-1401-4a22-80c6-f319e7ce1c91 userId=2215657831 issuedAt=1791331454.535935 displayName=dismantled }
+[07:05:44] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=1b807e94-4363-41bb-b257-e779a0b8faf6 points={ 1={ id=1 amount=1 position=163.78781127929688, 22.79999542236328, 59.91328048706055 } 2={ id=2 amount=1 position=156.7088623046875, 22.79999542236328, -58.30414581298828 } } }
+[07:05:44] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=1b807e94-4363-41bb-b257-e779a0b8faf6 points={ 1={ id=1 amount=1 position=163.78781127929688, 22.79999542236328, 59.91328048706055 } 2={ id=2 amount=1 position=156.7088623046875, 22.79999542236328, -58.30414581298828 } } }
+[07:05:52] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Clear | 1b807e94-4363-41bb-b257-e779a0b8faf6
+[07:05:52] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8469 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=22 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[07:06:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=gaga_map chasers=20 id=a704337c-cddb-4767-885f-55a297bbe5ba:aa49002e-9b46-4e66-8f0c-9d9006c80966 userId=8006410807 issuedAt=1791331478.924046 displayName=Ultron }
+[07:06:31] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=711d9ee5-4488-4bb1-900b-4176882727e4 points={ 1={ id=1 amount=1 position=51.689064025878906, 22.79999542236328, -91.45215606689453 } 2={ id=2 amount=3 position=124.11522674560547, 22.79999542236328, 39.7047119140625 } } }
+[07:06:31] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=711d9ee5-4488-4bb1-900b-4176882727e4 points={ 1={ id=1 amount=1 position=51.689064025878906, 22.79999542236328, -91.45215606689453 } 2={ id=2 amount=3 position=124.11522674560547, 22.79999542236328, 39.7047119140625 } } }
+[07:06:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Davicolor378 chasers=19 id=55f7435b-7f7b-481b-b855-fa55568e2484:9b74a87d-40a6-4140-a696-52e16f27ba53 userId=7743194156 issuedAt=1791331526.693021 displayName=Davi378 }
+[07:06:37] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Collected | { id=2 token=711d9ee5-4488-4bb1-900b-4176882727e4 amount=3 }
+[07:06:39] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Clear | 711d9ee5-4488-4bb1-900b-4176882727e4
+[07:06:39] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8492 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=22 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[07:07:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=Thegoatwillreturn2 chasers=18 id=7f045df2-1d2e-4d1e-a056-a7b52202382b:4f6ed100-6750-43ee-8c76-149a1c58dbc5 userId=8934116163 issuedAt=1791331538.448088 displayName=Thegoatwillreturn2 }
+[07:07:15] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=e074f886-77fa-46ec-96fb-5b44ecc67c39 points={ 1={ id=1 amount=1 position=138.40191650390625, 22.79999542236328, -97.8189926147461 } 2={ id=2 amount=1 position=54.675437927246094, 22.79999542236328, 42.18888473510742 } 3={ id=3 amount=1 position=109.9802017211914, 22.79999542236328, 47.12944793701172 } 4={ id=4 amount=1 position=168.0423126220703, 22.79999542236328, -90.62255096435547 } } }
+[07:07:16] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Layout | { token=e074f886-77fa-46ec-96fb-5b44ecc67c39 points={ 1={ id=1 amount=1 position=138.40191650390625, 22.79999542236328, -97.8189926147461 } 2={ id=2 amount=1 position=54.675437927246094, 22.79999542236328, 42.18888473510742 } 3={ id=3 amount=1 position=109.9802017211914, 22.79999542236328, 47.12944793701172 } 4={ id=4 amount=1 position=168.0423126220703, 22.79999542236328, -90.62255096435547 } } }
+[07:07:22] ReplicatedStorage.ChickenOrHero.Collectibles.GemEvent
+    Clear | e074f886-77fa-46ec-96fb-5b44ecc67c39
+[07:07:35] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=BenJiousW chasers=19 id=08494cdf-3c24-4434-8f2d-1d25c4a88e6a:69842436-c748-402c-9a81-ddfab7e06752 userId=8596115511 issuedAt=1791331566.758221 displayName=BenJiousW }
+[07:08:01] ReplicatedStorage.ChickenOrHero.Quests.QuestEvent
+    State | { loaded=true mode=Event event={ claimsEnabled=true secondsUntilStart=0 skipProductId=3716136143 phase=Active skipCredits=0 secondsRemaining=316320 id=ComedyCollection2026 endsAt=1791648000 durationDays=7 startsAt=1791010800 available=true activeWeapon=CluckBasher weapons={ 1={ id=CluckBasher name=CLUCK BASHER claimed=false locked=false claimable=true quests={ 1=... 2=... 3=... } bonus={ Trigger=... Currency=... Amount=... } } 2={ id=BananaBlade name=BANANA BLADE claimed=false locked=true claimable=false quests={ 1=... 2=... 3=... } bonus={ Trigger=... Currency=... Amount=... } } 3={ id=PizzaPunisher name=PIZZA PUNISHER claimed=false locked=true claimable=false quests={ 1=... 2=... 3=... } bonus={ Trigger=... Currency=... Amount=... } } } progressReady=true title=QUESTS } serverNow=1791331680 }
+[07:08:01] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8517 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=22 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[07:08:03] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Close | 60e0bb28-05ca-49fb-a917-386f96591743 | Lobby
+[07:08:04] ReplicatedStorage.ChickenOrHero.Presentation.ScreenTransition
+    Reveal | 60e0bb28-05ca-49fb-a917-386f96591743 | -76.00000762939453, 31.049999237060547, -3.000001907348633 | 44
+[07:08:05] ReplicatedStorage.ChickenOrHero.Game.LastRunnerChatEvent
+    { username=FTP_TAYLOR chasers=19 id=8c158101-c788-4764-9078-492df0e08934:4d98c80b-fd29-411a-a43c-7083d229c843 userId=9759292732 issuedAt=1791331607.013266 displayName=FTP_TAYLOR }
+[07:08:06] ReplicatedStorage.ChickenOrHero.Progression.JourneyEvent
+    State | { claims={ } loaded=true xp=8517 skins={ BalloonDagger=true SecretPencil=true BaseDagger=true } tier=22 emotes={ IdleSit=true } premium=false badges={ } seasonId=season_1 trackId=valley_journey_1 }
+[07:08:07] ReplicatedStorage.ChickenOrHero.Crates.CrateEvent
+    State | { pending=true studioPreview=false crate=Ember loaded=true gems=229 allowed=true reason= }
+[07:08:09] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791332368 discountAvailable=true credits=1 }
+[07:08:10] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } purchasesAvailable=true nextFreeAt=1791332368 discountAvailable=true regularProductId=3716057178 discountProductId=3716057142 tenProductId=3716072886 result={ id=250Coins angle=139 message=+250 COINS! } credits=0 }
+[07:08:10] ReplicatedStorage.ChickenOrHero.SpinWheelEvent
+    State | { odds={ 1={ percent=1 id=Knife } 2={ percent=2 id=Ability } 3={ percent=15 id=2xGems } 4={ percent=23 id=500Coins } 5={ percent=24 id=2xCoins } 6={ percent=35 id=250Coins } } regularProductId=3716057178 purchasesAvailable=true tenProductId=3716072886 discountProductId=3716057142 nextFreeAt=1791332368 discountAvailable=true credits=0 }

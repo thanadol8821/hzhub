@@ -1,0 +1,404 @@
+d00 [Folder] LobbyMusicPlayback | par=SoundService ATTR{CurrentTrack=JoiningGameMusic,IsJoiningTheme=true,LobbyEligible=true,ThemePlayCount=1,ThemeStartedAt=1791572600.875203,TrackSequence=1}
+  d01 [Sound] JoiningTheme | par=LobbyMusicPlayback ATTR{Enabled=true,Purpose=Theme: plays once on joining, starting during the loading screen. ReplicatedFirst makes it available early.}
+d00 [SoundGroup] LocalMusicVolume | par=SoundService
+d00 [AudioDeviceOutput] AudioDeviceOutput | par=SoundService
+d00 [Folder] GameAudio | par=SoundService ATTR{DebugEvents=false,Enabled=true,Instructions=Fill SoundId on a named Sound. Blank = silent (empty surface variants fall back to Grass). Keep names. Volume/PlaybackSpeed are editable. See 00_READ_ME.}
+  d01 [Folder] 01_Soundtracks | par=GameAudio ATTR{Notes=Lobby contains the random playlist. JoiningGameMusic points to the early-loading theme in ReplicatedFirst.Soundtracks. Match music is disabled.}
+    d02 [Sound] Match | par=01_Soundtracks ATTR{CueKey=MatchMusic,Enabled=false,Optional=true,Purpose=Reserved for a possible future match soundtrack. No match music plays in the current design.}
+    d02 [Folder] Lobby | par=01_Soundtracks
+      d03 [Sound] Lobby_FunkyHit | par=Lobby ATTR{Enabled=true,Purpose=Random lobby playlist. Add or remove Sound templates in this folder to change the playlist.}
+      d03 [Sound] Lobby_FnVibe | par=Lobby ATTR{Enabled=true,Purpose=Random lobby playlist. Add or remove Sound templates in this folder to change the playlist.}
+      d03 [Sound] Lobby_Track1 | par=Lobby ATTR{Enabled=true,Purpose=Random lobby playlist. Add or remove Sound templates in this folder to change the playlist.}
+      d03 [Sound] Lobby_Track2 | par=Lobby ATTR{Enabled=true,Purpose=Random lobby playlist. Add or remove Sound templates in this folder to change the playlist.}
+    d02 [ObjectValue] JoiningGameMusic | par=01_Soundtracks
+  d01 [Folder] 02_Movement | par=GameAudio
+    d02 [Sound] RunStart | par=02_Movement ATTR{CueKey=MovementStart,Enabled=true,Optional=true,Purpose=Subtle push-off when beginning to move, not every acceleration.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Robloxmastermanyay,SourceName=footstep grass 4,SourceURL=https://create.roblox.com/store/asset/135037154891351,TrialSelection=true,VerifiedDuration=0.3798185941043084}
+    d02 [Sound] RunStop | par=02_Movement ATTR{CueKey=RunStop,Enabled=true,Optional=false,Purpose=Short braking scrape for the aggressive Run Stop performance.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Sand Slide 7 (SFX),SourceURL=https://create.roblox.com/store/asset/9118771226,TrialSelection=true,VerifiedDuration=1.205375}
+    d02 [Sound] SharpTurn | par=02_Movement ATTR{CueKey=SharpTurn,Enabled=true,Optional=true,Purpose=Brief shoe scuff when making a hard turn without a boost.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Sand Slide 7 (SFX),SourceURL=https://create.roblox.com/store/asset/9118771226,TrialSelection=true,VerifiedDuration=1.205375}
+    d02 [Sound] BoostStart | par=02_Movement ATTR{CueKey=BoostStart,Enabled=true,Optional=false,Purpose=Short acceleration swoosh when the Runner's turn boost begins.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Whoosh Fast Short Dull Several Versions 1 (SFX),SourceURL=https://create.roblox.com/store/asset/9120709480,TrialSelection=true,VerifiedDuration=0.6049791666666666}
+    d02 [Sound] BoostRecovery | par=02_Movement ATTR{CueKey=BoostRecovery,Enabled=true,Optional=true,Purpose=Short slowdown/scuff when the boost recovery starts.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Cloth Movement 24 (SFX),SourceURL=https://create.roblox.com/store/asset/9113824230,TrialSelection=true,VerifiedDuration=0.9389791666666667}
+    d02 [Sound] BoostReady | par=02_Movement ATTR{CueKey=BoostReady,Enabled=true,Optional=true,Purpose=Quiet personal cue when the boost has rearmed after being used.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Synth Sparkle Tone High Pitch Bell Tone Ding (SFX),SourceURL=https://create.roblox.com/store/asset/9126073001,TrialSelection=true,VerifiedDuration=1.1626666666666667}
+    d02 [Sound] Jump | par=02_Movement ATTR{CueKey=Jump,Enabled=true,Optional=true,Purpose=Short takeoff sound. Wired for Humanoid jumping; currently jumping is disabled.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Whoosh Fast Short Dull Several Versions 1 (SFX),SourceURL=https://create.roblox.com/store/asset/9120709480,TrialSelection=true,VerifiedDuration=0.6049791666666666}
+    d02 [Sound] LandSoft | par=02_Movement ATTR{CueKey=LandSoft,Enabled=true,Optional=false,Purpose=Small foot impact after a short fall.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Robloxmastermanyay,SourceName=footstep grass 4,SourceURL=https://create.roblox.com/store/asset/135037154891351,TrialSelection=true,VerifiedDuration=0.3798185941043084}
+    d02 [Sound] LandHard | par=02_Movement ATTR{CueKey=LandHard,Enabled=true,Optional=true,Purpose=Heavier landing after a longer/faster fall.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Body Fall Thud 2 (SFX),SourceURL=https://create.roblox.com/store/asset/9113480915,TrialSelection=true,VerifiedDuration=1.0806666666666667}
+    d02 [Sound] ClothesRustle | par=02_Movement ATTR{CueKey=ClothesRustle,Enabled=true,Optional=true,Purpose=Optional seamless clothing/running rustle loop. Leave empty for a cleaner mix.}
+    d02 [Sound] SprintWind | par=02_Movement ATTR{CueKey=SprintWind,Enabled=true,Optional=true,Purpose=Optional seamless light rushing-air loop, fades in near maximum speed.}
+    d02 [Folder] Footsteps | par=02_Movement
+      d03 [Sound] Grass | par=Footsteps ATTR{CueKey=FootstepGrass,Enabled=true,Optional=false,Purpose=One short grass footstep/scuff, not a full walking recording. Main fallback surface; steps follow animation cadence.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Robloxmastermanyay,SourceName=footstep grass 4,SourceURL=https://create.roblox.com/store/asset/135037154891351,TrialSelection=true,VerifiedDuration=0.3798185941043084}
+      d03 [Sound] Concrete | par=Footsteps ATTR{CueKey=FootstepConcrete,Enabled=true,Optional=true,Purpose=One short concrete footstep. Empty surface slots fall back to Grass.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=IDogeffI,SourceName=Concrete Footstep,SourceURL=https://create.roblox.com/store/asset/87061775498714,TrialSelection=true,VerifiedDuration=0.4342857142857143}
+      d03 [Sound] Sand | par=Footsteps ATTR{CueKey=FootstepSand,Enabled=true,Optional=true,Purpose=One short sand footstep. Empty surface slots fall back to Grass.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Alexander366352wewq,SourceName=Sand Footstep,SourceURL=https://create.roblox.com/store/asset/98912102275037,TrialSelection=true,VerifiedDuration=0.4963265306122449}
+      d03 [Sound] Dirt | par=Footsteps ATTR{CueKey=FootstepDirt,Enabled=true,Optional=true,Purpose=One short dirt footstep. Empty surface slots fall back to Grass.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=StarWithABlox,SourceName=Dirt_step_05,SourceURL=https://create.roblox.com/store/asset/111154292786687,TrialSelection=true,VerifiedDuration=0.47365079365079366}
+      d03 [Sound] Wood | par=Footsteps ATTR{CueKey=FootstepWood,Enabled=true,Optional=true,Purpose=One short wood footstep. Empty surface slots fall back to Grass.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ChamoyBaconXD,SourceName=Wood Footstep 2 (SFX),SourceURL=https://create.roblox.com/store/asset/121617932377026,TrialSelection=true,VerifiedDuration=0.6893424036281179}
+      d03 [Sound] Metal | par=Footsteps ATTR{CueKey=FootstepMetal,Enabled=true,Optional=true,Purpose=One short metal footstep. Empty surface slots fall back to Grass.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=LeviathanStatus,SourceName=Audio/walk_metal4,SourceURL=https://create.roblox.com/store/asset/107632133878276,TrialSelection=true,VerifiedDuration=0.7699319727891156}
+      d03 [Sound] Snow | par=Footsteps ATTR{CueKey=FootstepSnow,Enabled=true,Optional=true,Purpose=One short snow footstep. Empty surface slots fall back to Grass.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=prodaikawa,SourceName=Snow Footstep - 2,SourceURL=https://create.roblox.com/store/asset/128551000876862,TrialSelection=true,VerifiedDuration=0.5096145833333333}
+      d03 [Sound] Water | par=Footsteps ATTR{CueKey=FootstepWater,Enabled=true,Optional=true,Purpose=One short water footstep. Empty surface slots fall back to Grass.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Puddle Stomps Small Water Splashes 18 (SFX),SourceURL=https://create.roblox.com/store/asset/9117947974,TrialSelection=true,VerifiedDuration=0.3606875}
+  d01 [Folder] 03_Catching | par=GameAudio
+    d02 [Sound] DiveStart | par=03_Catching ATTR{CueKey=DiveStart,Enabled=true,Optional=false,Purpose=Dive launch/whoosh. One animation is used for all three reach tiers.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Whoosh Fast Short Dull Several Versions 1 (SFX),SourceURL=https://create.roblox.com/store/asset/9120709480,TrialSelection=true,VerifiedDuration=0.6049791666666666}
+    d02 [Sound] DiveLand | par=03_Catching ATTR{CueKey=DiveLand,Enabled=true,Optional=false,Purpose=Ground impact at the end of the dive travel, even when nobody is caught.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Body Fall Hay 2 (SFX),SourceURL=https://create.roblox.com/store/asset/9113470020,TrialSelection=true,VerifiedDuration=2.2613333333333334}
+    d02 [Sound] DiveRecover | par=03_Catching ATTR{CueKey=DiveRecover,Enabled=true,Optional=true,Purpose=Optional short get-up rustle during dive recovery.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Cloth Movement 24 (SFX),SourceURL=https://create.roblox.com/store/asset/9113824230,TrialSelection=true,VerifiedDuration=0.9389791666666667}
+    d02 [Sound] CatchImpact | par=03_Catching ATTR{CueKey=CatchImpact,Enabled=true,Optional=false,PitchVariation=0,Purpose=Quiet spatial contact underneath the catcher/runner private outcome cue.,SelectionNote=Match audio refresh. Metadata-guided selection; load/playback verified, subjective listening pending.,SourceCreator=ProSoundEffects,SourceName=Body Fall Thud 2 (SFX),SourceURL=https://create.roblox.com/store/asset/9113480915,TrialSelection=true,VerifiedDuration=1.0806666666666667}
+    d02 [Sound] CatchSuccess | par=03_Catching ATTR{CueKey=CatchSuccess,Enabled=true,Optional=true,PitchVariation=0.025,Purpose=Private short reward for the catcher who confirms a catch. Other players do not hear this reward.,SelectionNote=Match audio refresh. Metadata-guided selection; load/playback verified, subjective listening pending.,SourceCreator=AmbientSorcery,SourceName=ui-simple-reward-collect,SourceURL=https://create.roblox.com/store/asset/82803453482376,TrialSelection=true,VerifiedDuration=0.506125}
+    d02 [Sound] CatchReady | par=03_Catching ATTR{CueKey=CatchReady,Enabled=true,Optional=true,PitchVariation=0,Purpose=Very quiet readiness cue after the catch cooldown. Distinct from confirming an actual catch.,SelectionNote=Match audio refresh. Metadata-guided selection; load/playback verified, subjective listening pending.,SourceCreator=Roblox,SourceName=Roblox GUI - Equip,SourceURL=https://create.roblox.com/store/asset/17208323435,TrialSelection=true,VerifiedDuration=0.6189166666666667}
+  d01 [Folder] 04_UI | par=GameAudio
+    d02 [Sound] Hover | par=04_UI ATTR{CueKey=Hover,Enabled=true,Optional=true,Purpose=Subtle tick on hovering/focusing a game button. Mouse/controller only.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Hover 01 (SFX),SourceURL=https://create.roblox.com/store/asset/10066931761,TrialSelection=true,VerifiedDuration=0.19566666666666666}
+    d02 [Sound] Click | par=04_UI ATTR{CueKey=Click,Enabled=true,Optional=false,Purpose=Short click on activating a game button with mouse, touch or controller.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Select 01 (SFX),SourceURL=https://create.roblox.com/store/asset/10128760939,TrialSelection=true,VerifiedDuration=0.5773333333333334}
+    d02 [Sound] PanelOpen | par=04_UI ATTR{CueKey=PanelOpen,Enabled=true,Optional=true,Purpose=Chicken/Hero or player-selection panel opens.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Swipe (SFX),SourceURL=https://create.roblox.com/store/asset/10128766965,TrialSelection=true,VerifiedDuration=0.62}
+    d02 [Sound] PanelClose | par=04_UI ATTR{CueKey=PanelClose,Enabled=true,Optional=true,Purpose=Choice panel closes.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Back (SFX),SourceURL=https://create.roblox.com/store/asset/10066914500,TrialSelection=true,VerifiedDuration=0.5595625}
+    d02 [Sound] ChoiceSubmitted | par=04_UI ATTR{CueKey=ChoiceSubmitted,Enabled=true,Optional=true,Purpose=Optional confirmation when a choice button sends its request.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Select 02 (SFX),SourceURL=https://create.roblox.com/store/asset/10066968815,TrialSelection=true,VerifiedDuration=0.48825}
+    d02 [Sound] Notice | par=04_UI ATTR{CueKey=Notice,Enabled=true,Optional=true,Purpose=Optional soft cue for a new announcement notice. Not every timer update.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Synth Sparkle Tone High Pitch Bell Tone Ding (SFX),SourceURL=https://create.roblox.com/store/asset/9126073001,TrialSelection=true,VerifiedDuration=1.1626666666666667}
+    d02 [Sound] ChoiceFocus | par=04_UI ATTR{CueKey=ChoiceFocus,Enabled=true,Optional=false,Purpose=Camera travels to the selected Chicken or Hero player.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Whoosh Fast Short Dull Several Versions 1 (SFX),SourceURL=https://create.roblox.com/store/asset/9120709480,TrialSelection=true,VerifiedDuration=0.6049791666666666}
+    d02 [Sound] ChoiceFocusResolve | par=04_UI ATTR{CueKey=ChoiceFocusResolve,Enabled=true,Optional=true,Purpose=Soft arrival accent after the selection camera settles.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Synth Sparkle Tone High Pitch Bell Tone Ding (SFX),SourceURL=https://create.roblox.com/store/asset/9126073001,TrialSelection=true,VerifiedDuration=1.1626666666666667}
+    d02 [Folder] MatchSummary | par=04_UI
+      d03 [Sound] Reveal | par=MatchSummary ATTR{Enabled=true,Purpose=Recap opening: a short, soft reveal.,SelectionNote=Creator Store selection; tune Volume after listening in the match. Clear SoundId to disable.,SourceCreator=Roblox,SourceName=RBLX UI Swipe (SFX),SourceURL=https://create.roblox.com/store/asset/10128766965,TrialSelection=true,VerifiedDuration=0.62}
+      d03 [Sound] CountTick | par=MatchSummary ATTR{Enabled=true,Purpose=Quiet, rate-limited ticks while visible match stats count up.,SelectionNote=Creator Store selection; tune Volume after listening in the match. Clear SoundId to disable.,SourceCreator=Roblox,SourceName=RBLX UI Hover 01 (SFX),SourceURL=https://create.roblox.com/store/asset/10066931761,TrialSelection=true,VerifiedDuration=0.19566666666666666}
+      d03 [Sound] CountComplete | par=MatchSummary ATTR{Enabled=true,Purpose=One soft confirmation when the totals settle.,SelectionNote=Creator Store selection; tune Volume after listening in the match. Clear SoundId to disable.,SourceCreator=Roblox,SourceName=RBLX UI Select 02 (SFX),SourceURL=https://create.roblox.com/store/asset/10066968815,TrialSelection=true,VerifiedDuration=0.48825}
+      d03 [Sound] LevelUp | par=MatchSummary ATTR{Enabled=true,Purpose=Personal XP count-up actually crosses a level boundary; one celebratory cue.,SelectionNote=Creator Store selection; tune Volume after listening in the match. Clear SoundId to disable.,SourceCreator=Roblox,SourceName=RBLX UI Purchase (SFX),SourceURL=https://create.roblox.com/store/asset/10066947742,TrialSelection=true,VerifiedDuration=0.8742708333333333}
+  d01 [Folder] 05_Rounds | par=GameAudio
+    d02 [Sound] MatchCountdown | par=05_Rounds ATTR{CueKey=MatchCountdown,Enabled=true,Optional=false,Purpose=Enough players have joined; the pre-match countdown begins.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Select 02 (SFX),SourceURL=https://create.roblox.com/store/asset/10066968815,TrialSelection=true,VerifiedDuration=0.48825}
+    d02 [Sound] CountdownTick | par=05_Rounds ATTR{CueKey=CountdownTick,Enabled=true,Optional=false,Purpose=Short tick for the last three seconds of match/setup/choice countdowns.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Single Tone Single High Pitch Beep Tones 11 (SFX),SourceURL=https://create.roblox.com/store/asset/9119143270,TrialSelection=true,VerifiedDuration=0.4514166666666667}
+    d02 [Sound] CountdownFinal | par=05_Rounds ATTR{CueKey=CountdownFinal,Enabled=true,Optional=true,Purpose=Optional different final tick at one second. Falls back to CountdownTick if empty.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Single Tone Single High Pitch Beep Tones 11 (SFX),SourceURL=https://create.roblox.com/store/asset/9119143270,TrialSelection=true,VerifiedDuration=0.4514166666666667}
+    d02 [Sound] RoundReady | par=05_Rounds ATTR{CueKey=RoundReady,Enabled=true,Optional=true,Purpose=A crossing is being prepared. Not the teleport sound.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Swipe (SFX),SourceURL=https://create.roblox.com/store/asset/10128766965,TrialSelection=true,VerifiedDuration=0.62}
+    d02 [Sound] RunStart | par=05_Rounds ATTR{CueKey=RunStart,Enabled=true,Optional=false,Purpose=The group crossing starts: a short GO/bell cue.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Plastic Whistle Short Bursts 6 (SFX),SourceURL=https://create.roblox.com/store/asset/9117649971,TrialSelection=true,VerifiedDuration=0.19033333333333333}
+    d02 [Sound] HeroRunStart | par=05_Rounds ATTR{CueKey=HeroRunStart,Enabled=true,Optional=true,Purpose=A solo Hero crossing begins.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Plastic Whistle Short Bursts 6 (SFX),SourceURL=https://create.roblox.com/store/asset/9117649971,TrialSelection=true,VerifiedDuration=0.19033333333333333}
+    d02 [Sound] FinalRunStart | par=05_Rounds ATTR{CueKey=FinalRunStart,Enabled=true,Optional=true,Purpose=The final Runner's crossing begins.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Plastic Whistle Short Bursts 6 (SFX),SourceURL=https://create.roblox.com/store/asset/9117649971,TrialSelection=true,VerifiedDuration=0.19033333333333333}
+    d02 [Sound] RunEnd | par=05_Rounds ATTR{CueKey=RunEnd,Enabled=true,Optional=false,Purpose=A crossing iteration ends.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Beeps Single Low Pitch Buzzy Beeps 4 (SFX),SourceURL=https://create.roblox.com/store/asset/9113402034,TrialSelection=true,VerifiedDuration=0.34220833333333334}
+    d02 [Sound] TimeWarning | par=05_Rounds ATTR{CueKey=TimeWarning,Enabled=true,Optional=true,Purpose=Urgent short tick for the last five seconds of an active crossing.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Single Tone Single High Pitch Beep Tones 11 (SFX),SourceURL=https://create.roblox.com/store/asset/9119143270,TrialSelection=true,VerifiedDuration=0.4514166666666667}
+    d02 [Sound] MatchEnd | par=05_Rounds ATTR{CueKey=MatchEnd,Enabled=true,Optional=false,PitchVariation=0,Purpose=The results phase starts, including cancelled/reset matches.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Back (SFX),SourceURL=https://create.roblox.com/store/asset/10066914500,TrialSelection=true,VerifiedDuration=0.5595625}
+    d02 [Sound] SpawnRefresh | par=05_Rounds ATTR{CueKey=SpawnRefresh,Enabled=true,Optional=false,Purpose=Personal refresh/teleport sound after being placed at a round spawn.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Swipe (SFX),SourceURL=https://create.roblox.com/store/asset/10128766965,TrialSelection=true,VerifiedDuration=0.62}
+    d02 [Sound] LobbyReturn | par=05_Rounds ATTR{CueKey=LobbyReturn,Enabled=true,Optional=false,Purpose=Personal refresh sound after being returned to a lobby spawn.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Swipe (SFX),SourceURL=https://create.roblox.com/store/asset/10128766965,TrialSelection=true,VerifiedDuration=0.62}
+    d02 [Sound] HeroChosen | par=05_Rounds ATTR{CueKey=HeroChosen,Enabled=true,Optional=true,Purpose=A Hero choice is accepted by the server.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Synth Sparkle Tone High Pitch Bell Tone Ding (SFX),SourceURL=https://create.roblox.com/store/asset/9126073001,TrialSelection=true,VerifiedDuration=1.1626666666666667}
+    d02 [Sound] ChickenChosen | par=05_Rounds ATTR{CueKey=ChickenChosen,Enabled=true,Optional=true,Purpose=Chicken is chosen or the decision times out to the group run.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Select 02 (SFX),SourceURL=https://create.roblox.com/store/asset/10066968815,TrialSelection=true,VerifiedDuration=0.48825}
+  d01 [Folder] 06_PlayerEvents | par=GameAudio
+    d02 [Sound] RoleRunner | par=06_PlayerEvents ATTR{CueKey=RoleRunner,Enabled=true,Optional=true,Purpose=Personal cue when assigned Runner for a new match.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Select 02 (SFX),SourceURL=https://create.roblox.com/store/asset/10066968815,TrialSelection=true,VerifiedDuration=0.48825}
+    d02 [Sound] RoleCatcher | par=06_PlayerEvents ATTR{CueKey=RoleCatcher,Enabled=true,Optional=true,Purpose=Personal cue when selected/promoted to Catcher.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Select 02 (SFX),SourceURL=https://create.roblox.com/store/asset/10066968815,TrialSelection=true,VerifiedDuration=0.48825}
+    d02 [Sound] SelectedHero | par=06_PlayerEvents ATTR{CueKey=SelectedHero,Enabled=true,Optional=true,Purpose=You have been selected to choose Chicken or Hero.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Synth Sparkle Tone High Pitch Bell Tone Ding (SFX),SourceURL=https://create.roblox.com/store/asset/9126073001,TrialSelection=true,VerifiedDuration=1.1626666666666667}
+    d02 [Sound] ReachedSafety | par=06_PlayerEvents ATTR{CueKey=ReachedSafety,Enabled=true,Optional=false,PitchVariation=0,PreviousPlaybackSpeed=1.149999976158142,PreviousSoundId=rbxassetid://9126073001,PreviousVolume=0.20000000298023224,Purpose=User-selected personal success sound when reaching the safe zone. Plays at its natural pitch and speed.,SelectionNote=Chosen by the user on 19 September 2026. Client preload succeeded; natural playback speed, no random pitch shift.,SourceName=User-selected safe-zone sound,SourceURL=https://create.roblox.com/store/asset/120644970572507,TrialSelection=false,VerifiedDuration=1.7076875}
+    d02 [Sound] Caught | par=06_PlayerEvents ATTR{CueKey=Caught,Enabled=true,Optional=false,PitchVariation=0,Purpose=Private, low negative cue for the runner who was caught or ran out of time.,SelectionNote=Match audio refresh. Metadata-guided selection; load/playback verified, subjective listening pending.,SourceCreator=Roblox,SourceName=Roblox GUI - Negative,SourceURL=https://create.roblox.com/store/asset/17208353912,TrialSelection=true,VerifiedDuration=0.375}
+    d02 [Sound] Victory | par=06_PlayerEvents ATTR{CueKey=Victory,Enabled=false,Optional=false,Purpose=Personal match victory stinger, only for awarded winners.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=APMOfficial,SourceName=Magical (f),SourceURL=https://create.roblox.com/store/asset/1841173505,TrialSelection=true,VerifiedDuration=4.884897959183673}
+    d02 [Sound] Defeat | par=06_PlayerEvents ATTR{CueKey=Defeat,Enabled=false,Optional=true,Purpose=Personal match loss stinger, only for match participants.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Back (SFX),SourceURL=https://create.roblox.com/store/asset/10066914500,TrialSelection=true,VerifiedDuration=0.5595625}
+    d02 [Sound] Respawn | par=06_PlayerEvents ATTR{CueKey=Respawn,Enabled=true,Optional=true,Purpose=Personal cue when a new character spawns.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=Roblox,SourceName=RBLX UI Swipe (SFX),SourceURL=https://create.roblox.com/store/asset/10128766965,TrialSelection=true,VerifiedDuration=0.62}
+    d02 [Sound] Death | par=06_PlayerEvents ATTR{CueKey=Death,Enabled=true,Optional=true,Purpose=Optional character death/reset cue.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=ProSoundEffects,SourceName=Body Fall Thud 2 (SFX),SourceURL=https://create.roblox.com/store/asset/9113480915,TrialSelection=true,VerifiedDuration=1.0806666666666667}
+  d01 [StringValue] 00_READ_ME | par=GameAudio
+  d01 [Folder] 07_Danger | par=GameAudio
+    d02 [Sound] ApproachingCatcher | par=07_Danger ATTR{Enabled=true,Purpose=Looping danger pulse. Fades and accelerates with the SAME approaching-Catcher sample as the red indicator. Runner only; blank SoundId disables.,SelectionNote=Creator Store selection; tune Volume after listening in the match. Clear SoundId to disable.,SourceCreator=turohabaneero,SourceName=Slow Heartbeat,SourceURL=https://create.roblox.com/store/asset/176554627,TrialSelection=true,VerifiedDuration=1.0122448979591836}
+  d01 [Folder] 08_Knives | par=GameAudio
+    d02 [Folder] SpoonDagger | par=08_Knives ATTR{Description=Every skin owns its full audio set. Edit these SoundIds and levels independently.}
+      d03 [Sound] Swing | par=SpoonDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Hit | par=SpoonDagger ATTR{Enabled=true,PitchVariation=0.025}
+      d03 [Sound] Equip | par=SpoonDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Windup | par=SpoonDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Sheath | par=SpoonDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Dive | par=SpoonDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Cancel | par=SpoonDagger ATTR{Enabled=true,PitchVariation=0.01}
+    d02 [Folder] BaseDagger | par=08_Knives ATTR{Description=Every skin owns its full audio set. Edit these SoundIds and levels independently.}
+      d03 [Sound] Swing | par=BaseDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Hit | par=BaseDagger ATTR{Enabled=true,PitchVariation=0.025}
+      d03 [Sound] Equip | par=BaseDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Windup | par=BaseDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Sheath | par=BaseDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Dive | par=BaseDagger ATTR{Enabled=true,PitchVariation=0.01}
+      d03 [Sound] Cancel | par=BaseDagger ATTR{Enabled=true,PitchVariation=0.01}
+    d02 [Folder] DevelopersPencil | par=08_Knives
+      d03 [Sound] Swing | par=DevelopersPencil ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Cancel | par=DevelopersPencil ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 17,SourceURL=https://create.roblox.com/store/asset/9126283592}
+      d03 [Sound] Hit | par=DevelopersPencil ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=ProSoundEffects,SourceName=Pencil Snaps 3,SourceURL=https://create.roblox.com/store/asset/9117278438}
+      d03 [Sound] Equip | par=DevelopersPencil ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Pencil Taps Tip End,SourceURL=https://create.roblox.com/store/asset/9117278724}
+      d03 [Sound] Windup | par=DevelopersPencil ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Scraping Brisk Plastic Wood 13,SourceURL=https://create.roblox.com/store/asset/9118839359}
+      d03 [Sound] Sheath | par=DevelopersPencil ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Pencil Taps Eraser End,SourceURL=https://create.roblox.com/store/asset/9117279747}
+      d03 [Sound] Dive | par=DevelopersPencil ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Wood Whoosh Quick Swings 1,SourceURL=https://create.roblox.com/store/asset/9120972444}
+    d02 [Folder] VIPDagger | par=08_Knives
+      d03 [Sound] Swing | par=VIPDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Sword Swish 102,SourceURL=https://create.roblox.com/store/asset/9119749145}
+      d03 [Sound] Cancel | par=VIPDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Swish Med High End Sharp Swords Fast Punches 17,SourceURL=https://create.roblox.com/store/asset/9126013811}
+      d03 [Sound] Hit | par=VIPDagger ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=ProSoundEffects,SourceName=Blade Hits Metal Rod On Knife Impacts 10,SourceURL=https://create.roblox.com/store/asset/9113449585}
+      d03 [Sound] Equip | par=VIPDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Sword Draw Clang Unsheathing Two Sabers 1,SourceURL=https://create.roblox.com/store/asset/9119742466}
+      d03 [Sound] Windup | par=VIPDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Sword Scrape 101,SourceURL=https://create.roblox.com/store/asset/9119748082}
+      d03 [Sound] Sheath | par=VIPDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Sword In 1,SourceURL=https://create.roblox.com/store/asset/9119747260}
+      d03 [Sound] Dive | par=VIPDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Swish Med High End Sharp Swords Fast Punches 20,SourceURL=https://create.roblox.com/store/asset/9126014020}
+    d02 [Folder] BalloonDagger | par=08_Knives
+      d03 [Sound] Swing | par=BalloonDagger ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=Roblox,SourceName=Rubber band sling shot,SourceURL=https://create.roblox.com/store/asset/12222103}
+      d03 [Sound] Cancel | par=BalloonDagger ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=Roblox,SourceName=Rubber band,SourceURL=https://create.roblox.com/store/asset/12222106}
+      d03 [Sound] Hit | par=BalloonDagger ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=ProSoundEffects,SourceName=Balloon Pop 4,SourceURL=https://create.roblox.com/store/asset/9113263647}
+      d03 [Sound] Equip | par=BalloonDagger ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=ProSoundEffects,SourceName=Squeeze Toy Rubber 10,SourceURL=https://create.roblox.com/store/asset/9125994570}
+      d03 [Sound] Windup | par=BalloonDagger ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=ProSoundEffects,SourceName=Rubber Stretch 19,SourceURL=https://create.roblox.com/store/asset/9118746214}
+      d03 [Sound] Sheath | par=BalloonDagger ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=ProSoundEffects,SourceName=Squeeze Toy Rubber 7,SourceURL=https://create.roblox.com/store/asset/9125994543}
+      d03 [Sound] Dive | par=BalloonDagger ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=ProSoundEffects,SourceName=Comic Spin 2,SourceURL=https://create.roblox.com/store/asset/9113863051}
+    d02 [Folder] TopWinsDagger | par=08_Knives
+      d03 [Sound] Swing | par=TopWinsDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Swish Sharp Swords Fast Punches 12,SourceURL=https://create.roblox.com/store/asset/9126013477}
+      d03 [Sound] Cancel | par=TopWinsDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Anvil Ringing Metal Clinks 6,SourceURL=https://create.roblox.com/store/asset/9113133597}
+      d03 [Sound] Hit | par=TopWinsDagger ATTR{Enabled=true,PitchVariation=0.025,SourceCreator=ProSoundEffects,SourceName=Anvil Hits Ringing Metal Clinks 34,SourceURL=https://create.roblox.com/store/asset/9125362690}
+      d03 [Sound] Equip | par=TopWinsDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Sword Draw Clang Unsheathing Two Sabers 30,SourceURL=https://create.roblox.com/store/asset/9119744718}
+      d03 [Sound] Windup | par=TopWinsDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Sword Scrape 101,SourceURL=https://create.roblox.com/store/asset/9119748082}
+      d03 [Sound] Sheath | par=TopWinsDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Keys Handling Metal Clinks 3,SourceURL=https://create.roblox.com/store/asset/9125616884}
+      d03 [Sound] Dive | par=TopWinsDagger ATTR{Enabled=true,PitchVariation=0.01,SourceCreator=ProSoundEffects,SourceName=Swish Sharp Swords Fast Punches 13,SourceURL=https://create.roblox.com/store/asset/9126013644}
+    d02 [Folder] IceCreamDagger | par=08_Knives
+      d03 [Sound] Swing | par=IceCreamDagger ATTR{Enabled=true,PitchVariation=0.025,SoundDesign=Ice-cream van, scooping, splat and comic whistle. Source levels balanced individually.,SourceCreator=ProSoundEffects,SourceName=Watermelon Splat 1,SourceURL=https://create.roblox.com/store/asset/9120572784}
+      d03 [Sound] Cancel | par=IceCreamDagger ATTR{Enabled=true,PitchVariation=0.025,SoundDesign=Ice-cream van, scooping, splat and comic whistle. Source levels balanced individually.,SourceCreator=ProSoundEffects,SourceName=Acme Whistle Wind Hurricane Siren 16,SourceURL=https://create.roblox.com/store/asset/9113041458}
+      d03 [Sound] Hit | par=IceCreamDagger ATTR{Enabled=true,PitchVariation=0,SoundDesign=Ice-cream van, scooping, splat and comic whistle. Source levels balanced individually.,SourceCreator=ToxicBanditT,SourceName=bing chilling,SourceURL=https://create.roblox.com/store/asset/8407071388}
+      d03 [Sound] Equip | par=IceCreamDagger ATTR{Enabled=true,PitchVariation=0,SoundDesign=Ice-cream van, scooping, splat and comic whistle. Source levels balanced individually.,SourceCreator=APMOfficial,SourceName=Ice Cream Truck,SourceURL=https://create.roblox.com/store/asset/1838796460}
+      d03 [Sound] Windup | par=IceCreamDagger ATTR{Enabled=true,PitchVariation=0,SoundDesign=Ice-cream van, scooping, splat and comic whistle. Source levels balanced individually.,SourceCreator=ProSoundEffects,SourceName=Ice Cream Truck Bell 3,SourceURL=https://create.roblox.com/store/asset/9114861389}
+      d03 [Sound] Sheath | par=IceCreamDagger ATTR{Enabled=true,PitchVariation=0,SoundDesign=Ice-cream van, scooping, splat and comic whistle. Source levels balanced individually.,SourceCreator=ProSoundEffects,SourceName=Ice Cream Truck Bell 1,SourceURL=https://create.roblox.com/store/asset/9114860944}
+      d03 [Sound] Dive | par=IceCreamDagger ATTR{Enabled=true,PitchVariation=0.025,SoundDesign=Ice-cream van, scooping, splat and comic whistle. Source levels balanced individually.,SourceCreator=ProSoundEffects,SourceName=Acme Whistle Wind Hurricane Siren 15,SourceURL=https://create.roblox.com/store/asset/9113041445}
+    d02 [Folder] OwnersTrident | par=08_Knives
+      d03 [Sound] Equip | par=OwnersTrident ATTR{Enabled=true,PitchVariation=0,SoundDesign=Choir theme selected by the owner. Short action cues; full choir phrase on confirmed hit.,SourceName=Choir - Binding of Isaac}
+      d03 [Sound] Windup | par=OwnersTrident ATTR{Enabled=true,PitchVariation=0,SoundDesign=Choir theme selected by the owner. Short action cues; full choir phrase on confirmed hit.,SourceName=Choir - Binding of Isaac}
+      d03 [Sound] Swing | par=OwnersTrident ATTR{Enabled=true,PitchVariation=0,SoundDesign=Choir theme selected by the owner. Short action cues; full choir phrase on confirmed hit.,SourceName=Choir - Binding of Isaac}
+      d03 [Sound] Dive | par=OwnersTrident ATTR{Enabled=true,PitchVariation=0,SoundDesign=Choir theme selected by the owner. Short action cues; full choir phrase on confirmed hit.,SourceName=Choir - Binding of Isaac}
+      d03 [Sound] Hit | par=OwnersTrident ATTR{Enabled=true,PitchVariation=0,SoundDesign=Choir theme selected by the owner. Short action cues; full choir phrase on confirmed hit.,SourceName=Choir - Binding of Isaac}
+      d03 [Sound] Sheath | par=OwnersTrident ATTR{Enabled=true,PitchVariation=0,SoundDesign=Choir theme selected by the owner. Short action cues; full choir phrase on confirmed hit.,SourceName=Choir - Binding of Isaac}
+      d03 [Sound] Cancel | par=OwnersTrident ATTR{Enabled=true,PitchVariation=0,SoundDesign=Choir theme selected by the owner. Short action cues; full choir phrase on confirmed hit.,SourceName=Choir - Binding of Isaac}
+    d02 [Folder] CloneDagger | par=08_Knives
+      d03 [Sound] Equip | par=CloneDagger ATTR{Enabled=true,PitchVariation=0.02,SoundDesign=Blue energy and metallic shimmer, with a short double-image echo.,SourceCreator=ProSoundEffects,SourceName=Magic Whooshes Pass Bys Metallic Shimmering 12,SourceURL=https://create.roblox.com/store/asset/9125647212}
+        d04 [EchoSoundEffect] CloneEcho | par=Equip
+      d03 [Sound] Windup | par=CloneDagger ATTR{Enabled=true,PitchVariation=0.02,SoundDesign=Blue energy and metallic shimmer, with a short double-image echo.,SourceCreator=ProSoundEffects,SourceName=Magic Zoom Up Sharp Tubular Whoosh Fast Hiss 6,SourceURL=https://create.roblox.com/store/asset/9125647922}
+        d04 [EchoSoundEffect] CloneEcho | par=Windup
+      d03 [Sound] Swing | par=CloneDagger ATTR{Enabled=true,PitchVariation=0.02,SoundDesign=Blue energy and metallic shimmer, with a short double-image echo.,SourceCreator=ProSoundEffects,SourceName=Magic Zoom Up Sharp Tubular Whoosh Fast Hiss 8,SourceURL=https://create.roblox.com/store/asset/9125648149}
+        d04 [EchoSoundEffect] CloneEcho | par=Swing
+      d03 [Sound] Dive | par=CloneDagger ATTR{Enabled=true,PitchVariation=0.02,SoundDesign=Blue energy and metallic shimmer, with a short double-image echo.,SourceCreator=ProSoundEffects,SourceName=Magic Whooshes Growly Magic Whooshes Airy Gusts 7,SourceURL=https://create.roblox.com/store/asset/9125646252}
+        d04 [EchoSoundEffect] CloneEcho | par=Dive
+      d03 [Sound] Hit | par=CloneDagger ATTR{Enabled=true,PitchVariation=0.02,SoundDesign=Blue energy and metallic shimmer, with a short double-image echo.,SourceCreator=ProSoundEffects,SourceName=Magic Whooshes Pass Bys Metallic Shimmering 11,SourceURL=https://create.roblox.com/store/asset/9125646917}
+        d04 [EchoSoundEffect] CloneEcho | par=Hit
+      d03 [Sound] Sheath | par=CloneDagger ATTR{Enabled=true,PitchVariation=0.02,SoundDesign=Blue energy and metallic shimmer, with a short double-image echo.,SourceCreator=ProSoundEffects,SourceName=Magic Whooshes Pass Bys Metallic Shimmering 7,SourceURL=https://create.roblox.com/store/asset/9125646918}
+        d04 [EchoSoundEffect] CloneEcho | par=Sheath
+      d03 [Sound] Cancel | par=CloneDagger ATTR{Enabled=true,PitchVariation=0.02,SoundDesign=Blue energy and metallic shimmer, with a short double-image echo.,SourceCreator=ProSoundEffects,SourceName=Magic Zoom Up Sharp Tubular Whoosh Fast Hiss 9,SourceURL=https://create.roblox.com/store/asset/9125648137}
+        d04 [EchoSoundEffect] CloneEcho | par=Cancel
+    d02 [Folder] GhostScythe | par=08_Knives
+      d03 [Sound] Swing | par=GhostScythe
+      d03 [Sound] Cancel | par=GhostScythe
+      d03 [Sound] Hit | par=GhostScythe
+      d03 [Sound] Equip | par=GhostScythe
+      d03 [Sound] Windup | par=GhostScythe
+      d03 [Sound] Sheath | par=GhostScythe
+      d03 [Sound] Dive | par=GhostScythe
+    d02 [Folder] BananaBlade | par=08_Knives ATTR{Description=Quest weapon signature cues. All one-shots end within 3 seconds.}
+      d03 [Sound] Swing | par=BananaBlade ATTR{Enabled=true,KnifeMaxSeconds=0.6521739130434783,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Cancel | par=BananaBlade ATTR{Enabled=true,KnifeMaxSeconds=0.5769230769230769,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Hit | par=BananaBlade ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Food squish,SourceURL=https://create.roblox.com/store/asset/9113660780}
+      d03 [Sound] Equip | par=BananaBlade ATTR{Enabled=true,KnifeMaxSeconds=1,PitchVariation=0.02,SourceName=Banana slip,SourceURL=https://create.roblox.com/store/asset/4390298761}
+      d03 [Sound] Windup | par=BananaBlade ATTR{Enabled=true,KnifeMaxSeconds=0.6521739130434783,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Sheath | par=BananaBlade ATTR{Enabled=true,KnifeMaxSeconds=0.625,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Dive | par=BananaBlade ATTR{Enabled=true,KnifeMaxSeconds=0.9583333333333333,PitchVariation=0.02,SourceName=Banana slip,SourceURL=https://create.roblox.com/store/asset/4390298761}
+    d02 [Folder] CluckBasher | par=08_Knives ATTR{Description=Quest weapon signature cues. All one-shots end within 3 seconds.}
+      d03 [Sound] Swing | par=CluckBasher ATTR{Enabled=true,KnifeMaxSeconds=0.923076923076923,PitchVariation=0.02,SourceCreator=Roboritech,SourceName=Rubber chicken squeak,SourceURL=https://create.roblox.com/store/asset/7507574099}
+      d03 [Sound] Cancel | par=CluckBasher ATTR{Enabled=true,KnifeMaxSeconds=0.625,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Hit | par=CluckBasher ATTR{Enabled=true,KnifeMaxSeconds=1.3043478260869563,PitchVariation=0.02,SourceCreator=Roboritech,SourceName=Rubber chicken squeak,SourceURL=https://create.roblox.com/store/asset/7507574099}
+      d03 [Sound] Equip | par=CluckBasher ATTR{Enabled=true,KnifeMaxSeconds=0.9,PitchVariation=0.02,SourceName=Chicken cluck,SourceURL=https://create.roblox.com/store/asset/77584650945481}
+      d03 [Sound] Windup | par=CluckBasher ATTR{Enabled=true,KnifeMaxSeconds=0.6521739130434783,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Sheath | par=CluckBasher ATTR{Enabled=true,KnifeMaxSeconds=0.782608695652174,PitchVariation=0.02,SourceName=Chicken cluck,SourceURL=https://create.roblox.com/store/asset/77584650945481}
+      d03 [Sound] Dive | par=CluckBasher ATTR{Enabled=true,KnifeMaxSeconds=0.8333333333333333,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+    d02 [Folder] PizzaPunisher | par=08_Knives ATTR{Description=Quest weapon signature cues. All one-shots end within 3 seconds.}
+      d03 [Sound] Swing | par=PizzaPunisher ATTR{Enabled=true,KnifeMaxSeconds=0.5652173913043479,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Food slicing,SourceURL=https://create.roblox.com/store/asset/9113736626}
+      d03 [Sound] Cancel | par=PizzaPunisher ATTR{Enabled=true,KnifeMaxSeconds=0.6818181818181818,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Hit | par=PizzaPunisher ATTR{Enabled=true,KnifeMaxSeconds=2.7,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Food squish,SourceURL=https://create.roblox.com/store/asset/9113660780}
+      d03 [Sound] Equip | par=PizzaPunisher ATTR{Enabled=true,KnifeMaxSeconds=0.6842105263157895,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Food slicing,SourceURL=https://create.roblox.com/store/asset/9113736626}
+      d03 [Sound] Windup | par=PizzaPunisher ATTR{Enabled=true,KnifeMaxSeconds=0.7894736842105263,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Sheath | par=PizzaPunisher ATTR{Enabled=true,KnifeMaxSeconds=0.5416666666666667,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Food slicing,SourceURL=https://create.roblox.com/store/asset/9113736626}
+      d03 [Sound] Dive | par=PizzaPunisher ATTR{Enabled=true,KnifeMaxSeconds=0.8522727272727273,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+    d02 [Folder] Bonker | par=08_Knives ATTR{Description=Comedy Collection signature cues. All one-shots end within 3 seconds.}
+      d03 [Sound] Swing | par=Bonker ATTR{Enabled=true,KnifeMaxSeconds=1.6,PitchVariation=0.02,SourceCreator=Huss Valley Official,SourceName=Whoosh Empty,SourceURL=https://create.roblox.com/store/asset/139094945030276}
+      d03 [Sound] Sheath | par=Bonker ATTR{Enabled=true,KnifeMaxSeconds=1.204,PitchVariation=0.02,SourceCreator=Huss Valley Official,SourceName=Equip l,SourceURL=https://create.roblox.com/store/asset/71019566458117}
+      d03 [Sound] Hit | par=Bonker ATTR{Enabled=true,KnifeMaxSeconds=1.254,PitchVariation=0.02,SourceCreator=Huss Valley Official,SourceName=stab  hit,SourceURL=https://create.roblox.com/store/asset/85632517084534}
+      d03 [Sound] Equip | par=Bonker ATTR{Enabled=true,KnifeMaxSeconds=1.369,PitchVariation=0.02,SourceCreator=Huss Valley Official,SourceName=Equip l,SourceURL=https://create.roblox.com/store/asset/71019566458117}
+      d03 [Sound] Windup | par=Bonker ATTR{Enabled=true,KnifeMaxSeconds=1.404,PitchVariation=0.02,SourceCreator=Huss Valley Official,SourceName=Whoosh Empty,SourceURL=https://create.roblox.com/store/asset/139094945030276}
+      d03 [Sound] Cancel | par=Bonker ATTR{Enabled=true,KnifeMaxSeconds=1.35,PitchVariation=0.02,SourceCreator=Huss Valley Official,SourceName=Whoosh Empty,SourceURL=https://create.roblox.com/store/asset/139094945030276}
+      d03 [Sound] Dive | par=Bonker ATTR{Enabled=true,KnifeMaxSeconds=1.715,PitchVariation=0.02,SourceCreator=Huss Valley Official,SourceName=Dive s,SourceURL=https://create.roblox.com/store/asset/112959677286813}
+      d03 [Sound] DiveHit | par=Bonker ATTR{Enabled=true,KnifeMaxSeconds=1.485,PitchVariation=0.02,SourceCreator=Huss Valley Official,SourceName=cartojnn,SourceURL=https://create.roblox.com/store/asset/121539369252251}
+    d02 [Folder] iSlice | par=08_Knives ATTR{Description=Comedy Collection signature cues. All one-shots end within 3 seconds.}
+      d03 [Sound] Swing | par=iSlice ATTR{Enabled=true,KnifeMaxSeconds=0.75,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Hit | par=iSlice ATTR{Enabled=true,KnifeMaxSeconds=0.7,PitchVariation=0.02,SourceCreator=NotSonicYea352,SourceName=cartoon bonk,SourceURL=https://create.roblox.com/store/asset/122682383632262}
+      d03 [Sound] Equip | par=iSlice ATTR{Enabled=true,KnifeMaxSeconds=0.8,PitchVariation=0.02,SourceCreator=hei13lu,SourceName=End_Call3,SourceURL=https://create.roblox.com/store/asset/95027497857851/}
+      d03 [Sound] Windup | par=iSlice ATTR{Enabled=true,KnifeMaxSeconds=0.6521739130434783,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Cancel | par=iSlice ATTR{Enabled=true,KnifeMaxSeconds=0.625,PitchVariation=0.02,SourceCreator=ProSoundEffects,SourceName=Wood Swish Ruler Whoosh 13,SourceURL=https://create.roblox.com/store/asset/9126283272}
+      d03 [Sound] Dive | par=iSlice ATTR{Enabled=true,KnifeMaxSeconds=0.7,PitchVariation=0.02,SourceCreator=amon_us009,SourceName=camera-flash-sound-effect,SourceURL=https://create.roblox.com/store/asset/135886549399726/}
+      d03 [Sound] Sheath | par=iSlice ATTR{Enabled=true,KnifeMaxSeconds=0.8,PitchVariation=0.02,SourceCreator=hei13lu,SourceName=End_Call3,SourceURL=https://create.roblox.com/store/asset/95027497857851/}
+    d02 [Folder] Voidspine | par=08_Knives
+      d03 [Sound] Equip | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] EquipSignature | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] DiveSignature | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Hit | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] HitSignature | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=Voidspine ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] EmberRare | par=08_Knives
+      d03 [Sound] Equip | par=EmberRare ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=EmberRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=EmberRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=EmberRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=EmberRare ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=EmberRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=EmberRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] GlacialCrown | par=08_Knives
+      d03 [Sound] Equip | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] EquipSignature | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] DiveSignature | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Hit | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] HitSignature | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=GlacialCrown ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] CelestialDragon | par=08_Knives
+      d03 [Sound] Equip | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] EquipSignature | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] DiveSignature | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Hit | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] HitSignature | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=CelestialDragon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] StormTalon | par=08_Knives
+      d03 [Sound] Equip | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] EquipSignature | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] DiveSignature | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Hit | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] HitSignature | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=StormTalon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] CelestialEpic | par=08_Knives
+      d03 [Sound] Equip | par=CelestialEpic ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=CelestialEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=CelestialEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=CelestialEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=CelestialEpic ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=CelestialEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=CelestialEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] FantasyCommon | par=08_Knives
+      d03 [Sound] Equip | par=FantasyCommon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=FantasyCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=FantasyCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=FantasyCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=FantasyCommon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=FantasyCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=FantasyCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] VoidSovereign | par=08_Knives
+      d03 [Sound] Equip | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] EquipSignature | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] DiveSignature | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Hit | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] HitSignature | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=VoidSovereign ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] EmberLegendary | par=08_Knives
+      d03 [Sound] Equip | par=EmberLegendary ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=EmberLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=EmberLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=EmberLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=EmberLegendary ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=EmberLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=EmberLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] EmberEpic | par=08_Knives
+      d03 [Sound] Equip | par=EmberEpic ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=EmberEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=EmberEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=EmberEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=EmberEpic ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=EmberEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=EmberEpic ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] CelestialRare | par=08_Knives
+      d03 [Sound] Equip | par=CelestialRare ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=CelestialRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=CelestialRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=CelestialRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=CelestialRare ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=CelestialRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=CelestialRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] MoltenFang | par=08_Knives
+      d03 [Sound] Equip | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] EquipSignature | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] DiveSignature | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Hit | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] HitSignature | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=MoltenFang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] CelestialCommon | par=08_Knives
+      d03 [Sound] Equip | par=CelestialCommon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=CelestialCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=CelestialCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=CelestialCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=CelestialCommon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=CelestialCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=CelestialCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] FantasyRare | par=08_Knives
+      d03 [Sound] Equip | par=FantasyRare ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=FantasyRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=FantasyRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=FantasyRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=FantasyRare ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=FantasyRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=FantasyRare ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] EmberCommon | par=08_Knives
+      d03 [Sound] Equip | par=EmberCommon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=EmberCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=EmberCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=EmberCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=EmberCommon ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=EmberCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=EmberCommon ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] SolarPhoenix | par=08_Knives
+      d03 [Sound] Equip | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] EquipSignature | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] DiveSignature | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Hit | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] HitSignature | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=SolarPhoenix ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] CelestialLegendary | par=08_Knives
+      d03 [Sound] Equip | par=CelestialLegendary ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=CelestialLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=CelestialLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=CelestialLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Hit | par=CelestialLegendary ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=CelestialLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=CelestialLegendary ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] Moonfang | par=08_Knives
+      d03 [Sound] Equip | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] EquipSignature | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] DiveSignature | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Hit | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] HitSignature | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=Moonfang ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+    d02 [Folder] SpectralReaper | par=08_Knives
+      d03 [Sound] Equip | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] EquipSignature | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Windup | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Swing | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Dive | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] DiveSignature | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Hit | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] HitSignature | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=3,PitchVariation=0.018}
+      d03 [Sound] Sheath | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+      d03 [Sound] Cancel | par=SpectralReaper ATTR{Enabled=true,KnifeMaxSeconds=2,PitchVariation=0.018}
+  d01 [Folder] 09_Collectibles | par=GameAudio
+    d02 [Sound] GemCollect | par=09_Collectibles ATTR{CueKey=Click,Enabled=true,Optional=false,Purpose=Short click on activating a game button with mouse, touch or controller.,SelectionNote=Toolbox trial; asset loads in Studio. Listening approval pending.,SourceCreator=AmbientSorcery,SourceName=ui-simple-reward-collect,SourceURL=https://create.roblox.com/store/asset/82803453482376,TrialSelection=true,VerifiedDuration=0.5773333333333334}
+d00 [Folder] GameAudioMixer | par=SoundService
+  d01 [SoundGroup] Music | par=GameAudioMixer
+  d01 [SoundGroup] Movement | par=GameAudioMixer
+  d01 [SoundGroup] Catching | par=GameAudioMixer
+  d01 [SoundGroup] UI | par=GameAudioMixer
+  d01 [SoundGroup] Rounds | par=GameAudioMixer
+  d01 [SoundGroup] PlayerEvents | par=GameAudioMixer
+  d01 [SoundGroup] Danger | par=GameAudioMixer
+d00 [Folder] GameAudioPlayback | par=SoundService
+d00 [Folder] ShowroomAudioPlayback | par=SoundService
+d00 [Sound] WheelTick | par=SoundService

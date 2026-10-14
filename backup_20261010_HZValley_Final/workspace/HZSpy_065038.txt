@@ -1,0 +1,16 @@
+[06:50:38] ReplicatedStorage.ChickenOrHero.Presentation.SettingsEvent
+    Loaded | { }
+[06:50:41] ReplicatedStorage.ChickenOrHero.Audio.Events
+    CatchConfirmed | { verified=false runner=11666796558 name=Luquinhas_1234685 catcher=2992869339 }
+[06:50:41] ReplicatedStorage.ChickenOrHero.Audio.Events
+    DaggerHit | { runner=11666796558 catcher=2992869339 position=57.38671875, 23, 60.016845703125 dive=false skin=BalloonDagger }
+[06:50:46] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=7231487456 direction=-0.2803606688976288, 0, 0.9598947763442993 item=BearTrap position=101.8736572265625, 21.999357223510742, 29.974910736083984 character=rayandelas_2 kind=Use actorId=7231487456 requestId=7f9f6b19-d717-47a6-9bf3-69e4fc37273b }
+[06:50:46] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=7231487456 character=rayandelas_2 item=BearTrap position=101.8736572265625, 21.999357223510742, 29.974910736083984 kind=BearTrapThrow actorId=7231487456 requestId=7f9f6b19-d717-47a6-9bf3-69e4fc37273b }
+[06:50:46] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=5059458136 direction=0.4955645501613617, -0, 0.8685711026191711 item=BearTrap position=109.339111328125, 22.210220336914062, 34.89183044433594 character=ryan635808 kind=Use actorId=5059458136 requestId=5A55D7C2-D4F3-4C79-B919-D6822455F28F }
+[06:50:46] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { ownerId=5059458136 character=ryan635808 item=BearTrap position=109.339111328125, 22.210220336914062, 34.89183044433594 kind=BearTrapThrow actorId=5059458136 requestId=5A55D7C2-D4F3-4C79-B919-D6822455F28F }
+[06:50:47] ReplicatedStorage.ChickenOrHero.Gear.GearEvent
+    FX | { character=Yurialberto5649 actorId=10451397217 position=117.332763671875, 23, 40.9345703125 duration=0.5 kind=BearTrapSnap side=Right }

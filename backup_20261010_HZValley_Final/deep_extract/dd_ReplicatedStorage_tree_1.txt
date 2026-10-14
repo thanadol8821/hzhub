@@ -1,0 +1,3004 @@
+d00 [ModuleScript] GoatAnalytics | par=ReplicatedStorage
+  d01 [Folder] Client | par=GoatAnalytics
+    d02 [ModuleScript] ClientAnalytics | par=Client
+    d02 [ModuleScript] RemoteConfig | par=Client
+    d02 [ModuleScript] SessionManager | par=Client
+  d01 [Folder] Server | par=GoatAnalytics
+    d02 [ModuleScript] BatchQueue | par=Server
+    d02 [ModuleScript] EconomyTracker | par=Server
+    d02 [ModuleScript] PlayerTracker | par=Server
+    d02 [ModuleScript] RemoteConfig | par=Server
+    d02 [ModuleScript] ReplayRecorder | par=Server
+    d02 [ModuleScript] ReplayUploader | par=Server
+    d02 [ModuleScript] ServerAnalytics | par=Server
+    d02 [ModuleScript] DeviceBuffer | par=Server
+    d02 [LocalScript] DeviceBootstrap | par=Server
+  d01 [Folder] Shared | par=GoatAnalytics
+    d02 [ModuleScript] Config | par=Shared
+    d02 [ModuleScript] EventSchema | par=Shared
+    d02 [ModuleScript] ReplayCodec | par=Shared
+    d02 [ModuleScript] Signal | par=Shared
+    d02 [ModuleScript] Types | par=Shared
+d00 [ModuleScript] chrono | par=ReplicatedStorage
+  d01 [Folder] Client | par=chrono
+    d02 [ModuleScript] ClientClock | par=Client
+    d02 [ModuleScript] InterpolationBuffer | par=Client
+    d02 [ModuleScript] ModelResolver | par=Client
+    d02 [ModuleScript] Player | par=Client
+    d02 [ModuleScript] Receiver | par=Client
+    d02 [ModuleScript] Replicate | par=Client
+    d02 [ModuleScript] Sender | par=Client
+  d01 [Folder] Server | par=chrono
+    d02 [ModuleScript] EntityGrid | par=Server
+    d02 [ModuleScript] Player | par=Server
+    d02 [ModuleScript] Receiver | par=Server
+    d02 [ModuleScript] Replicate | par=Server
+    d02 [ModuleScript] Sender | par=Server
+    d02 [ModuleScript] ServerClock | par=Server
+  d01 [Folder] Shared | par=chrono
+    d02 [ModuleScript] AlignDriver | par=Shared
+    d02 [ModuleScript] ApplyMounts | par=Shared
+    d02 [ModuleScript] Bin | par=Shared
+    d02 [ModuleScript] ClockUnwrap | par=Shared
+    d02 [ModuleScript] Config | par=Shared
+    d02 [ModuleScript] Entity | par=Shared
+    d02 [ModuleScript] Events | par=Shared
+    d02 [ModuleScript] Holder | par=Shared
+    d02 [ModuleScript] InterpolationMath | par=Shared
+    d02 [ModuleScript] ModelHelper | par=Shared
+    d02 [ModuleScript] ReplicationRules | par=Shared
+    d02 [ModuleScript] Signal | par=Shared
+    d02 [ModuleScript] Snapshots | par=Shared
+    d02 [ModuleScript] Stats | par=Shared
+      d03 [RemoteEvent] Stats | par=Stats
+    d02 [ModuleScript] Ticker | par=Shared
+    d02 [ModuleScript] Types | par=Shared
+    d02 [ModuleScript] Warn | par=Shared
+    d02 [Folder] Remotes | par=Shared
+      d03 [RemoteEvent] ClientClockRelay | par=Remotes
+      d03 [RemoteEvent] ClientHeartbeat | par=Remotes
+      d03 [RemoteEvent] ClientLoaded | par=Remotes
+      d03 [UnreliableRemoteEvent] Death | par=Remotes
+      d03 [UnreliableRemoteEvent] Heartbeat | par=Remotes
+      d03 [UnreliableRemoteEvent] Replicate | par=Remotes
+      d03 [RemoteEvent] ReplicateFull | par=Remotes
+      d03 [RemoteEvent] SafeReplicate | par=Remotes
+    d02 [Folder] _CUSTOM_MODEL_REP | par=Shared
+      d03 [Model] init | par=_CUSTOM_MODEL_REP
+d00 [Folder] ChickenOrHero | par=ReplicatedStorage ATTR{UIVersion=Switchable}
+  d01 [Folder] Movement | par=ChickenOrHero
+    d02 [ModuleScript] MovementConfig | par=Movement
+    d02 [ModuleScript] MovementModel | par=Movement
+    d02 [ModuleScript] MovementPresentation | par=Movement
+    d02 [ModuleScript] CameraFeelConfig | par=Movement
+    d02 [ModuleScript] BodyFacingConfig | par=Movement
+    d02 [ModuleScript] BodyFacingModel | par=Movement
+    d02 [ModuleScript] MovementProfiles | par=Movement
+    d02 [ModuleScript] CameraCollision | par=Movement
+    d02 [ModuleScript] BoostInput | par=Movement
+    d02 [ModuleScript] ControlGate | par=Movement
+    d02 [ModuleScript] CrossingBalance | par=Movement
+  d01 [Folder] Presentation | par=ChickenOrHero
+    d02 [ModuleScript] ReviveMarkers | par=Presentation
+    d02 [ModuleScript] DashMeterModel | par=Presentation
+    d02 [ModuleScript] FootDustConfig | par=Presentation
+    d02 [ModuleScript] OverheadConfig | par=Presentation
+    d02 [ModuleScript] CatchMeterModel | par=Presentation
+    d02 [ModuleScript] LeaderboardConfig | par=Presentation
+    d02 [ModuleScript] MapVoteTiming | par=Presentation
+    d02 [ModuleScript] ParticipantDirectory | par=Presentation
+    d02 [ModuleScript] BoostVFXConfig | par=Presentation
+    d02 [ModuleScript] ChoiceSpotlightConfig | par=Presentation
+    d02 [ModuleScript] ThreatIndicatorConfig | par=Presentation
+    d02 [ModuleScript] ThreatIndicatorModel | par=Presentation
+    d02 [ModuleScript] TouchActionButton | par=Presentation
+    d02 [ModuleScript] MatchSummaryConfig | par=Presentation
+    d02 [ModuleScript] CreatorVisibility | par=Presentation
+    d02 [ModuleScript] ReachPose | par=Presentation
+    d02 [ModuleScript] CreatorView | par=Presentation
+    d02 [ModuleScript] ValleyPanels | par=Presentation
+    d02 [ModuleScript] SpectateConfig | par=Presentation
+    d02 [ModuleScript] SpectateGeometry | par=Presentation
+    d02 [ModuleScript] SpectateInput | par=Presentation
+    d02 [ModuleScript] SpectateCamera | par=Presentation
+    d02 [ModuleScript] HudNavigation | par=Presentation
+    d02 [ModuleScript] UpdateLogConfig | par=Presentation
+    d02 [ModuleScript] VerifiedName | par=Presentation
+    d02 [ModuleScript] TouchCombatLayout | par=Presentation
+    d02 [ModuleScript] ValleyTheme | par=Presentation
+    d02 [ModuleScript] EquipmentHudLayout | par=Presentation TAG{NewUIOnly}
+    d02 [ModuleScript] CreatorPolicy | par=Presentation
+    d02 [ModuleScript] AdminConsoleView | par=Presentation
+    d02 [ModuleScript] AnnouncementView | par=Presentation
+    d02 [ModuleScript] OverheadView | par=Presentation
+    d02 [ModuleScript] FullscreenBackdrop | par=Presentation
+    d02 [ModuleScript] GiveawayView | par=Presentation
+    d02 [ModuleScript] GiveawayPicker | par=Presentation
+    d02 [ModuleScript] SpectateView | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] EscapeStreakController | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] HudDrawer | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] HudIcons | par=Presentation TAG{LegacyUIOnly}
+    d02 [RemoteEvent] PrivateServerSettingsEvent | par=Presentation
+    d02 [ModuleScript] HudStyle | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] ValleyToast | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] ServerBrowserView | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] RecapHighlights | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] RecapRewards | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] RecapSoloWin | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] ArmoryStyle | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] AvatarPortraits | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] ChoiceController | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] ChoiceView | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] NotificationDock | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] MapVoteView | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] CrossingBalanceNotice | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] EquipmentHudLayoutLegacy | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] EmoteWheelView | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] NotificationLayout | par=Presentation TAG{LegacyUIOnly}
+    d02 [ModuleScript] UIVersionSwap | par=Presentation
+    d02 [ModuleScript] BonkSplat | par=Presentation
+    d02 [RemoteEvent] SpectateEvent | par=Presentation
+    d02 [RemoteEvent] ScreenTransition | par=Presentation
+    d02 [Folder] UITemplates | par=Presentation
+      d03 [BillboardGui] OverheadUI | par=UITemplates ATTR{LayoutHeight=48,RenderFade=0,RenderScale=1.3,TemplateNotes=Synced from the updated Dummy design, including AFK. Labels are bound to player state; edit this template for live nameplates.}
+        d04 [Frame] Content | par=OverheadUI
+          d05 [TextLabel] Wins | par=Content
+          d05 [TextLabel] DisplayName | par=Content
+          d05 [TextLabel] Username | par=Content
+          d05 [TextLabel] SpecialRank | par=Content
+          d05 [TextLabel] AFK | par=Content
+          d05 [TextLabel] Lvl | par=Content
+          d05 [TextLabel] JourneyTitle | par=Content
+          d05 [TextLabel] TitleDot | par=Content
+          d05 [TextLabel] StatDot1 | par=Content
+          d05 [TextLabel] StatDot2 | par=Content
+    d02 [Trail] WindTrail | par=Presentation
+    d02 [RemoteEvent] BoostRequest | par=Presentation
+    d02 [RemoteEvent] ServerBrowserEvent | par=Presentation
+    d02 [RemoteEvent] MovementGuardEvent | par=Presentation
+    d02 [RemoteEvent] SettingsEvent | par=Presentation
+    d02 [ModuleScript] ValleyHudView | par=Presentation TAG{LegacyUIOnly}
+  d01 [Folder] Audio | par=ChickenOrHero
+    d02 [ModuleScript] AudioCatalog | par=Audio
+    d02 [ModuleScript] AudioConfig | par=Audio
+    d02 [ModuleScript] AudioPolicy | par=Audio
+    d02 [ModuleScript] AudioPlayback | par=Audio
+    d02 [ModuleScript] MovementAudio | par=Audio
+    d02 [ModuleScript] DefaultCharacterAudio | par=Audio
+    d02 [ModuleScript] ThreatAudio | par=Audio
+    d02 [ModuleScript] InterfaceAudio | par=Audio
+    d02 [ModuleScript] DaggerAudio | par=Audio
+    d02 [ModuleScript] FantasyKnifeAudio | par=Audio
+    d02 [RemoteEvent] Events | par=Audio
+    d02 [BindableEvent] PresentationCues | par=Audio
+  d01 [Folder] Bots | par=ChickenOrHero
+    d02 [ModuleScript] BotFrameCodec | par=Bots
+    d02 [ModuleScript] BotDirectory | par=Bots
+    d02 [ModuleScript] ClientBotAnimator | par=Bots
+    d02 [ModuleScript] ClientBotKnife | par=Bots
+    d02 [ModuleScript] ClientBotOutline | par=Bots
+    d02 [ModuleScript] ClientBotKnockdown | par=Bots
+    d02 [ModuleScript] ClientBotRenderer | par=Bots
+    d02 [ModuleScript] BotNetConfig | par=Bots
+    d02 [UnreliableRemoteEvent] BotFrames | par=Bots
+    d02 [UnreliableRemoteEvent] ViewBeacon | par=Bots
+    d02 [Folder] Actors | par=Bots
+  d01 [Folder] Progression | par=ChickenOrHero
+    d02 [ModuleScript] ProgressionConfig | par=Progression
+    d02 [ModuleScript] ProgressionMath | par=Progression
+    d02 [ModuleScript] JourneyConfig | par=Progression
+    d02 [ModuleScript] JourneySeasons | par=Progression
+    d02 [ModuleScript] JourneySeason1Rewards | par=Progression
+    d02 [ModuleScript] JourneyMath | par=Progression
+    d02 [RemoteEvent] JourneyEvent | par=Progression
+  d01 [Folder] Admin | par=ChickenOrHero
+    d02 [ModuleScript] CommandCatalog | par=Admin
+    d02 [ModuleScript] CommandCompletion | par=Admin
+    d02 [ModuleScript] GiveawayRules | par=Admin
+    d02 [ModuleScript] EventHostCatalog | par=Admin
+    d02 [ModuleScript] EventHostLayout | par=Admin
+    d02 [RemoteEvent] AdminEvent | par=Admin
+    d02 [RemoteEvent] GiveawayEvent | par=Admin
+    d02 [RemoteEvent] EventHostRemote | par=Admin
+  d01 [Folder] Weapons | par=ChickenOrHero
+    d02 [ModuleScript] DaggerConfig | par=Weapons
+    d02 [ModuleScript] SkinCatalog | par=Weapons
+    d02 [ModuleScript] ShopConfig | par=Weapons
+    d02 [ModuleScript] KnifeDisplayRig | par=Weapons
+    d02 [ModuleScript] OfferRules | par=Weapons
+    d02 [ModuleScript] DaggerGrip | par=Weapons
+    d02 [ModuleScript] WeaponEffects | par=Weapons
+    d02 [ModuleScript] ScythePose | par=Weapons
+    d02 [ModuleScript] CloneEchoMotion | par=Weapons
+    d02 [ModuleScript] CloneAbilityConfig | par=Weapons
+    d02 [ModuleScript] CloneSplitEffects | par=Weapons
+    d02 [ModuleScript] FantasySkinCatalog | par=Weapons
+    d02 [ModuleScript] KnifePerks | par=Weapons
+    d02 [ModuleScript] KnifeVFXSetup | par=Weapons
+    d02 [ModuleScript] ComedySkinCatalog | par=Weapons
+    d02 [ModuleScript] EmoteStoreClient | par=Weapons TAG{LegacyUIOnly}
+    d02 [ModuleScript] DailyEmoteOffers | par=Weapons TAG{LegacyUIOnly}
+    d02 [RemoteEvent] GhostAbilityEvent | par=Weapons
+    d02 [ModuleScript] BonkerBundle | par=Weapons
+    d02 [ModuleScript] BundlePanel | par=Weapons
+    d02 [RemoteEvent] ArmoryEvent | par=Weapons
+    d02 [BindableEvent] ArmoryNavigation | par=Weapons
+    d02 [RemoteEvent] CloneAbilityEvent | par=Weapons
+    d02 [Folder] Models | par=Weapons
+      d03 [Model] Bonker | par=Models ATTR{CosmeticOnly=true,Description=Comedy Collection skin; inherited dagger animation and grip.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0,-0.707,0.707,0,0.707,0.707,-1,0,0,SourceMesh=rbxassetid://101501519462560,SourceReference=Workspace.ClownHammer,StowedOffset=0.43,-0.38,1.18|-0.121,-0.697,0.707,0.121,0.697,0.707,-0.985,0.171,0,ThumbAxis=-0.010,0.999,0.041,ThumbNormal=0.998,0.012,-0.054}
+        d04 [Part] Handle | par=Bonker
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=Bonker
+        d04 [MeshPart] StowedBlade | par=Bonker
+      d03 [Model] BaseDagger | par=Models ATTR{Description=Align future skins to Handle; preserve the GripC0/GripC1 joint and BladeWeld offsets.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,StowedOffset=0.04,-1.15,0.59|-0.477,-0.878,-0.0508,-0.873,0.466,0.148,-0.106,0.115,-0.988,ThumbAxis=-0.729,-0.684,-0.022,ThumbNormal=0.142,-0.182,0.973}
+        d04 [Part] Handle | par=BaseDagger
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=BaseDagger
+          d05 [SurfaceAppearance] tripo_mat_f25f3164-8ea8-4a14-b871-3270e5f190a1 | par=Blade
+        d04 [MeshPart] StowedBlade | par=BaseDagger
+          d05 [SurfaceAppearance] tripo_mat_f25f3164-8ea8-4a14-b871-3270e5f190a1 | par=StowedBlade
+      d03 [Model] VIPDagger | par=Models ATTR{Description=VIP cosmetic. Gold blade aligned to the original animated Handle; identical catch reach and timing.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.309,0,0.951,0.951,0,0.309,0,1,0,SourceReference=ServerStorage.SkinSources.VIPDagger.DisplayReference,StowedOffset=0.07,-1.10,0.53|-0.309,0,0.951,0.951,0,0.309,0,1,0,ThumbAxis=-0.003,-0.007,1.000,ThumbNormal=0.007,1.000,0.007}
+        d04 [Part] Handle | par=VIPDagger
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=VIPDagger
+          d05 [SurfaceAppearance] tripo_node_4a0a7974-cb38-4c16-b43e-49e5775d6491_material | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=VIPDagger
+          d05 [SurfaceAppearance] tripo_node_4a0a7974-cb38-4c16-b43e-49e5775d6491_material | par=StowedBlade
+        d04 [Part] HeldVFX | par=VIPDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=100,VFXOriginalRate=1000,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=5,VFXOriginalRate=5,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=40,VFXOriginalRate=100,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=100,VFXOriginalRate=1000,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=40,VFXOriginalRate=100,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=HeldVFX
+        d04 [Part] StowedVFX | par=VIPDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=100,VFXOriginalRate=1000,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=5,VFXOriginalRate=5,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=40,VFXOriginalRate=100,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=100,VFXOriginalRate=1000,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=40,VFXOriginalRate=100,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=StowedVFX
+      d03 [Model] DevelopersPencil | par=Models ATTR{Description=Owner's pencil. Handle follows existing dagger animations; visible mesh is offset to the grip marker.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.766,0.643,0,0.643,0.766,0,0,0,-1,SourceReference=ServerStorage.SkinSources.DevelopersPencil.DisplayReference,StowedOffset=0.05,-1.14,0.58|-0.766,0.643,0,0.643,0.766,0,0,0,-1,ThumbAxis=-0.524,0.852,-0.005,ThumbNormal=-0.186,-0.119,-0.975}
+        d04 [Part] Handle | par=DevelopersPencil
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=DevelopersPencil
+          d05 [SurfaceAppearance] tripo_node_1be60abf-fc21-453b-b788-2c1c4ca0dea3_material | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=DevelopersPencil
+          d05 [SurfaceAppearance] tripo_node_1be60abf-fc21-453b-b788-2c1c4ca0dea3_material | par=StowedBlade
+        d04 [Part] HeldVFX | par=DevelopersPencil ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=8,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=HeldVFX
+        d04 [Part] StowedVFX | par=DevelopersPencil ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=8,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=StowedVFX
+      d03 [Model] SecretPencil | par=Models ATTR{Description=Owner's pencil. Handle follows existing dagger animations; visible mesh is offset to the grip marker.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.766,0.643,0,0.643,0.766,0,0,0,-1,SourceReference=ServerStorage.SkinSources.DevelopersPencil.DisplayReference,StowedOffset=0.05,-1.14,0.75|3.35e-08,0.643,-0.766,-2.81e-08,0.766,0.643,1,0,4.37e-08,ThumbAxis=-0.007,0.034,-0.999,ThumbNormal=-0.980,-0.201,-0.000}
+        d04 [Part] Handle | par=SecretPencil
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [Part] HeldVFX | par=SecretPencil ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=8,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [WeldConstraint] WeldConstraint | par=HeldVFX
+        d04 [Part] StowedVFX | par=SecretPencil ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=8,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [WeldConstraint] WeldConstraint | par=StowedVFX
+        d04 [MeshPart] Blade | par=SecretPencil
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=SecretPencil
+      d03 [Model] CloneDagger | par=Models ATTR{Description=Finished Clone Dagger. Cosmetic geometry only; existing dagger animations and reach.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.317,0.948,1.55e-16,-0.948,0.317,-7.73e-17,-1.22e-16,-1.22e-16,1,SourceReference=ServerStorage.SkinSources.CloneDagger.DisplayReference,StowedOffset=0.07,-1.10,0.64|0.317,0.948,1.55e-16,-0.948,0.317,-7.73e-17,-1.22e-16,-1.22e-16,1,ThumbAxis=0.010,0.998,0.059,ThumbNormal=-0.031,0.059,-0.998,VFXBudgetPerSecond=120}
+        d04 [Part] Handle | par=CloneDagger
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=CloneDagger
+          d05 [SurfaceAppearance] tripo_node_dec7dd99-18d6-407a-9d14-552731bd17bf_material | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=CloneDagger
+          d05 [SurfaceAppearance] tripo_node_dec7dd99-18d6-407a-9d14-552731bd17bf_material | par=StowedBlade
+        d04 [Part] BladeVFX1 | par=CloneDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] CloneEnergy1 | par=BladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy2 | par=BladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy3 | par=BladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy4 | par=BladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy5 | par=BladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy6 | par=BladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=BladeVFX1
+        d04 [Part] StowedBladeVFX1 | par=CloneDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] CloneEnergy1 | par=StowedBladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy2 | par=StowedBladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy3 | par=StowedBladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy4 | par=StowedBladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy5 | par=StowedBladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] CloneEnergy6 | par=StowedBladeVFX1 ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=20,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=StowedBladeVFX1
+      d03 [Model] GhostScythe | par=Models ATTR{Description=Owner's pencil. Handle follows existing dagger animations; visible mesh is offset to the grip marker.,DiveRecoveryLiftDegrees=90,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.94,0.342,0,0.342,0.94,0,0,0,-1,ScythePoseProfile=R6Scythe_v1,SourceReference=ServerStorage.SkinSources.DevelopersPencil.DisplayReference,StowedOffset=-0.92,-0.85,0.65|-0.94,0.342,0,0.342,0.94,0,0,0,-1,ThumbAxis=0.108,0.994,0.004,ThumbNormal=0.002,0.004,-1.000,WeaponStyle=Scythe}
+        d04 [Part] Handle | par=GhostScythe
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [Part] HeldVFX | par=GhostScythe ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=8,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{VFXAuthoredEnabled=true,VFXBaseRate=5}
+          d05 [Weld] VFXWeld | par=HeldVFX
+        d04 [Part] StowedVFX | par=GhostScythe ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{VFXAuthoredEnabled=true,VFXBaseRate=5}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=25,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalRate=35,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=8,VFXOriginalRate=25,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=StowedVFX
+        d04 [MeshPart] Blade | par=GhostScythe
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=GhostScythe
+          d05 [Attachment] GripPoint | par=StowedBlade
+      d03 [Model] SpoonDagger | par=Models ATTR{Description=Spoon cosmetic. Shared catch reach, timing and animated Handle.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,HeldBowlFlipped=true,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.105,-0.423,-0.9,-0.987,-0.0683,0.147,-0.124,0.904,-0.41,SourceReference=ServerStorage.SkinSources.SpoonDagger.DisplayReference,StowedOffset=0.08,-1.15,0.71|-0.105,-0.423,-0.9,-0.987,-0.0683,0.147,-0.124,0.904,-0.41,ThumbAxis=0.411,0.471,0.781,ThumbNormal=-0.140,0.879,-0.456}
+        d04 [Part] Handle | par=SpoonDagger
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=SpoonDagger
+          d05 [SurfaceAppearance] tripo_mat_bc86f1d6-2dbc-4fa7-aa65-629fba3d7890 | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=SpoonDagger
+          d05 [SurfaceAppearance] tripo_mat_bc86f1d6-2dbc-4fa7-aa65-629fba3d7890 | par=StowedBlade
+      d03 [Model] IceCreamDagger | par=Models ATTR{CosmeticOnly=true,Description=Ice-cream scythe with three welded mist volumes. Shared animations and catch reach.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,HeldBladeRollDegrees=180,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.625,-0.753,-0.205,-0.78,-0.601,-0.174,0.00787,0.269,-0.963,ReleaseStatus=Coming soon; Robux pass pending. Owner complimentary.,ScythePoseProfile=R6Scythe_v1,SourceMesh=rbxassetid://95510491590697,SourceReference=ServerStorage.SkinSources.IceCreamDagger.DisplayReference,StowedOffset=-0.03,-1.44,0.48|0.625,-0.753,-0.205,-0.78,-0.601,-0.174,0.00787,0.269,-0.963,ThumbAxis=-0.279,0.931,0.237,ThumbNormal=-0.011,0.244,-0.970,WeaponStyle=Scythe}
+        d04 [Part] Handle | par=IceCreamDagger
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=IceCreamDagger
+          d05 [SurfaceAppearance] tripo_node_d95f1608-fce9-4718-83c7-4c90a48a49de_material | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=IceCreamDagger
+          d05 [SurfaceAppearance] tripo_node_d95f1608-fce9-4718-83c7-4c90a48a49de_material | par=StowedBlade
+        d04 [Part] HeldVFX_Shaft | par=IceCreamDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] IceMist | par=HeldVFX_Shaft ATTR{Pack=SoulShroud Ultimate VFX Pack,PreviousZOffset=-1.850000023841858,VFXAuthoredEnabled=true,VFXBaseRate=100,VFXOriginalCombinedRate=300,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=HeldVFX_Shaft
+        d04 [Part] HeldVFX_CurveTip | par=IceCreamDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] IceMist | par=HeldVFX_CurveTip ATTR{Pack=SoulShroud Ultimate VFX Pack,PreviousZOffset=-1.850000023841858,VFXAuthoredEnabled=true,VFXBaseRate=45,VFXOriginalCombinedRate=300,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=HeldVFX_CurveTip
+        d04 [Part] HeldVFX_CurveBend | par=IceCreamDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] IceMist | par=HeldVFX_CurveBend ATTR{Pack=SoulShroud Ultimate VFX Pack,PreviousZOffset=-1.850000023841858,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalCombinedRate=300,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=HeldVFX_CurveBend
+        d04 [Part] StowedVFX_Shaft | par=IceCreamDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] IceMist | par=StowedVFX_Shaft ATTR{Pack=SoulShroud Ultimate VFX Pack,PreviousZOffset=-1.850000023841858,VFXAuthoredEnabled=true,VFXBaseRate=100,VFXOriginalCombinedRate=300,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=StowedVFX_Shaft
+        d04 [Part] StowedVFX_CurveTip | par=IceCreamDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] IceMist | par=StowedVFX_CurveTip ATTR{Pack=SoulShroud Ultimate VFX Pack,PreviousZOffset=-1.850000023841858,VFXAuthoredEnabled=true,VFXBaseRate=45,VFXOriginalCombinedRate=300,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=StowedVFX_CurveTip
+        d04 [Part] StowedVFX_CurveBend | par=IceCreamDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] IceMist | par=StowedVFX_CurveBend ATTR{Pack=SoulShroud Ultimate VFX Pack,PreviousZOffset=-1.850000023841858,VFXAuthoredEnabled=true,VFXBaseRate=35,VFXOriginalCombinedRate=300,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=StowedVFX_CurveBend
+      d03 [Model] BalloonDagger | par=Models ATTR{CosmeticOnly=true,Description=Cosmetic mesh aligned to the standard Handle. Shared catch range is unchanged.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.857,-0.515,0,-0.515,-0.857,0,0,0,-1,SourceMesh=rbxassetid://93493648750547,StowedOffset=-0.19,-1.32,0.60|0.857,-0.515,0,-0.515,-0.857,0,0,0,-1,ThumbAxis=0.618,-0.786,0.004,ThumbNormal=0.038,0.035,0.999}
+        d04 [Part] Handle | par=BalloonDagger
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=BalloonDagger
+          d05 [SurfaceAppearance] tripo_node_91fdec31-5225-458b-8b2c-539dc9ab5e0d_material | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=BalloonDagger
+          d05 [SurfaceAppearance] tripo_node_91fdec31-5225-458b-8b2c-539dc9ab5e0d_material | par=StowedBlade
+      d03 [Model] TopWinsDagger | par=Models ATTR{CosmeticOnly=true,Description=Cosmetic mesh aligned to the standard Handle. Shared catch range is unchanged.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.683,0.726,0.0803,-0.553,0.442,0.706,0.477,-0.526,0.704,SourceMesh=rbxassetid://100138183571166,StowedOffset=0.08,-1.21,0.66|0.683,0.726,0.0803,-0.553,0.442,0.706,0.477,-0.526,0.704,ThumbAxis=0.483,0.798,0.360,ThumbNormal=-0.278,0.530,-0.801}
+        d04 [Part] Handle | par=TopWinsDagger
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=TopWinsDagger
+          d05 [SurfaceAppearance] tripo_node_65573391-934a-4544-81ab-b2a9bccb7f9d_material | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=TopWinsDagger
+          d05 [SurfaceAppearance] tripo_node_65573391-934a-4544-81ab-b2a9bccb7f9d_material | par=StowedBlade
+        d04 [Part] HeldVFX | par=TopWinsDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=5,VFXOriginalRate=5,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=7,VFXOriginalRate=7,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=2.5,VFXOriginalRate=2.5,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=HeldVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=7,VFXOriginalRate=7,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=HeldVFX
+        d04 [Part] StowedVFX | par=TopWinsDagger ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=5,VFXOriginalRate=5,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=7,VFXOriginalRate=7,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=2.5,VFXOriginalRate=2.5,Version=1.8,Website=bz1studios.com}
+          d05 [ParticleEmitter] ParticleEmitter | par=StowedVFX ATTR{Pack=SoulShroud Ultimate VFX Pack,VFXAuthoredEnabled=true,VFXBaseRate=7,VFXOriginalRate=7,Version=1.8,Website=bz1studios.com}
+          d05 [Weld] VFXWeld | par=StowedVFX
+      d03 [Model] OwnersTrident | par=Models ATTR{CosmeticOnly=true,Description=Align future skins to Handle; preserve the GripC0/GripC1 joint and BladeWeld offsets.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.326,-0.946,-1.56e-16,0.946,-0.326,7.59e-17,-1.22e-16,-1.22e-16,1,SourceMesh=rbxassetid://137699685348845,SourceReference=ServerStorage.SkinSources.OwnersTrident.DisplayReference,StowedOffset=-0.44,-1.28,0.60|-0.326,-0.946,-1.56e-16,0.946,-0.326,7.59e-17,-1.22e-16,-1.22e-16,1,ThumbAxis=0.002,1.000,0.000,ThumbNormal=0.007,0.000,-1.000}
+        d04 [Part] Handle | par=OwnersTrident
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=OwnersTrident
+          d05 [SurfaceAppearance] tripo_node_6f88c8cc-33ba-4fb0-88a6-9df007ef9650_material | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=OwnersTrident
+          d05 [SurfaceAppearance] tripo_node_6f88c8cc-33ba-4fb0-88a6-9df007ef9650_material | par=StowedBlade
+        d04 [Part] HeldVFX_Celestial | par=OwnersTrident ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Attachment] CelestialPoint1 | par=HeldVFX_Celestial
+          d05 [Attachment] CelestialPoint2 | par=HeldVFX_Celestial
+            d06 [Beam] Beam | par=CelestialPoint2 ATTR{PreviousZOffset=-1,VFXAuthoredEnabled=true}
+          d05 [Attachment] CelestialPoint3 | par=HeldVFX_Celestial
+          d05 [Attachment] CelestialPoint4 | par=HeldVFX_Celestial
+            d06 [ParticleEmitter] ParticleEmitter | par=CelestialPoint4 ATTR{Pack=SoulShroud Ultimate VFX Pack,PreviousZOffset=-1,VFXAuthoredEnabled=true,VFXBaseRate=13,Version=1.8,Website=bz1studios.com}
+          d05 [Attachment] CelestialPoint5 | par=HeldVFX_Celestial
+          d05 [Attachment] CelestialPoint6 | par=HeldVFX_Celestial
+            d06 [Beam] Beam | par=CelestialPoint6 ATTR{PreviousZOffset=-1,VFXAuthoredEnabled=true}
+          d05 [Weld] VFXWeld | par=HeldVFX_Celestial
+        d04 [Part] StowedVFX_Celestial | par=OwnersTrident ATTR{WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Attachment] CelestialPoint1 | par=StowedVFX_Celestial
+          d05 [Attachment] CelestialPoint2 | par=StowedVFX_Celestial
+            d06 [Beam] Beam | par=CelestialPoint2 ATTR{PreviousZOffset=-1,VFXAuthoredEnabled=true}
+          d05 [Attachment] CelestialPoint3 | par=StowedVFX_Celestial
+          d05 [Attachment] CelestialPoint4 | par=StowedVFX_Celestial
+            d06 [ParticleEmitter] ParticleEmitter | par=CelestialPoint4 ATTR{Pack=SoulShroud Ultimate VFX Pack,PreviousZOffset=-1,VFXAuthoredEnabled=true,VFXBaseRate=13,Version=1.8,Website=bz1studios.com}
+          d05 [Attachment] CelestialPoint5 | par=StowedVFX_Celestial
+          d05 [Attachment] CelestialPoint6 | par=StowedVFX_Celestial
+            d06 [Beam] Beam | par=CelestialPoint6 ATTR{PreviousZOffset=-1,VFXAuthoredEnabled=true}
+          d05 [Weld] VFXWeld | par=StowedVFX_Celestial
+      d03 [Model] CopperBite | par=Models ATTR{Description=Copper Bite · Common crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Common,StowedOffset=0.06,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.053,-0.004,ThumbNormal=0.003,0.032,-0.999}
+        d04 [Part] Handle | par=CopperBite
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=CopperBite
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=CopperBite
+      d03 [Model] Ashsteel | par=Models ATTR{Description=Ashsteel · Common crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Common,StowedOffset=0.06,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.053,-0.000,ThumbNormal=0.000,-0.003,-1.000}
+        d04 [Part] Handle | par=Ashsteel
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=Ashsteel
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=Ashsteel
+      d03 [Model] AmberSting | par=Models ATTR{Description=Amber Sting · Rare crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Rare,StowedOffset=0.05,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.038,-0.006,ThumbNormal=0.007,-0.035,-0.999}
+        d04 [Part] Handle | par=AmberSting
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=AmberSting
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=AmberSting
+      d03 [Model] RoseQuartz | par=Models ATTR{Description=Rose Quartz · Rare crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Rare,StowedOffset=0.05,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.037,-0.019,ThumbNormal=0.021,-0.048,-0.999}
+        d04 [Part] Handle | par=RoseQuartz
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=RoseQuartz
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=RoseQuartz
+      d03 [Model] MoltenFang | par=Models ATTR{Description=Molten Fang · Epic crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Epic,StowedOffset=0.05,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.054,0.000,ThumbNormal=-0.002,0.034,-0.999}
+        d04 [MeshPart] Blade | par=MoltenFang
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=MoltenFang
+        d04 [Part] BladeAura | par=MoltenFang ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=BladeAura
+          d05 [Attachment] EdgeTip | par=BladeAura
+            d06 [ParticleEmitter] MoltenFangMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=8}
+          d05 [Attachment] EdgeHeel | par=BladeAura
+          d05 [Trail] BladeStreak | par=BladeAura ATTR{VFXAuthoredEnabled=true}
+        d04 [Part] StowedBladeAura | par=MoltenFang ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=StowedBladeAura
+          d05 [Attachment] EdgeTip | par=StowedBladeAura
+            d06 [ParticleEmitter] MoltenFangMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=8}
+          d05 [Attachment] EdgeHeel | par=StowedBladeAura
+          d05 [Trail] BladeStreak | par=StowedBladeAura ATTR{VFXAuthoredEnabled=true}
+        d04 [Part] Handle | par=MoltenFang
+          d05 [Weld] BladeWeld | par=Handle
+      d03 [Model] SpectralReaper | par=Models ATTR{Description=Spectral Reaper · Epic crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Epic,StowedOffset=0.05,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.041,-0.006,ThumbNormal=0.006,-0.018,-1.000}
+        d04 [Part] Handle | par=SpectralReaper
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=SpectralReaper
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=SpectralReaper
+        d04 [Part] BladeAura | par=SpectralReaper ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=BladeAura
+          d05 [Attachment] EdgeTip | par=BladeAura
+            d06 [ParticleEmitter] SpectralReaperMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=7}
+          d05 [Attachment] EdgeHeel | par=BladeAura
+          d05 [Trail] BladeStreak | par=BladeAura ATTR{VFXAuthoredEnabled=true}
+        d04 [Part] StowedBladeAura | par=SpectralReaper ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=StowedBladeAura
+          d05 [Attachment] EdgeTip | par=StowedBladeAura
+            d06 [ParticleEmitter] SpectralReaperMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=7}
+          d05 [Attachment] EdgeHeel | par=StowedBladeAura
+          d05 [Trail] BladeStreak | par=StowedBladeAura ATTR{VFXAuthoredEnabled=true}
+      d03 [Model] SolarPhoenix | par=Models ATTR{Description=Solar Phoenix · Legendary crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Legendary,StowedOffset=0.05,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.031,0.007,ThumbNormal=-0.008,0.007,-1.000}
+        d04 [Part] StowedBladeAura | par=SolarPhoenix ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=StowedBladeAura
+          d05 [Attachment] EdgeTip | par=StowedBladeAura
+            d06 [ParticleEmitter] SolarPhoenixMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=12}
+          d05 [Attachment] EdgeHeel | par=StowedBladeAura
+          d05 [Trail] BladeStreak | par=StowedBladeAura ATTR{VFXAuthoredEnabled=true}
+        d04 [Part] Handle | par=SolarPhoenix
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=SolarPhoenix
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=SolarPhoenix
+        d04 [Part] BladeAura | par=SolarPhoenix ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=BladeAura
+          d05 [Attachment] EdgeTip | par=BladeAura
+            d06 [ParticleEmitter] SolarPhoenixMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=12}
+          d05 [Attachment] EdgeHeel | par=BladeAura
+          d05 [Trail] BladeStreak | par=BladeAura ATTR{VFXAuthoredEnabled=true}
+      d03 [Model] VoidSovereign | par=Models ATTR{Description=Void Sovereign · Legendary crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Legendary,StowedOffset=0.04,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.998,-0.061,0.001,ThumbNormal=-0.001,-0.013,-1.000}
+        d04 [Part] Handle | par=VoidSovereign
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=VoidSovereign
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=VoidSovereign
+        d04 [Part] BladeAura | par=VoidSovereign ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=BladeAura
+          d05 [Attachment] EdgeTip | par=BladeAura
+            d06 [ParticleEmitter] VoidSovereignMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=10}
+          d05 [Attachment] EdgeHeel | par=BladeAura
+          d05 [Trail] BladeStreak | par=BladeAura ATTR{VFXAuthoredEnabled=true}
+        d04 [Part] StowedBladeAura | par=VoidSovereign ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=StowedBladeAura
+          d05 [Attachment] EdgeTip | par=StowedBladeAura
+            d06 [ParticleEmitter] VoidSovereignMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=10}
+          d05 [Attachment] EdgeHeel | par=StowedBladeAura
+          d05 [Trail] BladeStreak | par=StowedBladeAura ATTR{VFXAuthoredEnabled=true}
+      d03 [Model] IronFang | par=Models ATTR{Description=Iron Fang · Common crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Common,StowedOffset=0.06,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.998,-0.059,-0.002,ThumbNormal=0.003,-0.028,-1.000}
+        d04 [MeshPart] StowedBlade | par=IronFang
+        d04 [Part] Handle | par=IronFang
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=IronFang
+          d05 [Attachment] GripPoint | par=Blade
+      d03 [Model] ForestEdge | par=Models ATTR{Description=Forest Edge · Common crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Common,StowedOffset=0.06,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.050,-0.004,ThumbNormal=0.008,-0.075,-0.997}
+        d04 [Part] Handle | par=ForestEdge
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=ForestEdge
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=ForestEdge
+      d03 [Model] TidalShard | par=Models ATTR{Description=Tidal Shard · Rare crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Rare,StowedOffset=0.05,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.044,-0.007,ThumbNormal=0.007,0.017,-1.000}
+        d04 [Part] Handle | par=TidalShard
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=TidalShard
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=TidalShard
+      d03 [Model] VenomThorn | par=Models ATTR{Description=Venom Thorn · Rare crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Rare,StowedOffset=0.05,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.052,-0.002,ThumbNormal=0.004,-0.036,-0.999}
+        d04 [Part] Handle | par=VenomThorn
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=VenomThorn
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=VenomThorn
+      d03 [Model] StormTalon | par=Models ATTR{Description=Storm Talon · Epic crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Epic,StowedOffset=0.04,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.995,-0.098,-0.012,ThumbNormal=0.010,0.022,-1.000}
+        d04 [Part] Handle | par=StormTalon
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=StormTalon
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=StormTalon
+        d04 [Part] BladeAura | par=StormTalon ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=BladeAura
+          d05 [Attachment] EdgeTip | par=BladeAura
+            d06 [ParticleEmitter] StormTalonMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=12}
+          d05 [Attachment] EdgeHeel | par=BladeAura
+          d05 [Trail] BladeStreak | par=BladeAura ATTR{VFXAuthoredEnabled=true}
+        d04 [Part] StowedBladeAura | par=StormTalon ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=StowedBladeAura
+          d05 [Attachment] EdgeTip | par=StowedBladeAura
+            d06 [ParticleEmitter] StormTalonMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=12}
+          d05 [Attachment] EdgeHeel | par=StowedBladeAura
+          d05 [Trail] BladeStreak | par=StowedBladeAura ATTR{VFXAuthoredEnabled=true}
+      d03 [Model] Moonfang | par=Models ATTR{Description=Moonfang · Epic crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Epic,StowedOffset=0.06,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-1.000,-0.029,-0.006,ThumbNormal=0.005,0.008,-1.000}
+        d04 [Part] Handle | par=Moonfang
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=Moonfang
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=Moonfang
+        d04 [Part] BladeAura | par=Moonfang ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=BladeAura
+          d05 [Attachment] EdgeTip | par=BladeAura
+            d06 [ParticleEmitter] MoonfangMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=6}
+          d05 [Attachment] EdgeHeel | par=BladeAura
+          d05 [Trail] BladeStreak | par=BladeAura ATTR{VFXAuthoredEnabled=true}
+        d04 [Part] StowedBladeAura | par=Moonfang ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=StowedBladeAura
+          d05 [Attachment] EdgeTip | par=StowedBladeAura
+            d06 [ParticleEmitter] MoonfangMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=6}
+          d05 [Attachment] EdgeHeel | par=StowedBladeAura
+          d05 [Trail] BladeStreak | par=StowedBladeAura ATTR{VFXAuthoredEnabled=true}
+      d03 [Model] GlacialCrown | par=Models ATTR{Description=Glacial Crown · Legendary crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Legendary,StowedOffset=0.04,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-1.000,-0.020,-0.004,ThumbNormal=0.004,-0.015,-1.000}
+        d04 [Part] Handle | par=GlacialCrown
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=GlacialCrown
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=GlacialCrown
+        d04 [Part] BladeAura | par=GlacialCrown ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=BladeAura
+          d05 [Attachment] EdgeTip | par=BladeAura
+            d06 [ParticleEmitter] GlacialCrownMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=12}
+          d05 [Attachment] EdgeHeel | par=BladeAura
+          d05 [Trail] BladeStreak | par=BladeAura ATTR{VFXAuthoredEnabled=true}
+        d04 [Part] StowedBladeAura | par=GlacialCrown ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=StowedBladeAura
+          d05 [Attachment] EdgeTip | par=StowedBladeAura
+            d06 [ParticleEmitter] GlacialCrownMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=12}
+          d05 [Attachment] EdgeHeel | par=StowedBladeAura
+          d05 [Trail] BladeStreak | par=StowedBladeAura ATTR{VFXAuthoredEnabled=true}
+      d03 [Model] CelestialDragon | par=Models ATTR{Description=Celestial Dragon · Legendary crate skin,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,Rarity=Legendary,StowedOffset=0.05,-1.10,0.53|-0.951,-0.309,0,-0.309,0.951,0,0,0,-1,ThumbAxis=-0.999,-0.030,-0.012,ThumbNormal=0.014,-0.056,-0.998}
+        d04 [Part] Handle | par=CelestialDragon
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=CelestialDragon
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=CelestialDragon
+        d04 [Part] BladeAura | par=CelestialDragon ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=BladeAura
+          d05 [Attachment] EdgeTip | par=BladeAura
+            d06 [ParticleEmitter] CelestialDragonMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=10}
+          d05 [Attachment] EdgeHeel | par=BladeAura
+          d05 [Trail] BladeStreak | par=BladeAura ATTR{VFXAuthoredEnabled=true}
+        d04 [Part] StowedBladeAura | par=CelestialDragon ATTR{KnifeVFXGenerated=true,WeaponVFX=true} TAG{ValleyWeaponVFX}
+          d05 [Weld] VFXWeld | par=StowedBladeAura
+          d05 [Attachment] EdgeTip | par=StowedBladeAura
+            d06 [ParticleEmitter] CelestialDragonMotes | par=EdgeTip ATTR{VFXAuthoredEnabled=true,VFXBaseRate=10}
+          d05 [Attachment] EdgeHeel | par=StowedBladeAura
+          d05 [Trail] BladeStreak | par=StowedBladeAura ATTR{VFXAuthoredEnabled=true}
+      d03 [Model] Bloodthorn | par=Models ATTR{Description=Forged from crimson crystal and forked at the guard. It's said to grow sharper with every wound it opens.,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.866,-0.5,0,0.5,0.866,0,0,0,1,Rarity=Legendary,SourceMesh=rbxassetid://83763686664233,SourceReference=Workspace.ComedyWeapons.Banana Blade,StowedOffset=0.00,-0.08,0.65|0.866,-0.5,0,0.5,0.866,0,0,0,1,ThumbAxis=0.747,0.664,0.043,ThumbNormal=-0.272,0.363,-0.891}
+        d04 [MeshPart] Blade | par=Bloodthorn
+          d05 [SurfaceAppearance] de5ef04c_5de0_49fd_9bfc_67db3c6754c7 | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=Bloodthorn
+          d05 [SurfaceAppearance] de5ef04c_5de0_49fd_9bfc_67db3c6754c7 | par=StowedBlade
+        d04 [Part] Handle | par=Bloodthorn
+          d05 [Weld] BladeWeld | par=Handle
+      d03 [Model] VipersFang | par=Models ATTR{Description=A curved blade of venom-green steel, ringed with golden hooks that bite on the way in and tear on the way out.,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.866,-0.5,0,0.5,0.866,0,0,0,1,Rarity=Epic,SourceMesh=rbxassetid://83763686664233,SourceReference=Workspace.ComedyWeapons.Banana Blade,StowedOffset=0.00,-0.08,0.65|0.866,-0.5,0,0.5,0.866,0,0,0,1,ThumbAxis=-0.760,0.622,0.187,ThumbNormal=-0.002,0.286,-0.958}
+        d04 [MeshPart] Blade | par=VipersFang
+          d05 [SurfaceAppearance] Texture | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=VipersFang
+          d05 [SurfaceAppearance] Texture | par=StowedBlade
+        d04 [Part] Handle | par=VipersFang
+          d05 [Weld] BladeWeld | par=Handle
+      d03 [Model] Vowbreaker | par=Models ATTR{Description=Forged to seal an oath and then used to break it. It cuts through any promise, pact or bond, and nobody who swore on it has kept their word.,DiveAnim=rbxassetid://102572813611768,EquipAnim=rbxassetid://94372596497551,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.866,-0.5,0,0.5,0.866,0,0,0,1,Rarity=Legendary,SourceMesh=rbxassetid://83763686664233,SourceReference=Workspace.ComedyWeapons.Banana Blade,StabAnim=rbxassetid://92589371346802,StowedOffset=0.00,-0.08,0.65|0.866,-0.5,0,0.5,0.866,0,0,0,1,ThumbAxis=0.976,0.218,-0.010,ThumbNormal=0.010,0.003,1.000}
+        d04 [MeshPart] Blade | par=Vowbreaker
+          d05 [Attachment] GripPoint | par=Blade
+          d05 [Attachment] 1 | par=Blade
+          d05 [Attachment] 2 | par=Blade
+          d05 [Trail] BladeTrail12 | par=Blade
+          d05 [Attachment] 3 | par=Blade
+          d05 [Trail] BladeTrail23 | par=Blade
+          d05 [MeshPart] HandleOld | par=Blade
+            d06 [WeldConstraint] WeldConstraint | par=HandleOld
+            d06 [Part] Part | par=HandleOld
+              d07 [ParticleEmitter] ParticleEmitter | par=Part
+              d07 [WeldConstraint] WeldConstraint | par=Part
+        d04 [MeshPart] StowedBlade | par=Vowbreaker
+          d05 [Part] Part | par=StowedBlade
+            d06 [ParticleEmitter] ParticleEmitter | par=Part
+            d06 [WeldConstraint] WeldConstraint | par=Part
+        d04 [Part] Handle | par=Vowbreaker
+          d05 [Weld] BladeWeld | par=Handle
+      d03 [Model] iSlice | par=Models ATTR{CosmeticOnly=true,Description=Now 40% thinner and 100% sharper. Charger sold separately.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.866,-0.5,0,0.5,0.866,0,0,0,1,Rarity=Epic,SourceMesh=rbxassetid://83763686664233,SourceReference=Workspace.ComedyWeapons.Banana Blade,StowedOffset=0.00,-0.08,0.65|0.866,-0.5,0,0.5,0.866,0,0,0,1,ThumbAxis=-0.019,1.000,-0.002,ThumbNormal=-0.004,-0.002,-1.000}
+        d04 [MeshPart] Blade | par=iSlice
+          d05 [Attachment] GripPoint | par=Blade
+        d04 [MeshPart] StowedBlade | par=iSlice
+        d04 [Part] Handle | par=iSlice
+          d05 [Weld] BladeWeld | par=Handle
+      d03 [Model] CluckBasher | par=Models ATTR{CosmeticOnly=true,Description=Comedy Collection quest skin; inherited dagger animation and grip.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.707,-0.707,-6.18e-08,-0.707,0.707,-6.18e-08,8.74e-08,0,-1,SourceMesh=rbxassetid://104958820339564,SourceReference=Workspace.ComedyWeapons.Cluck Basher,StowedOffset=0.00,0.00,0.65|-0.707,-0.707,-6.18e-08,-0.707,0.707,-6.18e-08,8.74e-08,0,-1,ThumbAxis=0.011,1.000,-0.024,ThumbNormal=0.103,-0.025,-0.994}
+        d04 [Part] Handle | par=CluckBasher
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=CluckBasher
+        d04 [MeshPart] StowedBlade | par=CluckBasher
+      d03 [Model] BananaBlade | par=Models ATTR{CosmeticOnly=true,Description=Comedy Collection quest skin; inherited dagger animation and grip.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.866,-0.5,0,0.5,0.866,0,0,0,1,SourceMesh=rbxassetid://83763686664233,SourceReference=Workspace.ComedyWeapons.Banana Blade,StowedOffset=0.00,-0.08,0.65|0.866,-0.5,0,0.5,0.866,0,0,0,1,ThumbAxis=0.442,-0.897,0.008,ThumbNormal=-0.010,0.004,1.000}
+        d04 [Part] Handle | par=BananaBlade
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=BananaBlade
+        d04 [MeshPart] StowedBlade | par=BananaBlade
+      d03 [Model] PizzaPunisher | par=Models ATTR{CosmeticOnly=true,Description=Comedy Collection quest skin; inherited dagger animation and grip.,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|-0.707,-0.707,-6.18e-08,-0.707,0.707,-6.18e-08,8.74e-08,0,-1,SourceMesh=rbxassetid://126635062166737,SourceReference=Workspace.ComedyWeapons.Pizza Punisher,StowedOffset=0.00,0.00,0.65|-0.707,-0.707,-6.18e-08,-0.707,0.707,-6.18e-08,8.74e-08,0,-1,ThumbAxis=0.017,1.000,0.007,ThumbNormal=-0.001,0.007,-1.000}
+        d04 [Part] Handle | par=PizzaPunisher
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] Blade | par=PizzaPunisher
+        d04 [MeshPart] StowedBlade | par=PizzaPunisher
+      d03 [Model] Voidspine | par=Models ATTR{Description=Broken off something that lives far below the surface. Its jagged edge drinks the light around it.,FantasyCrateSkin=true,GripC0=-0.01,-0.86,-0.06|1,-5.07e-07,3.09e-07,5.07e-07,1,-1.71e-06,-3.09e-07,1.71e-06,1,GripC1=0.00,0.00,0.00|1,0,0,0,1,0,0,0,1,IdleGrip=0.09,-0.03,0.09|0.994,-0.0114,-0.112,0.0264,0.991,0.133,0.109,-0.135,0.985,PreviewRotation=0.00,0.00,0.00|0.866,-0.5,0,0.5,0.866,0,0,0,1,Rarity=Legendary,SourceMesh=rbxassetid://83763686664233,SourceReference=Workspace.ComedyWeapons.Banana Blade,StowedOffset=0.00,-0.08,0.65|0.866,-0.5,0,0.5,0.866,0,0,0,1,ThumbAxis=0.578,0.719,0.387,ThumbNormal=0.142,0.378,-0.915}
+        d04 [MeshPart] Blade | par=Voidspine
+          d05 [Attachment] Attachment | par=Blade
+          d05 [Attachment] BladeAttach | par=Blade
+          d05 [Attachment] BladeAttach | par=Blade
+          d05 [Attachment] GripPoint | par=Blade
+          d05 [Attachment] HandleTrail | par=Blade
+          d05 [Attachment] HandleTrail | par=Blade
+          d05 [SurfaceAppearance] SurafaceTexture | par=Blade
+          d05 [Attachment] Attachment | par=Blade
+        d04 [MeshPart] StowedBlade | par=Voidspine
+          d05 [SurfaceAppearance] SurafaceTexture | par=StowedBlade
+        d04 [Part] Handle | par=Voidspine
+          d05 [Weld] BladeWeld | par=Handle
+        d04 [MeshPart] BladeAura | par=Voidspine
+          d05 [ParticleEmitter] Back | par=BladeAura
+          d05 [ParticleEmitter] Ray | par=BladeAura
+          d05 [Trail] BladeTrail | par=BladeAura
+          d05 [Trail] HandleTrail | par=BladeAura
+          d05 [Beam] RayBeam | par=BladeAura
+          d05 [Weld] BladeWeld | par=BladeAura
+    d02 [ModuleScript] StorefrontClient | par=Weapons TAG{LegacyUIOnly}
+  d01 [Folder] Collectibles | par=ChickenOrHero
+    d02 [ModuleScript] GemConfig | par=Collectibles
+    d02 [RemoteEvent] GemEvent | par=Collectibles
+    d02 [BillboardGui] GemBillboard | par=Collectibles
+      d03 [TextLabel] Amount | par=GemBillboard
+      d03 [ImageLabel] StackLeft | par=GemBillboard
+      d03 [ImageLabel] Gem | par=GemBillboard
+      d03 [ImageLabel] StackRight | par=GemBillboard
+  d01 [Folder] Emotes | par=ChickenOrHero ATTR{DailyCoins=FastDancer,DailyDay=20735,DailyGems=YaYaYing,DailyRobux=DaBabyDance}
+    d02 [ModuleScript] EmoteCatalog | par=Emotes
+    d02 [ModuleScript] EmotePlayback | par=Emotes
+    d02 [ModuleScript] DailyEmotes | par=Emotes
+    d02 [ModuleScript] EmoteSync | par=Emotes
+    d02 [Folder] Assets | par=Emotes
+      d03 [Animation] IdleDance | par=Assets ATTR{PublishClip=Idle Dance,Route=Starter}
+    d02 [RemoteEvent] EmoteEvent | par=Emotes
+  d01 [Folder] Gear | par=ChickenOrHero
+    d02 [ModuleScript] GearCatalog | par=Gear
+    d02 [ModuleScript] StarterPackConfig | par=Gear
+    d02 [ModuleScript] GearPredictionClient | par=Gear
+    d02 [ModuleScript] AirhornCone | par=Gear
+    d02 [Folder] Assets | par=Gear
+      d03 [Model] RescueKit | par=Assets
+        d04 [MeshPart] handle | par=RescueKit
+        d04 [MeshPart] bandage | par=RescueKit
+        d04 [MeshPart] BodyAttachment | par=RescueKit
+          d05 [Weld] handle | par=BodyAttachment
+          d05 [Weld] patchnotused | par=BodyAttachment
+          d05 [Motor6D] bandage | par=BodyAttachment
+          d05 [Motor6D] patch | par=BodyAttachment
+          d05 [Motor6D] top | par=BodyAttachment
+          d05 [Weld] Part | par=BodyAttachment
+        d04 [Part] patch | par=RescueKit
+        d04 [MeshPart] top | par=RescueKit
+        d04 [Part] patchnotused | par=RescueKit
+        d04 [Part] Part | par=RescueKit
+      d03 [Model] Adrenaline | par=Assets
+        d04 [Part] Can | par=Adrenaline
+          d05 [SurfaceGui] SurfaceGui | par=Can
+            d06 [TextLabel] TextLabel | par=SurfaceGui
+      d03 [Model] RocketShoes | par=Assets
+        d04 [Part] Boot | par=RocketShoes
+        d04 [Part] Sole | par=RocketShoes
+        d04 [Part] Cuff | par=RocketShoes
+        d04 [Part] Rocket | par=RocketShoes
+        d04 [Part] Exhaust | par=RocketShoes
+        d04 [Part] Cuff | par=RocketShoes
+        d04 [Part] Rocket | par=RocketShoes
+        d04 [Part] Exhaust | par=RocketShoes
+        d04 [Part] Boot | par=RocketShoes
+        d04 [Part] Sole | par=RocketShoes
+      d03 [Model] InflatableDecoy | par=Assets
+        d04 [Part] Body | par=InflatableDecoy
+        d04 [Part] Head | par=InflatableDecoy
+        d04 [Part] Leg | par=InflatableDecoy
+        d04 [Part] Leg | par=InflatableDecoy
+        d04 [Part] Arm | par=InflatableDecoy
+        d04 [Part] Arm | par=InflatableDecoy
+        d04 [Part] Eye | par=InflatableDecoy
+        d04 [Part] Eye | par=InflatableDecoy
+      d03 [Model] EmergencyAirhorn | par=Assets ATTR{CreatorStoreAssetId=93585103620212,HandGripR15=0.00,-0.30,0.00|1,-0,0,0,-4.37e-08,1,0,-1,-4.37e-08,HandGripR6=0.00,-1.00,0.00|1,-0,0,0,-4.37e-08,1,0,-1,-4.37e-08,SourceCreator=Rocket_Racer001}
+        d04 [MeshPart] Cylinder.001 | par=EmergencyAirhorn
+        d04 [MeshPart] Cylinder.002 | par=EmergencyAirhorn
+        d04 [MeshPart] Cylinder | par=EmergencyAirhorn
+          d05 [Attachment] GripPoint | par=Cylinder
+      d03 [Model] BigDagger | par=Assets
+        d04 [MeshPart] Blade | par=BigDagger
+      d03 [Model] Cloak | par=Assets
+        d04 [Part] Cape | par=Cloak
+        d04 [Part] Hood | par=Cloak
+        d04 [Part] Opening | par=Cloak
+        d04 [Part] Clasp | par=Cloak
+      d03 [Model] BearTrap | par=Assets
+        d04 [MeshPart] Open | par=BearTrap
+        d04 [MeshPart] Close | par=BearTrap
+          d05 [WeldConstraint] WeldConstraint | par=Close
+      d03 [Model] OneHitShield | par=Assets
+        d04 [MeshPart] ForceField | par=OneHitShield
+      d03 [MeshPart] BananaPeel | par=Assets
+      d03 [Part] PocketDoor | par=Assets
+        d04 [SurfaceGui] DoorPanels | par=PocketDoor
+          d05 [Frame] Frame | par=DoorPanels
+            d06 [UIStroke] UIStroke | par=Frame
+          d05 [Frame] Frame | par=DoorPanels
+            d06 [UIStroke] UIStroke | par=Frame
+          d05 [Frame] Frame | par=DoorPanels
+            d06 [UICorner] UICorner | par=Frame
+        d04 [SurfaceGui] DoorPanels | par=PocketDoor
+          d05 [Frame] Frame | par=DoorPanels
+            d06 [UIStroke] UIStroke | par=Frame
+          d05 [Frame] Frame | par=DoorPanels
+            d06 [UIStroke] UIStroke | par=Frame
+          d05 [Frame] Frame | par=DoorPanels
+            d06 [UICorner] UICorner | par=Frame
+      d03 [Part] BowlingBall | par=Assets
+        d04 [SurfaceGui] FingerHoles | par=BowlingBall
+          d05 [Frame] Frame | par=FingerHoles
+            d06 [UICorner] UICorner | par=Frame
+          d05 [Frame] Frame | par=FingerHoles
+            d06 [UICorner] UICorner | par=Frame
+          d05 [Frame] Frame | par=FingerHoles
+            d06 [UICorner] UICorner | par=Frame
+      d03 [UnionOperation] RufusLeash | par=Assets ATTR{CreatorStoreAssetId=16708182315,HandGripR15=0.00,-0.30,0.00|1,0,0,0,1,0,0,0,1,HandGripR6=0.00,-1.00,0.00|1,0,0,0,1,0,0,0,1,SourceCreator=hehehawhawb}
+        d04 [Attachment] GripPoint | par=RufusLeash
+    d02 [RemoteEvent] GearEvent | par=Gear
+    d02 [RemoteEvent] StarterPackEvent | par=Gear
+    d02 [ModuleScript] GearStoreClient | par=Gear TAG{LegacyUIOnly}
+  d01 [Folder] Crates | par=ChickenOrHero
+    d02 [ModuleScript] CrateCatalog | par=Crates
+    d02 [RemoteEvent] CrateEvent | par=Crates
+    d02 [ModuleScript] CrateReel | par=Crates TAG{LegacyUIOnly}
+  d01 [Folder] Quests | par=ChickenOrHero
+    d02 [RemoteEvent] QuestEvent | par=Quests
+  d01 [Folder] Interface | par=ChickenOrHero
+    d02 [ModuleScript] Signal | par=Interface
+    d02 [ModuleScript] Cursor | par=Interface
+    d02 [ModuleScript] Registry | par=Interface TAG{NewUIOnly,OldUIReskinKeeps}
+    d02 [ModuleScript] Panels | par=Interface TAG{NewUIOnly,OldUIReskinKeeps}
+    d02 [ModuleScript] Toasts | par=Interface TAG{NewUIOnly}
+    d02 [ModuleScript] EconomyState | par=Interface TAG{NewUIOnly}
+    d02 [ModuleScript] Widgets | par=Interface TAG{NewUIOnly,OldUIReskinKeeps}
+    d02 [ModuleScript] SpectateBar | par=Interface TAG{NewUIOnly}
+    d02 [ModuleScript] InputMode | par=Interface TAG{NewUIOnly}
+    d02 [ModuleScript] CrateReel | par=Interface TAG{NewUIOnly}
+    d02 [ModuleScript] CharacterClone | par=Interface
+    d02 [ModuleScript] AvatarPortrait | par=Interface TAG{NewUIOnly,OldUIReskinKeeps}
+    d02 [ModuleScript] CrateLanes | par=Interface
+    d02 [ModuleScript] EmotePose | par=Interface
+    d02 [ModuleScript] CharacterFrame | par=Interface
+    d02 [ModuleScript] EmoteSound | par=Interface
+    d02 [ModuleScript] CharacterPreview | par=Interface
+    d02 [ModuleScript] Telemetry | par=Interface
+    d02 [ModuleScript] RewardPop | par=Interface TAG{NewUIOnly}
+    d02 [Folder] Features | par=Interface TAG{NewUIOnly}
+      d03 [ModuleScript] HudShell | par=Features
+      d03 [ModuleScript] MatchInfo | par=Features
+      d03 [ModuleScript] ActionBar | par=Features
+      d03 [ModuleScript] SettingsPanel | par=Features
+      d03 [ModuleScript] UpdateLogPanel | par=Features
+      d03 [ModuleScript] MapPick | par=Features
+      d03 [ModuleScript] ServerListPanel | par=Features
+      d03 [ModuleScript] JourneyPanel | par=Features
+      d03 [ModuleScript] ShopPanel | par=Features
+      d03 [ModuleScript] MatchResultPanel | par=Features TAG{OldUIReskinKeeps}
+      d03 [ModuleScript] BalloonOfferPanel | par=Features
+      d03 [ModuleScript] CursorHintPanel | par=Features
+      d03 [ModuleScript] LikeRewardPanel | par=Features
+      d03 [ModuleScript] StarterPackPanel | par=Features
+      d03 [ModuleScript] CratePanel | par=Features
+      d03 [ModuleScript] QuestsPanel | par=Features
+      d03 [ModuleScript] EmoteWheelPanel | par=Features
+      d03 [ModuleScript] FairPlayPanel | par=Features
+      d03 [ModuleScript] ChoiceSpotlight | par=Features
+      d03 [ModuleScript] HeroChoicePanel | par=Features
+      d03 [ModuleScript] CrossingNotice | par=Features
+    d02 [Folder] Shop | par=Interface TAG{NewUIOnly}
+      d03 [ModuleScript] Offers | par=Shop
+      d03 [ModuleScript] Preview | par=Shop
+      d03 [ModuleScript] Storefront | par=Shop
+      d03 [ModuleScript] Loadout | par=Shop
+      d03 [ModuleScript] Knives | par=Shop
+      d03 [ModuleScript] Emotes | par=Shop
+      d03 [ModuleScript] EmoteOffers | par=Shop
+  d01 [Folder] OldUIReskin | par=ChickenOrHero TAG{OldUIReskinOnly}
+    d02 [ModuleScript] Skin | par=OldUIReskin
+    d02 [Folder] SkinKit | par=OldUIReskin
+      d03 [Frame] PillCoins | par=SkinKit ATTR{Recipe=StarterGui.Hud.Currencies.Coins}
+        d04 [UICorner] UICorner | par=PillCoins
+        d04 [UIStroke] UIStroke | par=PillCoins
+        d04 [UIStroke] UIStroke | par=PillCoins
+        d04 [ImageLabel] Icon | par=PillCoins
+        d04 [CanvasGroup] CanvasGroup | par=PillCoins
+          d05 [UICorner] UICorner | par=CanvasGroup
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+      d03 [Frame] PillGems | par=SkinKit ATTR{Recipe=StarterGui.Hud.Currencies.Gems}
+        d04 [UICorner] UICorner | par=PillGems
+        d04 [UIStroke] UIStroke | par=PillGems
+        d04 [UIStroke] UIStroke | par=PillGems
+        d04 [ImageLabel] Icon | par=PillGems
+        d04 [CanvasGroup] CanvasGroup | par=PillGems
+          d05 [UICorner] UICorner | par=CanvasGroup
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+      d03 [Frame] BarMeter | par=SkinKit ATTR{Recipe=StarterGui.Hud.BottomBar.Bar}
+        d04 [UICorner] UICorner | par=BarMeter
+        d04 [UIStroke] UIStroke | par=BarMeter
+        d04 [UIStroke] UIStroke | par=BarMeter
+        d04 [Frame] InnerBar | par=BarMeter
+          d05 [UICorner] UICorner | par=InnerBar
+          d05 [UIStroke] UIStroke | par=InnerBar
+            d06 [UIGradient] UIGradient | par=UIStroke
+          d05 [UIGradient] UIGradient | par=InnerBar
+      d03 [Frame] BarSegment | par=SkinKit ATTR{Recipe=StarterGui.Hud.TopInfo.EscapesBar.Bar}
+        d04 [Frame] FilledSegmentTemplate | par=BarSegment
+          d05 [UICorner] UICorner | par=FilledSegmentTemplate
+        d04 [Frame] EmptySegmentTemplate | par=BarSegment
+          d05 [UICorner] UICorner | par=EmptySegmentTemplate
+      d03 [Frame] KeyBadge | par=SkinKit ATTR{Recipe=StarterGui.Hud.CatchKeybind.Keybind}
+        d04 [UICorner] UICorner | par=KeyBadge
+        d04 [UIStroke] UIStroke | par=KeyBadge
+        d04 [UIStroke] UIStroke | par=KeyBadge
+      d03 [Frame] BarSlider | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Settings.Content.ScrollingFrame.SliderSettingTemplate.Bar}
+        d04 [UICorner] UICorner | par=BarSlider
+        d04 [UIStroke] UIStroke | par=BarSlider
+        d04 [UIStroke] UIStroke | par=BarSlider
+        d04 [Frame] InnerBar | par=BarSlider
+          d05 [UICorner] UICorner | par=InnerBar
+          d05 [UIStroke] UIStroke | par=InnerBar
+          d05 [UIStroke] UIStroke | par=InnerBar
+            d06 [UIGradient] UIGradient | par=UIStroke
+          d05 [UIGradient] UIGradient | par=InnerBar
+        d04 [ImageLabel] Dragger | par=BarSlider
+          d05 [UIStroke] UIStroke | par=Dragger
+          d05 [UIStroke] UIStroke | par=Dragger
+          d05 [UICorner] UICorner | par=Dragger
+      d03 [Frame] SettingsRow | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Settings.Content.ScrollingFrame.ToggleSettingTemplate}
+        d04 [UICorner] UICorner | par=SettingsRow
+        d04 [UIStroke] UIStroke | par=SettingsRow
+        d04 [UIStroke] UIStroke | par=SettingsRow
+      d03 [Frame] CardHeader | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Journey.RewardsContainer.ScrollingFrame.TierTemplate.Free.Header}
+        d04 [UICorner] UICorner | par=CardHeader
+        d04 [UIStroke] UIStroke | par=CardHeader
+      d03 [Frame] PanelFooter | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Journey.Footer}
+        d04 [UICorner] UICorner | par=PanelFooter
+        d04 [UIStroke] UIStroke | par=PanelFooter
+      d03 [Frame] PanelHeader | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ShopMenu.Header}
+        d04 [UICorner] UICorner | par=PanelHeader
+        d04 [UIStroke] UIStroke | par=PanelHeader
+        d04 [ImageLabel] Icon | par=PanelHeader
+        d04 [ImageLabel] Decoration | par=PanelHeader
+      d03 [Frame] SectionBand | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ShopMenu.ShopContainer.ScrollingFrame.ExclusiveTitle}
+        d04 [UIGradient] UIGradient | par=SectionBand
+      d03 [Frame] Panel | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ShopMenu}
+        d04 [UICorner] UICorner | par=Panel
+        d04 [UIStroke] UIStroke | par=Panel
+        d04 [UIStroke] UIStroke | par=Panel
+      d03 [Frame] CardPodium | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.MatchResult.MVPContainer.1stPlace}
+        d04 [ImageLabel] Sunray | par=CardPodium
+        d04 [UICorner] UICorner | par=CardPodium
+        d04 [UIStroke] UIStroke | par=CardPodium
+        d04 [UIStroke] UIStroke | par=CardPodium
+        d04 [UIGradient] UIGradient | par=CardPodium
+      d03 [Frame] PanelModal | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.MatchResult}
+        d04 [UICorner] UICorner | par=PanelModal
+        d04 [UIStroke] UIStroke | par=PanelModal
+        d04 [UIStroke] UIStroke | par=PanelModal
+      d03 [Frame] ToastRow | par=SkinKit ATTR{Recipe=StarterGui.Hud.Toasts.ToastTemplate}
+        d04 [UICorner] UICorner | par=ToastRow
+      d03 [Frame] HintCard | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.CursorHint}
+        d04 [UICorner] UICorner | par=HintCard
+        d04 [UIStroke] UIStroke | par=HintCard
+        d04 [UIStroke] UIStroke | par=HintCard
+      d03 [Frame] CardNeutral | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ShopMenu.AbilitiesContainer.ScrollingFrame.RunnerAbilities.AbilityCardTemplate}
+        d04 [UIStroke] UIStroke | par=CardNeutral
+        d04 [UIStroke] UIStroke | par=CardNeutral
+        d04 [UICorner] UICorner | par=CardNeutral
+      d03 [Frame] CardRarity | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Crate.Knives.KnifeCardTemplate}
+        d04 [ImageLabel] Glow | par=CardRarity
+        d04 [UIStroke] UIStroke | par=CardRarity
+        d04 [UIStroke] UIStroke | par=CardRarity
+        d04 [UICorner] UICorner | par=CardRarity
+        d04 [UIGradient] UIGradient | par=CardRarity
+      d03 [Frame] BarThin | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Quests.Daily.List.DailyTemplate.Track}
+        d04 [UICorner] UICorner | par=BarThin
+        d04 [Frame] Fill | par=BarThin
+          d05 [UICorner] UICorner | par=Fill
+          d05 [UIGradient] UIGradient | par=Fill
+      d03 [Frame] Checkbox | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.HeroPicker.AutoRollButton.Box}
+        d04 [UIStroke] UIStroke | par=Checkbox
+        d04 [UIStroke] UIStroke | par=Checkbox
+        d04 [UICorner] UICorner | par=Checkbox
+      d03 [Frame] NoticeDot | par=SkinKit ATTR{Recipe=StarterGui.Hud.LeftButtons.JourneyButton.Notice}
+        d04 [UICorner] UICorner | par=NoticeDot
+        d04 [UIStroke] UIStroke | par=NoticeDot
+      d03 [Frame] CollectedGlow | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Journey.RewardsContainer.ScrollingFrame.TierTemplate.Free.CollectedGlow}
+        d04 [Frame] Vertical | par=CollectedGlow
+          d05 [UICorner] UICorner | par=Vertical
+          d05 [UIGradient] UIGradient | par=Vertical
+        d04 [Frame] Horizontal | par=CollectedGlow
+          d05 [UICorner] UICorner | par=Horizontal
+          d05 [UIGradient] UIGradient | par=Horizontal
+      d03 [ImageLabel] ButtonPrimary | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Journey.Footer.Buttons.ClaimAllButton}
+        d04 [UIGradient] UIGradient | par=ButtonPrimary
+        d04 [UICorner] UICorner | par=ButtonPrimary
+        d04 [UIStroke] UIStroke | par=ButtonPrimary
+        d04 [UIStroke] UIStroke | par=ButtonPrimary
+        d04 [CanvasGroup] Texture | par=ButtonPrimary
+          d05 [UICorner] UICorner | par=Texture
+          d05 [ImageLabel] ImageLabel | par=Texture
+            d06 [UIGradient] UIGradient | par=ImageLabel
+      d03 [ImageLabel] ButtonSecondary | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Journey.Tabs.TitlesButton}
+        d04 [UICorner] UICorner | par=ButtonSecondary
+        d04 [UIStroke] UIStroke | par=ButtonSecondary
+        d04 [UIStroke] UIStroke | par=ButtonSecondary
+        d04 [CanvasGroup] Texture | par=ButtonSecondary
+          d05 [ImageLabel] ImageLabel | par=Texture
+            d06 [UIGradient] UIGradient | par=ImageLabel
+        d04 [UIGradient] UIGradient | par=ButtonSecondary
+      d03 [ImageLabel] ButtonRobux | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Crate.Buttons.RobuxButton}
+        d04 [CanvasGroup] CanvasGroup | par=ButtonRobux
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+          d05 [UICorner] UICorner | par=CanvasGroup
+        d04 [UIGradient] UIGradient | par=ButtonRobux
+        d04 [UIStroke] UIStroke | par=ButtonRobux
+        d04 [UIStroke] UIStroke | par=ButtonRobux
+        d04 [UICorner] UICorner | par=ButtonRobux
+      d03 [ImageLabel] ButtonDanger | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Spectate.ControlsContainer.ExitButton}
+        d04 [UICorner] UICorner | par=ButtonDanger
+        d04 [UIStroke] UIStroke | par=ButtonDanger
+        d04 [UIStroke] UIStroke | par=ButtonDanger
+        d04 [CanvasGroup] CanvasGroup | par=ButtonDanger
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+          d05 [UICorner] UICorner | par=CanvasGroup
+        d04 [UIGradient] UIGradient | par=ButtonDanger
+      d03 [ImageLabel] ButtonDark | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ServerList.SortAndRefresh.SortButton}
+        d04 [UICorner] UICorner | par=ButtonDark
+        d04 [UIStroke] UIStroke | par=ButtonDark
+        d04 [UIStroke] UIStroke | par=ButtonDark
+      d03 [ImageLabel] ButtonBuyCoins | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ShopMenu.ItemsContainer.ScrollingFrame.ItemCards.ItemCardTemplate.Buttons.BuyButtons.CoinsButton}
+        d04 [UICorner] UICorner | par=ButtonBuyCoins
+        d04 [UIStroke] UIStroke | par=ButtonBuyCoins
+        d04 [UIStroke] UIStroke | par=ButtonBuyCoins
+        d04 [UIGradient] UIGradient | par=ButtonBuyCoins
+        d04 [CanvasGroup] CanvasGroup | par=ButtonBuyCoins
+          d05 [UICorner] UICorner | par=CanvasGroup
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+        d04 [Frame] Price | par=ButtonBuyCoins
+          d05 [ImageLabel] Icon | par=Price
+      d03 [ImageLabel] ButtonBuyGems | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Crate.Buttons.GemsButton}
+        d04 [CanvasGroup] CanvasGroup | par=ButtonBuyGems
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+          d05 [UICorner] UICorner | par=CanvasGroup
+        d04 [Frame] Price | par=ButtonBuyGems
+          d05 [ImageLabel] Icon | par=Price
+        d04 [UIGradient] UIGradient | par=ButtonBuyGems
+        d04 [UIStroke] UIStroke | par=ButtonBuyGems
+        d04 [UIStroke] UIStroke | par=ButtonBuyGems
+        d04 [UICorner] UICorner | par=ButtonBuyGems
+      d03 [ImageLabel] ToggleOn | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Settings.Content.ScrollingFrame.ToggleSettingTemplate.OnButton}
+        d04 [UICorner] UICorner | par=ToggleOn
+        d04 [UIStroke] UIStroke | par=ToggleOn
+        d04 [UIStroke] UIStroke | par=ToggleOn
+        d04 [CanvasGroup] CanvasGroup | par=ToggleOn
+          d05 [UICorner] UICorner | par=CanvasGroup
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+        d04 [UIGradient] UIGradient | par=ToggleOn
+      d03 [ImageLabel] ToggleOff | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Settings.Content.ScrollingFrame.ToggleSettingTemplate.OffButton}
+        d04 [UICorner] UICorner | par=ToggleOff
+        d04 [UIGradient] UIGradient | par=ToggleOff
+        d04 [UIStroke] UIStroke | par=ToggleOff
+        d04 [UIStroke] UIStroke | par=ToggleOff
+        d04 [CanvasGroup] CanvasGroup | par=ToggleOff
+          d05 [UICorner] UICorner | par=CanvasGroup
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+      d03 [ImageLabel] TabSelected | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ShopMenu.Tabs.KnivesButton}
+        d04 [CanvasGroup] CanvasGroup | par=TabSelected
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+          d05 [UICorner] UICorner | par=CanvasGroup
+        d04 [UICorner] UICorner | par=TabSelected
+        d04 [UIStroke] UIStroke | par=TabSelected
+        d04 [UIStroke] UIStroke | par=TabSelected
+        d04 [UIGradient] UIGradient | par=TabSelected
+      d03 [ImageLabel] TabIdle | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ShopMenu.Tabs.ShopButton}
+        d04 [CanvasGroup] CanvasGroup | par=TabIdle
+          d05 [ImageLabel] ImageLabel | par=CanvasGroup
+            d06 [UIGradient] UIGradient | par=ImageLabel
+          d05 [UICorner] UICorner | par=CanvasGroup
+        d04 [UICorner] UICorner | par=TabIdle
+        d04 [UIStroke] UIStroke | par=TabIdle
+        d04 [UIStroke] UIStroke | par=TabIdle
+        d04 [UIGradient] UIGradient | par=TabIdle
+      d03 [ImageLabel] Slot | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ShopMenu.KnivesContainer.ItemGrid.ScrollingFrame.KnifeCardTemplate}
+        d04 [UIStroke] UIStroke | par=Slot
+        d04 [UIStroke] UIStroke | par=Slot
+        d04 [UICorner] UICorner | par=Slot
+      d03 [ImageLabel] SlotEquipped | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.ShopMenu.KnivesContainer.ItemGrid.ScrollingFrame.KnifeCardEquippedTemplate}
+        d04 [UIGradient] UIGradient | par=SlotEquipped
+        d04 [UIStroke] UIStroke | par=SlotEquipped
+        d04 [UIStroke] UIStroke | par=SlotEquipped
+        d04 [UICorner] UICorner | par=SlotEquipped
+      d03 [ImageLabel] SlotEmote | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.EmoteWheel.Slot1}
+        d04 [UICorner] UICorner | par=SlotEmote
+        d04 [UIStroke] UIStroke | par=SlotEmote
+        d04 [UIStroke] UIStroke | par=SlotEmote
+      d03 [ImageLabel] PillDark | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.Crate.Knives.KnifeCardTemplate.SoundButton}
+        d04 [UICorner] UICorner | par=PillDark
+        d04 [UIStroke] UIStroke | par=PillDark
+        d04 [UIStroke] UIStroke | par=PillDark
+        d04 [ImageLabel] Icon | par=PillDark
+      d03 [ImageLabel] HudButton | par=SkinKit ATTR{Recipe=StarterGui.Hud.LeftButtons.KnivesButton}
+        d04 [UICorner] UICorner | par=HudButton
+        d04 [UIStroke] UIStroke | par=HudButton
+        d04 [UIStroke] UIStroke | par=HudButton
+        d04 [CanvasGroup] Texture | par=HudButton
+          d05 [UICorner] UICorner | par=Texture
+          d05 [ImageLabel] ImageLabel | par=Texture
+            d06 [UIGradient] UIGradient | par=ImageLabel
+        d04 [ImageLabel] Icon | par=HudButton
+      d03 [ImageLabel] HudButtonFeatured | par=SkinKit ATTR{Recipe=StarterGui.Hud.LeftButtons.ShopButton}
+        d04 [UICorner] UICorner | par=HudButtonFeatured
+        d04 [UIStroke] UIStroke | par=HudButtonFeatured
+        d04 [UIStroke] UIStroke | par=HudButtonFeatured
+        d04 [CanvasGroup] Texture | par=HudButtonFeatured
+          d05 [UICorner] UICorner | par=Texture
+          d05 [ImageLabel] ImageLabel | par=Texture
+            d06 [UIGradient] UIGradient | par=ImageLabel
+        d04 [ImageLabel] Icon | par=HudButtonFeatured
+      d03 [ImageLabel] HudChip | par=SkinKit ATTR{Recipe=StarterGui.Hud.MapVoteChip}
+        d04 [UICorner] UICorner | par=HudChip
+        d04 [UIStroke] UIStroke | par=HudChip
+        d04 [UIStroke] UIStroke | par=HudChip
+        d04 [ImageLabel] Icon | par=HudChip
+      d03 [ImageLabel] HudCard | par=SkinKit ATTR{Recipe=StarterGui.Hud.Equipment.AbilityCard}
+        d04 [Frame] Key | par=HudCard
+          d05 [UICorner] UICorner | par=Key
+          d05 [UIStroke] UIStroke | par=Key
+          d05 [UIStroke] UIStroke | par=Key
+        d04 [UICorner] UICorner | par=HudCard
+        d04 [UIGradient] Gradient | par=HudCard
+        d04 [UIStroke] Outline | par=HudCard
+        d04 [Frame] Track | par=HudCard
+          d05 [UICorner] UICorner | par=Track
+          d05 [Frame] Fill | par=Track
+            d06 [UICorner] UICorner | par=Fill
+      d03 [Frame] InputBox | par=SkinKit ATTR{Recipe=StarterGui.UI.HolderFrame.HeroPicker.Search}
+        d04 [UICorner] UICorner | par=InputBox
+        d04 [UIStroke] UIStroke | par=InputBox
+        d04 [UIStroke] UIStroke | par=InputBox
+      d03 [Folder] TextStrokes | par=SkinKit
+        d04 [UIStroke] Caption | par=TextStrokes
+        d04 [UIStroke] Title | par=TextStrokes
+        d04 [UIStroke] Body | par=TextStrokes
+      d03 [Folder] Icons | par=SkinKit
+        d04 [ImageLabel] MapPin | par=Icons
+        d04 [ImageLabel] Emote | par=Icons
+        d04 [ImageLabel] Scroll | par=Icons
+        d04 [ImageLabel] Sunray | par=Icons
+        d04 [ImageLabel] List | par=Icons
+        d04 [ImageLabel] GemPrice | par=Icons
+        d04 [ImageLabel] Checker | par=Icons
+        d04 [ImageLabel] GemLarge | par=Icons
+        d04 [ImageLabel] Gear | par=Icons
+        d04 [ImageLabel] Portrait | par=Icons
+        d04 [ImageLabel] Sound | par=Icons
+        d04 [ImageLabel] GlowGold | par=Icons
+        d04 [ImageLabel] Dagger | par=Icons
+        d04 [ImageLabel] Cloak | par=Icons
+        d04 [ImageLabel] Coin | par=Icons
+        d04 [ImageLabel] GlowWhite | par=Icons
+        d04 [ImageLabel] Mouse | par=Icons
+        d04 [ImageLabel] GemWallet | par=Icons
+        d04 [ImageLabel] StarterPack | par=Icons
+        d04 [ImageLabel] VIP | par=Icons
+        d04 [ImageLabel] DecorationWide | par=Icons
+        d04 [ImageLabel] Decoration | par=Icons
+        d04 [ImageLabel] DoubleXP | par=Icons
+        d04 [ImageLabel] SoundMuted | par=Icons
+        d04 [ImageLabel] Eye | par=Icons
+        d04 [ImageLabel] Music | par=Icons
+        d04 [ImageLabel] Quests | par=Icons
+        d04 [ImageLabel] Person | par=Icons
+  d01 [Folder] Animation | par=ChickenOrHero
+    d02 [ModuleScript] AnimationConfig | par=Animation
+    d02 [ModuleScript] AnimationLibrary | par=Animation
+    d02 [ModuleScript] AnimationPolicy | par=Animation
+    d02 [ModuleScript] StopAnimationPolicy | par=Animation
+    d02 [ModuleScript] TackleAnimation | par=Animation
+    d02 [ModuleScript] DashAnimationPolicy | par=Animation
+    d02 [ModuleScript] DashAnimation | par=Animation
+    d02 [ModuleScript] LocomotionTracks | par=Animation
+    d02 [ModuleScript] DaggerAnimation | par=Animation
+    d02 [ModuleScript] MeleeAttackTimeline | par=Animation
+    d02 [ModuleScript] LocalLocomotion | par=Animation
+  d01 [Folder] Game | par=ChickenOrHero
+    d02 [ModuleScript] GameConfig | par=Game
+    d02 [ModuleScript] TackleProfile | par=Game
+    d02 [ModuleScript] ContactCatchConfig | par=Game
+    d02 [ModuleScript] ContactCatchGeometry | par=Game
+    d02 [ModuleScript] TackleMotion | par=Game
+    d02 [ModuleScript] TacklePredictionConfig | par=Game
+    d02 [ModuleScript] TacklePrediction | par=Game
+    d02 [ModuleScript] ConnectionQualityConfig | par=Game
+    d02 [ModuleScript] MapVoteConfig | par=Game
+    d02 [ModuleScript] MapLocator | par=Game
+    d02 [ModuleScript] MapVotePolicy | par=Game
+    d02 [ModuleScript] RescueConfig | par=Game
+    d02 [ModuleScript] TackleCollision | par=Game
+    d02 [ModuleScript] HitReplayMath | par=Game
+    d02 [ModuleScript] CrossyRoadMotion | par=Game
+    d02 [ModuleScript] DonkeyKongMotion | par=Game
+    d02 [ModuleScript] CombatPrediction | par=Game
+    d02 [ModuleScript] CombatClaimMath | par=Game
+    d02 [ModuleScript] ChronoSetup | par=Game
+    d02 [RemoteEvent] GameAction | par=Game
+    d02 [Folder] Leaderboards | par=Game
+      d03 [StringValue] Catches | par=Leaderboards
+      d03 [StringValue] Levels | par=Leaderboards
+      d03 [StringValue] LMS | par=Leaderboards
+      d03 [StringValue] Wins | par=Leaderboards
+    d02 [RemoteEvent] PlayerPreferences | par=Game
+    d02 [StringValue] MapCatalog | par=Game
+    d02 [RemoteEvent] MapVoteEvent | par=Game
+    d02 [Folder] MapPreviews | par=Game
+      d03 [Model] Map1 | par=MapPreviews
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Torso | par=Map1
+          d05 [Decal] roblox | par=Torso
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Right Arm | par=Map1
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Torso | par=Map1
+          d05 [Decal] roblox | par=Torso
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Left Leg | par=Map1
+        d04 [Part] Left Arm | par=Map1
+        d04 [Part] Right Arm | par=Map1
+        d04 [Part] Right Leg | par=Map1
+        d04 [Part] Left Arm | par=Map1
+        d04 [Part] Left Leg | par=Map1
+        d04 [Part] Right Leg | par=Map1
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] LeaderboardPart | par=Map1
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Water | par=Map1
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Line | par=Map1
+          d05 [Texture] Texture | par=Line
+        d04 [Part] Line | par=Map1
+          d05 [Texture] Texture | par=Line
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map1
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map1 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map1
+        d04 [Part] Part | par=Map1 ATTR{AudioSurface=Grass}
+        d04 [Part] Water | par=Map1
+      d03 [Model] Map2 | par=MapPreviews
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Grass | par=Map2 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map2
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Grass | par=Map2 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] Rock | par=Map2
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Rock | par=Map2
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Grass | par=Map2 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] TreeBush | par=Map2 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+        d04 [Part] Part | par=Map2
+      d03 [Model] Map3 | par=MapPreviews
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Floor | par=Map3
+        d04 [Part] Floor | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [UnionOperation] Union | par=Map3
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Part | par=Map3
+        d04 [UnionOperation] Union | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [UnionOperation] Union | par=Map3
+        d04 [UnionOperation] Union | par=Map3
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map3
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [UnionOperation] Union | par=Map3
+          d05 [Texture] Texture | par=Union
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map3
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3 ATTR{AudioSurface=Grass}
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map3
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map3
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Part | par=Map3
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [Part] Grass | par=Map3 ATTR{AudioSurface=Grass}
+          d05 [Texture] Texture | par=Grass
+        d04 [UnionOperation] Union | par=Map3
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+        d04 [Part] Rock | par=Map3
+          d05 [Texture] Texture | par=Rock
+    d02 [RemoteEvent] RescueEvent | par=Game
+    d02 [RemoteEvent] MeleeEvent | par=Game
+    d02 [RemoteEvent] HitboxDebugEvent | par=Game
+    d02 [RemoteEvent] HitReplayEvent | par=Game
+    d02 [Folder] HitReplayDiagnostics | par=Game ATTR{Mode=ShadowOnly}
+    d02 [Model] CrossyRoadChaserTemplate | par=Game
+      d03 [Humanoid] Humanoid | par=CrossyRoadChaserTemplate
+        d04 [Animator] Animator | par=Humanoid
+      d03 [Part] HumanoidRootPart | par=CrossyRoadChaserTemplate
+        d04 [Attachment] RootAttachment | par=HumanoidRootPart
+        d04 [Motor6D] RootJoint | par=HumanoidRootPart
+      d03 [Part] Torso | par=CrossyRoadChaserTemplate
+        d04 [Attachment] RightCollarAttachment | par=Torso
+        d04 [Attachment] WaistFrontAttachment | par=Torso
+        d04 [Attachment] NeckAttachment | par=Torso
+        d04 [Attachment] BodyFrontAttachment | par=Torso
+        d04 [Decal] roblox | par=Torso
+        d04 [Attachment] WaistCenterAttachment | par=Torso
+        d04 [Attachment] BodyBackAttachment | par=Torso
+        d04 [Attachment] WaistBackAttachment | par=Torso
+        d04 [Attachment] LeftCollarAttachment | par=Torso
+        d04 [Motor6D] Right Shoulder | par=Torso
+        d04 [Motor6D] Neck | par=Torso
+        d04 [Motor6D] Left Hip | par=Torso
+        d04 [Motor6D] Left Shoulder | par=Torso
+        d04 [Motor6D] Right Hip | par=Torso
+      d03 [Part] Right Arm | par=CrossyRoadChaserTemplate
+        d04 [Attachment] RightShoulderAttachment | par=Right Arm
+        d04 [Attachment] RightGripAttachment | par=Right Arm
+      d03 [Part] Head | par=CrossyRoadChaserTemplate
+        d04 [Decal] face | par=Head
+        d04 [Attachment] HairAttachment | par=Head
+        d04 [Attachment] FaceCenterAttachment | par=Head
+        d04 [Attachment] HatAttachment | par=Head
+        d04 [Attachment] FaceFrontAttachment | par=Head
+        d04 [SpecialMesh] Mesh | par=Head
+      d03 [Part] Left Leg | par=CrossyRoadChaserTemplate
+        d04 [Attachment] LeftFootAttachment | par=Left Leg
+      d03 [Part] Left Arm | par=CrossyRoadChaserTemplate
+        d04 [Attachment] LeftGripAttachment | par=Left Arm
+        d04 [Attachment] LeftShoulderAttachment | par=Left Arm
+      d03 [Part] Right Leg | par=CrossyRoadChaserTemplate
+        d04 [Attachment] RightFootAttachment | par=Right Leg
+    d02 [RemoteEvent] CrossyRoadEvent | par=Game
+    d02 [RemoteEvent] DonkeyKongEvent | par=Game
+    d02 [RemoteEvent] LastRunnerChatEvent | par=Game
+    d02 [RemoteEvent] MeleeInputMode | par=Game
+    d02 [UnreliableRemoteEvent] ChronoView | par=Game
+    d02 [StringValue] MatchSummary | par=Game
+    d02 [Folder] Session | par=Game ATTR{ActiveMapId=Map1,Announcement=RUN! Reach the opposite safe side!,ChoiceMoment={"endsAt":1791572585.2496212,"choice":"Hero","name":"paj6ng","version":1337,"kind":"Chosen","userId":3948525475,"verified":false},EndsAt=1791572632.017822,EscapeStreakState={"count":0,"eligible":true,"matchId":"54e4c73e-58b4-4c8f-abb3-bb77d2ed5ee9","version":226,"event":"Reset","goal":3},FriendAvatarBotCount=0,FriendAvatarFailures=0,FriendAvatarPending=0,HeroUserId=0,LeadUserId=3791609510,LobbyBotCount=0,MapChanging=false,MatchBuild=late-join-diagnostics-20260917,MatchHealth=Healthy,MatchStep=GroupRun,MatchStepDeadline=1791572636.017812,Notice=paj6ng was caught by khoanaza!,NoticeSound=false,NoticeUntil=1791572601.666229,Phase=GroupRun,PublicBotCatcherCount=0,PublicBotCount=0,PublicBotDifficulty=0.55,RunNumber=1,SelectedUserId=0,SpectateAvailable=true,StartSide=A}
+    d02 [StringValue] MapVoteState | par=Game
+    d02 [ObjectValue] ActiveMap | par=Game
+  d01 [RemoteEvent] SpinWheelEvent | par=ChickenOrHero
+  d01 [Folder] LegacyUI | par=ChickenOrHero TAG{LegacyUIOnly}
+    d02 [Folder] Screens | par=LegacyUI
+      d03 [ScreenGui] ValleyHUD | par=Screens ATTR{DrawerCenter=381.52,DrawerTop=221.745,DrawerWidth=263.2}
+        d04 [Frame] Wallet | par=ValleyHUD
+          d05 [UIScale] Scale | par=Wallet
+          d05 [Frame] Coins | par=Wallet
+            d06 [UICorner] Corner | par=Coins
+            d06 [UIStroke] Outline | par=Coins
+            d06 [Frame] Icon | par=Coins
+              d07 [Frame] Frame | par=Icon
+                d08 [UIStroke] UIStroke | par=Frame
+                d08 [UICorner] UICorner | par=Frame
+              d07 [Frame] Frame | par=Icon
+                d08 [UIStroke] UIStroke | par=Frame
+                d08 [UICorner] UICorner | par=Frame
+              d07 [Frame] Frame | par=Icon
+              d07 [ImageLabel] SkinIcon | par=Icon
+            d06 [TextLabel] Value | par=Coins
+              d07 [UIStroke] SkinTextStroke | par=Value
+            d06 [TextLabel] Label | par=Coins
+              d07 [UIStroke] SkinTextStroke | par=Label
+            d06 [UIStroke] SkinOutline | par=Coins
+            d06 [CanvasGroup] SkinShimmer | par=Coins
+              d07 [UICorner] Corner | par=SkinShimmer
+              d07 [UIGradient] Fade | par=SkinShimmer
+              d07 [ImageLabel] Tile | par=SkinShimmer
+          d05 [Frame] Gems | par=Wallet
+            d06 [UICorner] Corner | par=Gems
+            d06 [UIStroke] Outline | par=Gems
+            d06 [Frame] Icon | par=Gems
+              d07 [Frame] Frame | par=Icon
+                d08 [UIStroke] UIStroke | par=Frame
+                d08 [UICorner] UICorner | par=Frame
+              d07 [Frame] Frame | par=Icon
+              d07 [Frame] Frame | par=Icon
+              d07 [ImageLabel] SkinIcon | par=Icon
+            d06 [TextLabel] Value | par=Gems
+              d07 [UIStroke] SkinTextStroke | par=Value
+            d06 [TextLabel] Label | par=Gems
+              d07 [UIStroke] SkinTextStroke | par=Label
+            d06 [UIStroke] SkinOutline | par=Gems
+            d06 [CanvasGroup] SkinShimmer | par=Gems
+              d07 [UICorner] Corner | par=SkinShimmer
+              d07 [UIGradient] Fade | par=SkinShimmer
+              d07 [ImageLabel] Tile | par=SkinShimmer
+        d04 [TextButton] Servers | par=ValleyHUD
+          d05 [UICorner] Corner | par=Servers
+          d05 [UIStroke] Outline | par=Servers
+          d05 [Frame] Icon | par=Servers
+            d06 [Frame] Frame | par=Icon
+              d07 [UIStroke] UIStroke | par=Frame
+              d07 [UICorner] UICorner | par=Frame
+            d06 [Frame] Frame | par=Icon
+            d06 [Frame] Frame | par=Icon
+            d06 [Frame] Frame | par=Icon
+              d07 [UIStroke] UIStroke | par=Frame
+              d07 [UICorner] UICorner | par=Frame
+            d06 [Frame] Frame | par=Icon
+            d06 [Frame] Frame | par=Icon
+            d06 [ImageLabel] SkinIcon | par=Icon
+          d05 [TextLabel] Caption | par=Servers
+            d06 [UIStroke] SkinTextStroke | par=Caption
+          d05 [Frame] Accent | par=Servers
+            d06 [UICorner] SkinCorner | par=Accent
+          d05 [Frame] StateDot | par=Servers
+            d06 [UICorner] SkinCorner | par=StateDot
+          d05 [UIScale] Scale | par=Servers
+          d05 [UIStroke] SkinOutline | par=Servers
+          d05 [UIStroke] SkinStroke | par=Servers
+        d04 [TextButton] Updates | par=ValleyHUD
+          d05 [UICorner] Corner | par=Updates
+          d05 [UIStroke] Outline | par=Updates
+          d05 [Frame] Icon | par=Updates
+            d06 [Frame] Frame | par=Icon
+              d07 [UIStroke] UIStroke | par=Frame
+              d07 [UICorner] UICorner | par=Frame
+            d06 [Frame] Frame | par=Icon
+            d06 [Frame] Frame | par=Icon
+            d06 [Frame] Frame | par=Icon
+            d06 [Frame] Frame | par=Icon
+            d06 [ImageLabel] SkinIcon | par=Icon
+          d05 [TextLabel] Caption | par=Updates
+            d06 [UIStroke] SkinTextStroke | par=Caption
+          d05 [Frame] Accent | par=Updates
+            d06 [UICorner] SkinCorner | par=Accent
+          d05 [Frame] StateDot | par=Updates
+            d06 [UICorner] SkinCorner | par=StateDot
+          d05 [UIScale] Scale | par=Updates
+          d05 [UIStroke] SkinOutline | par=Updates
+          d05 [UIStroke] SkinStroke | par=Updates
+        d04 [TextLabel] Notice | par=ValleyHUD
+        d04 [Frame] SettingsShade | par=ValleyHUD
+          d05 [Frame] Panel | par=SettingsShade
+            d06 [UICorner] Corner | par=Panel
+            d06 [UIStroke] Outline | par=Panel
+            d06 [UIScale] Scale | par=Panel
+            d06 [Frame] TopRule | par=Panel
+              d07 [UIGradient] SkinGradient | par=TopRule
+            d06 [TextLabel] Eyebrow | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=Eyebrow
+            d06 [TextLabel] Heading | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=Heading
+            d06 [TextButton] Close | par=Panel
+              d07 [UICorner] Corner | par=Close
+              d07 [UIStroke] SkinTextStroke | par=Close
+            d06 [Frame] Rule | par=Panel
+              d07 [UIGradient] SkinGradient | par=Rule
+            d06 [TextLabel] MusicLabel | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=MusicLabel
+            d06 [TextLabel] Volume | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=Volume
+            d06 [TextButton] MusicSlider | par=Panel
+              d07 [Frame] Track | par=MusicSlider
+                d08 [UICorner] Corner | par=Track
+                d08 [UIStroke] SkinOutline | par=Track
+                d08 [UIStroke] SkinStroke | par=Track
+              d07 [Frame] Fill | par=MusicSlider
+                d08 [UICorner] Corner | par=Fill
+                d08 [UIGradient] SkinGradient | par=Fill
+              d07 [Frame] Knob | par=MusicSlider
+                d08 [UICorner] Corner | par=Knob
+                d08 [UIStroke] SkinOutline | par=Knob
+                d08 [UIStroke] SkinStroke | par=Knob
+            d06 [TextLabel] Zero | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=Zero
+            d06 [TextLabel] Max | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=Max
+            d06 [TextLabel] MuteLabel | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=MuteLabel
+            d06 [TextButton] Mute | par=Panel
+              d07 [UICorner] Corner | par=Mute
+              d07 [UIStroke] SkinOutline | par=Mute
+              d07 [UIStroke] SkinStroke | par=Mute
+              d07 [UIStroke] SkinTextStroke | par=Mute
+            d06 [TextLabel] HintsLabel | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=HintsLabel
+            d06 [TextButton] Hints | par=Panel
+              d07 [UICorner] Corner | par=Hints
+              d07 [UIStroke] SkinOutline | par=Hints
+              d07 [UIStroke] SkinStroke | par=Hints
+              d07 [UIStroke] SkinTextStroke | par=Hints
+            d06 [TextLabel] Footer | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=Footer
+            d06 [UIStroke] SkinOutline | par=Panel
+        d04 [Frame] UpdatesShade | par=ValleyHUD
+          d05 [Frame] Panel | par=UpdatesShade
+            d06 [UICorner] Corner | par=Panel
+            d06 [UIStroke] Outline | par=Panel
+            d06 [UIScale] Scale | par=Panel
+            d06 [Frame] TopRule | par=Panel
+              d07 [UIGradient] SkinGradient | par=TopRule
+            d06 [TextLabel] Eyebrow | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=Eyebrow
+            d06 [TextLabel] Heading | par=Panel
+              d07 [UIStroke] SkinTextStroke | par=Heading
+            d06 [TextButton] Close | par=Panel
+              d07 [UICorner] Corner | par=Close
+              d07 [UIStroke] SkinTextStroke | par=Close
+            d06 [Frame] Rule | par=Panel
+              d07 [UIGradient] SkinGradient | par=Rule
+            d06 [ScrollingFrame] Entries | par=Panel
+              d07 [UIListLayout] List | par=Entries
+              d07 [UIPadding] Padding | par=Entries
+            d06 [UIStroke] SkinOutline | par=Panel
+        d04 [Frame] DrawerClip | par=ValleyHUD
+          d05 [Frame] Panel | par=DrawerClip
+            d06 [UICorner] Corner | par=Panel
+            d06 [UIStroke] Outline | par=Panel
+            d06 [Frame] Navigation | par=Panel
+              d07 [UIScale] Scale | par=Navigation
+              d07 [TextButton] Shop | par=Navigation
+                d08 [UICorner] Corner | par=Shop
+                d08 [UIStroke] Outline | par=Shop
+                d08 [Frame] Icon | par=Shop
+                  d09 [Frame] Frame | par=Icon
+                    d10 [UIStroke] UIStroke | par=Frame
+                    d10 [UICorner] UICorner | par=Frame
+                  d09 [Frame] Frame | par=Icon
+                    d10 [UIStroke] UIStroke | par=Frame
+                    d10 [UICorner] UICorner | par=Frame
+                  d09 [Frame] Frame | par=Icon
+                  d09 [ImageLabel] SkinIcon | par=Icon
+                d08 [TextLabel] Caption | par=Shop
+                  d09 [UIStroke] SkinTextStroke | par=Caption
+                d08 [Frame] Accent | par=Shop
+                  d09 [UICorner] SkinCorner | par=Accent
+                d08 [Frame] StateDot | par=Shop
+                  d09 [UICorner] SkinCorner | par=StateDot
+                d08 [UIStroke] SkinOutline | par=Shop
+                d08 [UIStroke] SkinStroke | par=Shop
+              d07 [TextButton] Inventory | par=Navigation
+                d08 [UICorner] Corner | par=Inventory
+                d08 [UIStroke] Outline | par=Inventory
+                d08 [Frame] Icon | par=Inventory
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                  d09 [ImageLabel] SkinIcon | par=Icon
+                d08 [TextLabel] Caption | par=Inventory
+                  d09 [UIStroke] SkinTextStroke | par=Caption
+                d08 [Frame] Accent | par=Inventory
+                  d09 [UICorner] SkinCorner | par=Accent
+                d08 [Frame] StateDot | par=Inventory
+                  d09 [UICorner] SkinCorner | par=StateDot
+                d08 [UIStroke] SkinOutline | par=Inventory
+                d08 [UIStroke] SkinStroke | par=Inventory
+              d07 [TextButton] Journey | par=Navigation
+                d08 [UICorner] Corner | par=Journey
+                d08 [UIStroke] Outline | par=Journey
+                d08 [Frame] Icon | par=Journey
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                    d10 [UIStroke] UIStroke | par=Frame
+                    d10 [UICorner] UICorner | par=Frame
+                  d09 [Frame] Frame | par=Icon
+                    d10 [UIStroke] UIStroke | par=Frame
+                    d10 [UICorner] UICorner | par=Frame
+                  d09 [ImageLabel] SkinIcon | par=Icon
+                d08 [TextLabel] Caption | par=Journey
+                  d09 [UIStroke] SkinTextStroke | par=Caption
+                d08 [Frame] Accent | par=Journey
+                  d09 [UICorner] SkinCorner | par=Accent
+                d08 [Frame] StateDot | par=Journey
+                  d09 [UICorner] SkinCorner | par=StateDot
+                d08 [UIStroke] SkinOutline | par=Journey
+                d08 [UIStroke] SkinStroke | par=Journey
+              d07 [TextButton] AFK | par=Navigation
+                d08 [UICorner] Corner | par=AFK
+                d08 [UIStroke] Outline | par=AFK
+                d08 [Frame] Icon | par=AFK
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                  d09 [ImageLabel] SkinIcon | par=Icon
+                d08 [TextLabel] Caption | par=AFK ATTR{SelfManagedText=true}
+                  d09 [UIStroke] SkinTextStroke | par=Caption
+                d08 [Frame] Accent | par=AFK
+                  d09 [UICorner] SkinCorner | par=Accent
+                d08 [Frame] StateDot | par=AFK
+                  d09 [UICorner] SkinCorner | par=StateDot
+                d08 [UIStroke] SkinOutline | par=AFK
+                d08 [UIStroke] SkinStroke | par=AFK
+              d07 [TextButton] Settings | par=Navigation
+                d08 [UICorner] Corner | par=Settings
+                d08 [UIStroke] Outline | par=Settings
+                d08 [Frame] Icon | par=Settings
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                    d10 [UIStroke] UIStroke | par=Frame
+                    d10 [UICorner] UICorner | par=Frame
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                    d10 [UIStroke] UIStroke | par=Frame
+                    d10 [UICorner] UICorner | par=Frame
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                    d10 [UIStroke] UIStroke | par=Frame
+                    d10 [UICorner] UICorner | par=Frame
+                  d09 [ImageLabel] SkinIcon | par=Icon
+                d08 [TextLabel] Caption | par=Settings
+                  d09 [UIStroke] SkinTextStroke | par=Caption
+                d08 [Frame] Accent | par=Settings
+                  d09 [UICorner] SkinCorner | par=Accent
+                d08 [Frame] StateDot | par=Settings
+                  d09 [UICorner] SkinCorner | par=StateDot
+                d08 [UIStroke] SkinOutline | par=Settings
+                d08 [UIStroke] SkinStroke | par=Settings
+              d07 [TextButton] Music | par=Navigation
+                d08 [UICorner] Corner | par=Music
+                d08 [UIStroke] Outline | par=Music
+                d08 [Frame] Icon | par=Music
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                  d09 [Frame] Frame | par=Icon
+                    d10 [UIStroke] UIStroke | par=Frame
+                    d10 [UICorner] UICorner | par=Frame
+                  d09 [Frame] Frame | par=Icon
+                    d10 [UIStroke] UIStroke | par=Frame
+                    d10 [UICorner] UICorner | par=Frame
+                  d09 [ImageLabel] SkinIcon | par=Icon
+                d08 [TextLabel] Caption | par=Music
+                  d09 [UIStroke] SkinTextStroke | par=Caption
+                d08 [Frame] Accent | par=Music
+                  d09 [UICorner] SkinCorner | par=Accent
+                d08 [Frame] StateDot | par=Music
+                  d09 [UICorner] SkinCorner | par=StateDot
+                d08 [UIStroke] SkinOutline | par=Music
+                d08 [UIStroke] SkinStroke | par=Music
+              d07 [TextLabel] CursorHint | par=Navigation
+                d08 [UIStroke] SkinTextStroke | par=CursorHint
+            d06 [UIStroke] SkinOutline | par=Panel
+        d04 [TextButton] MenuToggle | par=ValleyHUD
+          d05 [UICorner] Corner | par=MenuToggle
+          d05 [UIStroke] Outline | par=MenuToggle
+          d05 [TextLabel] Arrow | par=MenuToggle
+            d06 [UIStroke] SkinTextStroke | par=Arrow
+          d05 [TextLabel] Label | par=MenuToggle
+            d06 [UIStroke] SkinTextStroke | par=Label
+          d05 [UIStroke] SkinOutline | par=MenuToggle
+          d05 [UIStroke] SkinStroke | par=MenuToggle
+        d04 [NumberValue] DrawerReveal | par=ValleyHUD
+        d04 [TextButton] Spectate | par=ValleyHUD
+          d05 [UICorner] Corner | par=Spectate
+          d05 [UIStroke] Outline | par=Spectate
+          d05 [Frame] Icon | par=Spectate
+            d06 [Frame] Frame | par=Icon
+              d07 [UIStroke] UIStroke | par=Frame
+              d07 [UICorner] UICorner | par=Frame
+            d06 [Frame] Frame | par=Icon
+              d07 [UIStroke] UIStroke | par=Frame
+              d07 [UICorner] UICorner | par=Frame
+            d06 [ImageLabel] SkinIcon | par=Icon
+          d05 [TextLabel] Caption | par=Spectate ATTR{SelfManagedText=true}
+            d06 [UIStroke] SkinTextStroke | par=Caption
+          d05 [Frame] Accent | par=Spectate
+            d06 [UICorner] SkinCorner | par=Accent
+          d05 [Frame] StateDot | par=Spectate
+            d06 [UICorner] SkinCorner | par=StateDot
+          d05 [UIStroke] SkinOutline | par=Spectate
+          d05 [UIStroke] SkinStroke | par=Spectate
+        d04 [TextLabel] 2xCoinsTimer | par=ValleyHUD ATTR{SelfManagedText=true}
+          d05 [UIStroke] UIStroke | par=2xCoinsTimer
+        d04 [TextLabel] 2xGemsTimer | par=ValleyHUD ATTR{SelfManagedText=true}
+          d05 [UIStroke] UIStroke | par=2xGemsTimer
+      d03 [ScreenGui] ValleyArmory | par=Screens ATTR{UseGameAudio=true}
+        d04 [Frame] Dock | par=ValleyArmory
+          d05 [UIScale] Scale | par=Dock
+          d05 [TextLabel] CoinIcon | par=Dock
+          d05 [TextLabel] Coins | par=Dock
+          d05 [TextLabel] GemIcon | par=Dock
+          d05 [TextLabel] Gems | par=Dock
+          d05 [TextButton] Shop | par=Dock
+            d06 [Frame] Accent | par=Shop
+          d05 [TextButton] Inventory | par=Dock
+            d06 [Frame] Accent | par=Inventory
+        d04 [Frame] Overlay | par=ValleyArmory
+          d05 [Frame] Canvas | par=Overlay
+            d06 [UIScale] Scale | par=Canvas
+            d06 [UIGradient] Depth | par=Canvas
+            d06 [Frame] TopRule | par=Canvas
+            d06 [TextLabel] Brand | par=Canvas
+            d06 [TextLabel] Edition | par=Canvas
+            d06 [Frame] Tabs | par=Canvas
+              d07 [TextButton] Shop | par=Tabs
+                d08 [UICorner] Corner | par=Shop
+                d08 [UIStroke] Border | par=Shop
+              d07 [TextButton] Inventory | par=Tabs
+                d08 [UICorner] Corner | par=Inventory
+                d08 [UIStroke] Border | par=Inventory
+              d07 [Frame] ActiveLine | par=Tabs
+            d06 [Frame] Wallet | par=Canvas
+              d07 [TextLabel] Coins | par=Wallet
+              d07 [TextLabel] Gems | par=Wallet
+            d06 [TextButton] Close | par=Canvas
+              d07 [UICorner] Corner | par=Close
+              d07 [UIStroke] Border | par=Close
+            d06 [Frame] HeaderRule | par=Canvas
+            d06 [Frame] Hero | par=Canvas
+              d07 [Frame] Field | par=Hero
+                d08 [UICorner] Corner | par=Field
+                d08 [UIStroke] Outline | par=Field
+                d08 [Frame] CentreLine | par=Field
+                d08 [Frame] CentreCircle | par=Field
+                  d09 [UICorner] Corner | par=CentreCircle
+                  d09 [UIStroke] Outline | par=CentreCircle
+              d07 [ViewportFrame] Weapon | par=Hero
+              d07 [TextLabel] PreviewHint | par=Hero
+            d06 [Frame] Details | par=Canvas
+              d07 [TextLabel] Collection | par=Details
+              d07 [TextLabel] Title | par=Details
+              d07 [TextLabel] Subtitle | par=Details
+              d07 [TextLabel] Description | par=Details
+              d07 [TextButton] Action | par=Details
+            d06 [Frame] Sounds | par=Canvas
+              d07 [TextLabel] Label | par=Sounds
+              d07 [TextButton] Equip | par=Sounds
+                d08 [UICorner] Corner | par=Equip
+                d08 [UIStroke] Border | par=Equip
+              d07 [TextButton] Swing | par=Sounds
+                d08 [UICorner] Corner | par=Swing
+                d08 [UIStroke] Border | par=Swing
+              d07 [TextButton] Hit | par=Sounds
+                d08 [UICorner] Corner | par=Hit
+                d08 [UIStroke] Border | par=Hit
+            d06 [TextLabel] Status | par=Canvas
+            d06 [ScrollingFrame] Selection | par=Canvas
+              d07 [UIListLayout] Layout | par=Selection
+            d06 [ScrollingFrame] Storefront | par=Canvas
+              d07 [TextLabel] Promotion | par=Storefront
+              d07 [Frame] Featured | par=Storefront
+                d08 [UIGradient] Depth | par=Featured
+                d08 [UIStroke] Border | par=Featured
+                d08 [Frame] Pitch | par=Featured
+                  d09 [UIStroke] Line | par=Pitch
+                  d09 [Frame] Circle | par=Pitch
+                    d10 [UICorner] Round | par=Circle
+                    d10 [UIStroke] Line | par=Circle
+                  d09 [Frame] Halfway | par=Pitch
+                d08 [TextLabel] Index | par=Featured
+                d08 [ViewportFrame] Weapon | par=Featured
+                d08 [TextLabel] Hint | par=Featured
+                d08 [TextLabel] Loading | par=Featured
+                d08 [TextLabel] Eyebrow | par=Featured
+                d08 [TextLabel] Title | par=Featured
+                d08 [TextLabel] Tagline | par=Featured
+                d08 [TextLabel] Description | par=Featured
+                d08 [TextLabel] Footnote | par=Featured
+                d08 [TextButton] Buy | par=Featured
+                  d09 [UICorner] Corner | par=Buy
+                  d09 [UIStroke] Border | par=Buy
+                d08 [Frame] Sounds | par=Featured
+                  d09 [TextLabel] Label | par=Sounds
+                  d09 [TextButton] Equip | par=Sounds
+                    d10 [UICorner] Corner | par=Equip
+                    d10 [UIStroke] Border | par=Equip
+                  d09 [TextButton] Swing | par=Sounds
+                    d10 [UICorner] Corner | par=Swing
+                    d10 [UIStroke] Border | par=Swing
+                  d09 [TextButton] Hit | par=Sounds
+                    d10 [UICorner] Corner | par=Hit
+                    d10 [UIStroke] Border | par=Hit
+                d08 [TextLabel] Timer | par=Featured
+                d08 [UICorner] Corner | par=Featured
+              d07 [TextLabel] PerksHeading | par=Storefront
+              d07 [Frame] Perks | par=Storefront
+                d08 [Frame] DoubleXP | par=Perks
+                  d09 [UIGradient] Depth | par=DoubleXP
+                  d09 [TextLabel] Index | par=DoubleXP
+                  d09 [TextLabel] Title | par=DoubleXP
+                  d09 [TextLabel] Description | par=DoubleXP
+                  d09 [TextButton] Buy | par=DoubleXP
+                    d10 [UICorner] Corner | par=Buy
+                    d10 [UIStroke] Border | par=Buy
+                  d09 [UICorner] Corner | par=DoubleXP
+                  d09 [UIStroke] Border | par=DoubleXP
+                d08 [Frame] VIP | par=Perks
+                  d09 [UIGradient] Depth | par=VIP
+                  d09 [TextLabel] Index | par=VIP
+                  d09 [TextLabel] Title | par=VIP
+                  d09 [TextLabel] Description | par=VIP
+                  d09 [TextButton] Buy | par=VIP
+                    d10 [UICorner] Corner | par=Buy
+                    d10 [UIStroke] Border | par=Buy
+                  d09 [UICorner] Corner | par=VIP
+                  d09 [UIStroke] Border | par=VIP
+              d07 [TextLabel] Stacking | par=Storefront
+              d07 [Frame] Coins | par=Storefront
+                d08 [TextLabel] Heading | par=Coins
+                d08 [TextLabel] Description | par=Coins
+                d08 [Frame] Packs | par=Coins
+                  d09 [Frame] Pack1 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack1
+                    d10 [Frame] Art | par=Pack1
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UICorner] Round | par=Token1
+                        d12 [UIStroke] Rim | par=Token1
+                        d12 [Frame] Inset | par=Token1
+                          d13 [UICorner] Round | par=Inset
+                    d10 [TextLabel] Amount | par=Pack1
+                    d10 [TextLabel] Caption | par=Pack1
+                    d10 [TextButton] Buy | par=Pack1
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [UICorner] Corner | par=Pack1
+                    d10 [UIStroke] Border | par=Pack1
+                  d09 [Frame] Pack2 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack2
+                    d10 [Frame] Art | par=Pack2
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UICorner] Round | par=Token1
+                        d12 [UIStroke] Rim | par=Token1
+                        d12 [Frame] Inset | par=Token1
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UICorner] Round | par=Token2
+                        d12 [UIStroke] Rim | par=Token2
+                        d12 [Frame] Inset | par=Token2
+                          d13 [UICorner] Round | par=Inset
+                    d10 [TextLabel] Amount | par=Pack2
+                    d10 [TextLabel] Caption | par=Pack2
+                    d10 [TextButton] Buy | par=Pack2
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [UICorner] Corner | par=Pack2
+                    d10 [UIStroke] Border | par=Pack2
+                  d09 [Frame] Pack3 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack3
+                    d10 [Frame] Art | par=Pack3
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UICorner] Round | par=Token1
+                        d12 [UIStroke] Rim | par=Token1
+                        d12 [Frame] Inset | par=Token1
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UICorner] Round | par=Token2
+                        d12 [UIStroke] Rim | par=Token2
+                        d12 [Frame] Inset | par=Token2
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token3 | par=Art
+                        d12 [UICorner] Round | par=Token3
+                        d12 [UIStroke] Rim | par=Token3
+                        d12 [Frame] Inset | par=Token3
+                          d13 [UICorner] Round | par=Inset
+                    d10 [TextLabel] Amount | par=Pack3
+                    d10 [TextLabel] Caption | par=Pack3
+                    d10 [TextButton] Buy | par=Pack3
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [UICorner] Corner | par=Pack3
+                    d10 [UIStroke] Border | par=Pack3
+                  d09 [Frame] Pack4 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack4
+                    d10 [Frame] Art | par=Pack4
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UICorner] Round | par=Token1
+                        d12 [UIStroke] Rim | par=Token1
+                        d12 [Frame] Inset | par=Token1
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UICorner] Round | par=Token2
+                        d12 [UIStroke] Rim | par=Token2
+                        d12 [Frame] Inset | par=Token2
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token3 | par=Art
+                        d12 [UICorner] Round | par=Token3
+                        d12 [UIStroke] Rim | par=Token3
+                        d12 [Frame] Inset | par=Token3
+                          d13 [UICorner] Round | par=Inset
+                    d10 [TextLabel] Amount | par=Pack4
+                    d10 [TextLabel] Caption | par=Pack4
+                    d10 [TextButton] Buy | par=Pack4
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [UICorner] Corner | par=Pack4
+                    d10 [UIStroke] Border | par=Pack4
+                  d09 [Frame] Pack5 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack5
+                    d10 [Frame] Art | par=Pack5
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UICorner] Round | par=Token1
+                        d12 [UIStroke] Rim | par=Token1
+                        d12 [Frame] Inset | par=Token1
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UICorner] Round | par=Token2
+                        d12 [UIStroke] Rim | par=Token2
+                        d12 [Frame] Inset | par=Token2
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token3 | par=Art
+                        d12 [UICorner] Round | par=Token3
+                        d12 [UIStroke] Rim | par=Token3
+                        d12 [Frame] Inset | par=Token3
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token4 | par=Art
+                        d12 [UICorner] Round | par=Token4
+                        d12 [UIStroke] Rim | par=Token4
+                        d12 [Frame] Inset | par=Token4
+                          d13 [UICorner] Round | par=Inset
+                    d10 [TextLabel] Amount | par=Pack5
+                    d10 [TextLabel] Caption | par=Pack5
+                    d10 [TextButton] Buy | par=Pack5
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [UICorner] Corner | par=Pack5
+                    d10 [UIStroke] Border | par=Pack5
+                  d09 [Frame] Pack6 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack6
+                    d10 [Frame] Art | par=Pack6
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UICorner] Round | par=Token1
+                        d12 [UIStroke] Rim | par=Token1
+                        d12 [Frame] Inset | par=Token1
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UICorner] Round | par=Token2
+                        d12 [UIStroke] Rim | par=Token2
+                        d12 [Frame] Inset | par=Token2
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token3 | par=Art
+                        d12 [UICorner] Round | par=Token3
+                        d12 [UIStroke] Rim | par=Token3
+                        d12 [Frame] Inset | par=Token3
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token4 | par=Art
+                        d12 [UICorner] Round | par=Token4
+                        d12 [UIStroke] Rim | par=Token4
+                        d12 [Frame] Inset | par=Token4
+                          d13 [UICorner] Round | par=Inset
+                      d11 [Frame] Token5 | par=Art
+                        d12 [UICorner] Round | par=Token5
+                        d12 [UIStroke] Rim | par=Token5
+                        d12 [Frame] Inset | par=Token5
+                          d13 [UICorner] Round | par=Inset
+                    d10 [TextLabel] Amount | par=Pack6
+                    d10 [TextLabel] Caption | par=Pack6
+                    d10 [TextButton] Buy | par=Pack6
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [UICorner] Corner | par=Pack6
+                    d10 [UIStroke] Border | par=Pack6
+              d07 [Frame] Gems | par=Storefront
+                d08 [TextLabel] Heading | par=Gems
+                d08 [TextLabel] Description | par=Gems
+                d08 [Frame] Packs | par=Gems
+                  d09 [Frame] Pack1 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack1
+                    d10 [TextLabel] Amount | par=Pack1
+                    d10 [TextLabel] Caption | par=Pack1
+                    d10 [TextButton] Buy | par=Pack1
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [CanvasGroup] Art | par=Pack1
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UIGradient] Depth | par=Token1
+                        d12 [UIStroke] Edge | par=Token1
+                    d10 [UICorner] Corner | par=Pack1
+                    d10 [UIStroke] Border | par=Pack1
+                  d09 [Frame] Pack2 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack2
+                    d10 [TextLabel] Amount | par=Pack2
+                    d10 [TextLabel] Caption | par=Pack2
+                    d10 [TextButton] Buy | par=Pack2
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [CanvasGroup] Art | par=Pack2
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UIGradient] Depth | par=Token1
+                        d12 [UIStroke] Edge | par=Token1
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UIGradient] Depth | par=Token2
+                        d12 [UIStroke] Edge | par=Token2
+                    d10 [UICorner] Corner | par=Pack2
+                    d10 [UIStroke] Border | par=Pack2
+                  d09 [Frame] Pack3 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack3
+                    d10 [TextLabel] Amount | par=Pack3
+                    d10 [TextLabel] Caption | par=Pack3
+                    d10 [TextButton] Buy | par=Pack3
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [CanvasGroup] Art | par=Pack3
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UIGradient] Depth | par=Token1
+                        d12 [UIStroke] Edge | par=Token1
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UIGradient] Depth | par=Token2
+                        d12 [UIStroke] Edge | par=Token2
+                      d11 [Frame] Token3 | par=Art
+                        d12 [UIGradient] Depth | par=Token3
+                        d12 [UIStroke] Edge | par=Token3
+                    d10 [UICorner] Corner | par=Pack3
+                    d10 [UIStroke] Border | par=Pack3
+                  d09 [Frame] Pack4 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack4
+                    d10 [TextLabel] Amount | par=Pack4
+                    d10 [TextLabel] Caption | par=Pack4
+                    d10 [TextButton] Buy | par=Pack4
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [CanvasGroup] Art | par=Pack4
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UIGradient] Depth | par=Token1
+                        d12 [UIStroke] Edge | par=Token1
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UIGradient] Depth | par=Token2
+                        d12 [UIStroke] Edge | par=Token2
+                      d11 [Frame] Token3 | par=Art
+                        d12 [UIGradient] Depth | par=Token3
+                        d12 [UIStroke] Edge | par=Token3
+                    d10 [UICorner] Corner | par=Pack4
+                    d10 [UIStroke] Border | par=Pack4
+                  d09 [Frame] Pack5 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack5
+                    d10 [TextLabel] Amount | par=Pack5
+                    d10 [TextLabel] Caption | par=Pack5
+                    d10 [TextButton] Buy | par=Pack5
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [CanvasGroup] Art | par=Pack5
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UIGradient] Depth | par=Token1
+                        d12 [UIStroke] Edge | par=Token1
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UIGradient] Depth | par=Token2
+                        d12 [UIStroke] Edge | par=Token2
+                      d11 [Frame] Token3 | par=Art
+                        d12 [UIGradient] Depth | par=Token3
+                        d12 [UIStroke] Edge | par=Token3
+                      d11 [Frame] Token4 | par=Art
+                        d12 [UIGradient] Depth | par=Token4
+                        d12 [UIStroke] Edge | par=Token4
+                    d10 [UICorner] Corner | par=Pack5
+                    d10 [UIStroke] Border | par=Pack5
+                  d09 [Frame] Pack6 | par=Packs
+                    d10 [UIGradient] Depth | par=Pack6
+                    d10 [TextLabel] Amount | par=Pack6
+                    d10 [TextLabel] Caption | par=Pack6
+                    d10 [TextButton] Buy | par=Pack6
+                      d11 [UICorner] Corner | par=Buy
+                      d11 [UIStroke] Border | par=Buy
+                    d10 [CanvasGroup] Art | par=Pack6
+                      d11 [Frame] Token1 | par=Art
+                        d12 [UIGradient] Depth | par=Token1
+                        d12 [UIStroke] Edge | par=Token1
+                      d11 [Frame] Token2 | par=Art
+                        d12 [UIGradient] Depth | par=Token2
+                        d12 [UIStroke] Edge | par=Token2
+                      d11 [Frame] Token3 | par=Art
+                        d12 [UIGradient] Depth | par=Token3
+                        d12 [UIStroke] Edge | par=Token3
+                      d11 [Frame] Token4 | par=Art
+                        d12 [UIGradient] Depth | par=Token4
+                        d12 [UIStroke] Edge | par=Token4
+                      d11 [Frame] Token5 | par=Art
+                        d12 [UIGradient] Depth | par=Token5
+                        d12 [UIStroke] Edge | par=Token5
+                    d10 [UICorner] Corner | par=Pack6
+                    d10 [UIStroke] Border | par=Pack6
+              d07 [TextLabel] Footer | par=Storefront
+              d07 [Frame] Earnable | par=Storefront
+                d08 [UIGradient] Depth | par=Earnable
+                d08 [UIStroke] Border | par=Earnable
+                d08 [Frame] Pitch | par=Earnable
+                  d09 [UIStroke] Line | par=Pitch
+                  d09 [Frame] Circle | par=Pitch
+                    d10 [UICorner] Round | par=Circle
+                    d10 [UIStroke] Line | par=Circle
+                  d09 [Frame] Halfway | par=Pitch
+                d08 [TextLabel] Index | par=Earnable
+                d08 [ViewportFrame] Weapon | par=Earnable
+                d08 [TextLabel] Hint | par=Earnable
+                d08 [TextLabel] Loading | par=Earnable
+                d08 [TextLabel] Eyebrow | par=Earnable
+                d08 [TextLabel] Title | par=Earnable
+                d08 [TextLabel] Tagline | par=Earnable
+                d08 [TextLabel] Description | par=Earnable
+                d08 [TextLabel] Footnote | par=Earnable
+                d08 [TextButton] Buy | par=Earnable
+                  d09 [UICorner] Corner | par=Buy
+                  d09 [UIStroke] Border | par=Buy
+                d08 [Frame] Sounds | par=Earnable
+                  d09 [TextLabel] Label | par=Sounds
+                  d09 [TextButton] Equip | par=Sounds
+                    d10 [UICorner] Corner | par=Equip
+                    d10 [UIStroke] Border | par=Equip
+                  d09 [TextButton] Swing | par=Sounds
+                    d10 [UICorner] Corner | par=Swing
+                    d10 [UIStroke] Border | par=Swing
+                  d09 [TextButton] Hit | par=Sounds
+                    d10 [UICorner] Corner | par=Hit
+                    d10 [UIStroke] Border | par=Hit
+                d08 [TextLabel] Timer | par=Earnable
+                d08 [UICorner] Corner | par=Earnable
+              d07 [Frame] BalloonDagger | par=Storefront
+                d08 [UIGradient] Depth | par=BalloonDagger
+                d08 [UIStroke] Border | par=BalloonDagger
+                d08 [Frame] Pitch | par=BalloonDagger
+                  d09 [UIStroke] Line | par=Pitch
+                  d09 [Frame] Circle | par=Pitch
+                    d10 [UICorner] Round | par=Circle
+                    d10 [UIStroke] Line | par=Circle
+                  d09 [Frame] Halfway | par=Pitch
+                d08 [TextLabel] Index | par=BalloonDagger
+                d08 [ViewportFrame] Weapon | par=BalloonDagger
+                d08 [TextLabel] Hint | par=BalloonDagger
+                d08 [TextLabel] Loading | par=BalloonDagger
+                d08 [TextLabel] Eyebrow | par=BalloonDagger
+                d08 [TextLabel] Title | par=BalloonDagger
+                d08 [TextLabel] Tagline | par=BalloonDagger
+                d08 [TextLabel] Description | par=BalloonDagger
+                d08 [TextLabel] Footnote | par=BalloonDagger
+                d08 [TextButton] Buy | par=BalloonDagger
+                  d09 [UICorner] Corner | par=Buy
+                  d09 [UIStroke] Border | par=Buy
+                d08 [Frame] Sounds | par=BalloonDagger
+                  d09 [TextLabel] Label | par=Sounds
+                  d09 [TextButton] Equip | par=Sounds
+                    d10 [UICorner] Corner | par=Equip
+                    d10 [UIStroke] Border | par=Equip
+                  d09 [TextButton] Swing | par=Sounds
+                    d10 [UICorner] Corner | par=Swing
+                    d10 [UIStroke] Border | par=Swing
+                  d09 [TextButton] Hit | par=Sounds
+                    d10 [UICorner] Corner | par=Hit
+                    d10 [UIStroke] Border | par=Hit
+                d08 [TextLabel] Timer | par=BalloonDagger
+                d08 [UICorner] Corner | par=BalloonDagger
+              d07 [Frame] TopWinsDagger | par=Storefront
+                d08 [UIGradient] Depth | par=TopWinsDagger
+                d08 [UIStroke] Border | par=TopWinsDagger
+                d08 [Frame] Pitch | par=TopWinsDagger
+                  d09 [UIStroke] Line | par=Pitch
+                  d09 [Frame] Circle | par=Pitch
+                    d10 [UICorner] Round | par=Circle
+                    d10 [UIStroke] Line | par=Circle
+                  d09 [Frame] Halfway | par=Pitch
+                d08 [TextLabel] Index | par=TopWinsDagger
+                d08 [ViewportFrame] Weapon | par=TopWinsDagger
+                d08 [TextLabel] Hint | par=TopWinsDagger
+                d08 [TextLabel] Loading | par=TopWinsDagger
+                d08 [TextLabel] Eyebrow | par=TopWinsDagger
+                d08 [TextLabel] Title | par=TopWinsDagger
+                d08 [TextLabel] Tagline | par=TopWinsDagger
+                d08 [TextLabel] Description | par=TopWinsDagger
+                d08 [TextLabel] Footnote | par=TopWinsDagger
+                d08 [TextButton] Buy | par=TopWinsDagger
+                  d09 [UICorner] Corner | par=Buy
+                  d09 [UIStroke] Border | par=Buy
+                d08 [Frame] Sounds | par=TopWinsDagger
+                  d09 [TextLabel] Label | par=Sounds
+                  d09 [TextButton] Equip | par=Sounds
+                    d10 [UICorner] Corner | par=Equip
+                    d10 [UIStroke] Border | par=Equip
+                  d09 [TextButton] Swing | par=Sounds
+                    d10 [UICorner] Corner | par=Swing
+                    d10 [UIStroke] Border | par=Swing
+                  d09 [TextButton] Hit | par=Sounds
+                    d10 [UICorner] Corner | par=Hit
+                    d10 [UIStroke] Border | par=Hit
+                d08 [TextLabel] Timer | par=TopWinsDagger
+                d08 [UICorner] Corner | par=TopWinsDagger
+            d06 [TextLabel] Notice | par=Canvas
+            d06 [TextLabel] ScrollHint | par=Canvas
+            d06 [UICorner] Corner | par=Canvas
+            d06 [UIStroke] Border | par=Canvas
+        d04 [TextButton] SkinTile | par=ValleyArmory
+          d05 [TextLabel] Index | par=SkinTile
+          d05 [TextLabel] NameLabel | par=SkinTile
+          d05 [TextLabel] State | par=SkinTile
+          d05 [Frame] SelectionMark | par=SkinTile
+          d05 [UICorner] Corner | par=SkinTile
+          d05 [UIStroke] Border | par=SkinTile
+      d03 [ScreenGui] ValleyArmoryShade | par=Screens
+        d04 [Frame] Shade | par=ValleyArmoryShade
+          d05 [UIGradient] Fade | par=Shade
+      d03 [ScreenGui] MatchSummaryUI | par=Screens ATTR{SelfManagedText=true,UseGameAudio=true}
+        d04 [LocalScript] MatchResultClient | par=MatchSummaryUI
+        d04 [Frame] HolderFrame | par=MatchSummaryUI
+      d03 [ScreenGui] ServerBrowser | par=Screens ATTR{UIReferenceViewport=2130.000,933.000}
+        d04 [TextButton] Open | par=ServerBrowser ATTR{UIProportionalGroup=true}
+          d05 [UICorner] Corners | par=Open
+          d05 [UIAspectRatioConstraint] Proportions | par=Open
+          d05 [UISizeConstraint] TouchTarget | par=Open
+          d05 [UIPadding] ResponsiveTextPadding | par=Open
+          d05 [UIStroke] SkinOutline | par=Open
+          d05 [UIStroke] SkinStroke | par=Open
+          d05 [UIStroke] SkinTextStroke | par=Open
+        d04 [Frame] Panel | par=ServerBrowser
+          d05 [UICorner] Corner | par=Panel
+          d05 [TextLabel] Title | par=Panel
+          d05 [TextLabel] Connection | par=Panel
+          d05 [TextButton] Close | par=Panel
+            d06 [UICorner] Corner | par=Close
+            d06 [UIStroke] Border | par=Close
+          d05 [TextButton] Refresh | par=Panel
+            d06 [UICorner] Corner | par=Refresh
+            d06 [UIStroke] Border | par=Refresh
+          d05 [TextButton] Sort | par=Panel
+            d06 [UICorner] Corner | par=Sort
+            d06 [UIStroke] Border | par=Sort
+          d05 [ScrollingFrame] List | par=Panel
+            d06 [UIListLayout] Layout | par=List
+            d06 [UIPadding] Padding | par=List
+          d05 [TextLabel] Empty | par=Panel
+          d05 [TextLabel] Explanation | par=Panel
+          d05 [TextLabel] Status | par=Panel
+          d05 [UIStroke] Border | par=Panel
+          d05 [UIScale] Scale | par=Panel
+          d05 [Frame] TopRule | par=Panel
+          d05 [TextLabel] Eyebrow | par=Panel
+          d05 [Frame] HeaderRule | par=Panel
+          d05 [TextLabel] Count | par=Panel
+        d04 [Folder] Templates | par=ServerBrowser
+          d05 [Frame] ServerRow | par=Templates
+            d06 [UICorner] Corner | par=ServerRow
+            d06 [TextLabel] Title | par=ServerRow
+            d06 [TextLabel] Details | par=ServerRow
+            d06 [TextLabel] Region | par=ServerRow
+            d06 [TextLabel] Ping | par=ServerRow
+            d06 [TextButton] Join | par=ServerRow
+              d07 [UICorner] Corner | par=Join
+              d07 [UIStroke] Border | par=Join
+            d06 [Frame] Accent | par=ServerRow
+            d06 [UIStroke] Border | par=ServerRow
+      d03 [ScreenGui] ServerBrowserShade | par=Screens
+        d04 [TextButton] Shade | par=ServerBrowserShade
+      d03 [ScreenGui] Misc | par=Screens ATTR{UIReferenceViewport=2130.000,933.000,UseGameAudio=true}
+        d04 [LocalScript] LobbyControlsClient | par=Misc
+        d04 [Frame] MainFrame | par=Misc
+          d05 [Frame] LobbyControls | par=MainFrame ATTR{UIProportionalGroup=true}
+            d06 [UISizeConstraint] SizeLimits | par=LobbyControls
+            d06 [Frame] AFKF | par=LobbyControls
+              d07 [TextButton] AFKButton | par=AFKF
+                d08 [UICorner] SkinCorner | par=AFKButton
+                d08 [UIStroke] SkinOutline | par=AFKButton
+                d08 [UIStroke] SkinStroke | par=AFKButton
+                d08 [UIStroke] SkinTextStroke | par=AFKButton
+            d06 [Frame] MusicControls | par=LobbyControls
+              d07 [Frame] MusicF | par=MusicControls
+              d07 [Frame] MuteF | par=MusicControls
+                d08 [ImageButton] MuteIB | par=MuteF
+                  d09 [Decal] Sound On | par=MuteIB
+                  d09 [Decal] Sound Off | par=MuteIB
+                d08 [UIAspectRatioConstraint] Square | par=MuteF
+            d06 [TextLabel] KeyboardHint | par=LobbyControls
+              d07 [UIStroke] SkinTextStroke | par=KeyboardHint
+            d06 [TextLabel] Feedback | par=LobbyControls
+              d07 [UIStroke] SkinTextStroke | par=Feedback
+            d06 [UIAspectRatioConstraint] Proportions | par=LobbyControls
+      d03 [ScreenGui] Notifications | par=Screens ATTR{TemplateNotes=MainFrame is the live editable UI. Templates.ChoiceOption supplies player/choice buttons.,UIReferenceViewport=2130.000,933.000}
+        d04 [LocalScript] NotificationsController | par=Notifications
+        d04 [Frame] MainFrame | par=Notifications
+          d05 [Frame] NotificationsF | par=MainFrame
+            d06 [Frame] Frame | par=NotificationsF
+              d07 [TextLabel] Location | par=Frame
+                d08 [UIStroke] SkinTextStroke | par=Location
+              d07 [UICorner] UICorner | par=Frame
+              d07 [TextLabel] Hint | par=Frame
+                d08 [UIStroke] SkinTextStroke | par=Hint
+              d07 [TextLabel] WhatsHappening | par=Frame
+                d08 [UIStroke] SkinTextStroke | par=WhatsHappening
+            d06 [CanvasGroup] EscapeStreak | par=NotificationsF
+              d07 [UIScale] Reveal | par=EscapeStreak
+              d07 [TextLabel] Caption | par=EscapeStreak
+                d08 [UIStroke] SkinTextStroke | par=Caption
+              d07 [TextLabel] Count | par=EscapeStreak
+                d08 [UIStroke] SkinTextStroke | par=Count
+              d07 [TextLabel] Hint | par=EscapeStreak
+                d08 [UIStroke] SkinTextStroke | par=Hint
+              d07 [Frame] Segments | par=EscapeStreak
+                d08 [Frame] Segment1 | par=Segments
+                  d09 [UICorner] UICorner | par=Segment1
+                  d09 [Frame] Fill | par=Segment1
+                    d10 [UICorner] UICorner | par=Fill
+                d08 [Frame] Segment2 | par=Segments
+                  d09 [UICorner] UICorner | par=Segment2
+                  d09 [Frame] Fill | par=Segment2
+                    d10 [UICorner] UICorner | par=Fill
+                d08 [Frame] Segment3 | par=Segments
+                  d09 [UICorner] UICorner | par=Segment3
+                  d09 [Frame] Fill | par=Segment3
+                    d10 [UICorner] UICorner | par=Fill
+            d06 [CanvasGroup] ChoiceAnnouncement | par=NotificationsF
+              d07 [TextLabel] Title | par=ChoiceAnnouncement
+                d08 [UIStroke] SkinTextStroke | par=Title
+              d07 [TextLabel] Description | par=ChoiceAnnouncement
+                d08 [UIStroke] SkinTextStroke | par=Description
+              d07 [Frame] Accent | par=ChoiceAnnouncement
+                d08 [UICorner] Round | par=Accent
+          d05 [Frame] Choices | par=MainFrame ATTR{PickerColumns=1}
+            d06 [TextLabel] Title | par=Choices
+            d06 [TextLabel] Hint | par=Choices
+            d06 [TextLabel] Status | par=Choices
+            d06 [Frame] RunnerChoice | par=Choices
+              d07 [Frame] Options | par=RunnerChoice
+                d08 [TextButton] Chicken | par=Options
+                  d09 [UICorner] Corner | par=Chicken
+                  d09 [UIStroke] Border | par=Chicken
+                  d09 [TextLabel] Eyebrow | par=Chicken
+                  d09 [TextLabel] Title | par=Chicken
+                  d09 [TextLabel] Description | par=Chicken
+                  d09 [Frame] Accent | par=Chicken
+                d08 [TextButton] Hero | par=Options
+                  d09 [UICorner] Corner | par=Hero
+                  d09 [UIStroke] Border | par=Hero
+                  d09 [TextLabel] Eyebrow | par=Hero
+                  d09 [TextLabel] Title | par=Hero
+                  d09 [TextLabel] Description | par=Hero
+                  d09 [Frame] Accent | par=Hero
+            d06 [Frame] PlayerPicker | par=Choices
+              d07 [ScrollingFrame] Options | par=PlayerPicker
+                d08 [UIPadding] Padding | par=Options
+                d08 [UIGridLayout] Layout | par=Options
+              d07 [TextLabel] Empty | par=PlayerPicker
+            d06 [Frame] HeaderBackground | par=Choices
+              d07 [UICorner] UICorner | par=HeaderBackground
+            d06 [NumberValue] Reveal | par=Choices
+            d06 [UICorner] Corner | par=Choices
+            d06 [UIStroke] Border | par=Choices
+            d06 [UIScale] ChoiceScale | par=Choices
+            d06 [Frame] TopRule | par=Choices
+            d06 [TextLabel] Eyebrow | par=Choices
+            d06 [TextLabel] Count | par=Choices
+            d06 [TextBox] Search | par=Choices
+              d07 [UICorner] Corner | par=Search
+              d07 [UIStroke] Border | par=Search
+              d07 [UIPadding] Inset | par=Search
+        d04 [Folder] Templates | par=Notifications
+          d05 [TextButton] ChoiceOption | par=Templates
+            d06 [UICorner] Corner | par=ChoiceOption
+            d06 [UIStroke] Border | par=ChoiceOption
+            d06 [ImageLabel] Avatar | par=ChoiceOption
+              d07 [UICorner] UICorner | par=Avatar
+              d07 [TextLabel] Fallback | par=Avatar
+            d06 [TextLabel] Title | par=ChoiceOption
+            d06 [TextLabel] Description | par=ChoiceOption
+            d06 [TextLabel] Choose | par=ChoiceOption
+      d03 [ScreenGui] ChoiceSpotlight | par=Screens
+        d04 [LocalScript] ChoiceSpotlightClient | par=ChoiceSpotlight
+        d04 [BillboardGui] DecisionTemplate | par=ChoiceSpotlight
+          d05 [TextLabel] Label | par=DecisionTemplate
+            d06 [UIStroke] SkinTextStroke | par=Label
+    d02 [Folder] HUD | par=LegacyUI
+      d03 [LocalScript] ActionBarController | par=HUD
+      d03 [Frame] MainFrame | par=HUD
+        d04 [Frame] BarMainFrame | par=MainFrame ATTR{UIProportionalGroup=true}
+          d05 [Frame] BarBG | par=BarMainFrame
+            d06 [UICorner] UICorner | par=BarBG
+            d06 [Frame] Bar | par=BarBG
+              d07 [UICorner] UICorner | par=Bar
+              d07 [UIGradient] SkinGradient | par=Bar
+            d06 [UIStroke] SkinOutline | par=BarBG
+            d06 [UIStroke] SkinStroke | par=BarBG
+          d05 [TextLabel] Status | par=BarMainFrame
+            d06 [UIStroke] SkinTextStroke | par=Status
+          d05 [TextLabel] Hint | par=BarMainFrame
+            d06 [UIStroke] SkinTextStroke | par=Hint
+          d05 [UISizeConstraint] SizeLimits | par=BarMainFrame
+          d05 [TextLabel] ControlPrompt | par=BarMainFrame
+            d06 [UIPadding] UIPadding | par=ControlPrompt
+            d06 [UIStroke] SkinTextStroke | par=ControlPrompt
+          d05 [UIAspectRatioConstraint] Proportions | par=BarMainFrame
+          d05 [TextLabel] MeleeControl | par=BarMainFrame
+            d06 [UIPadding] UIPadding | par=MeleeControl
+            d06 [ImageLabel] ImageLabel | par=MeleeControl
+              d07 [UIAspectRatioConstraint] UIAspectRatioConstraint | par=ImageLabel
+            d06 [UIStroke] SkinTextStroke | par=MeleeControl
+    d02 [Folder] PlayerScripts | par=LegacyUI
+      d03 [LocalScript] JourneyClient | par=PlayerScripts
+      d03 [LocalScript] EmoteClient | par=PlayerScripts
+      d03 [LocalScript] ValleyHudClient | par=PlayerScripts
+      d03 [LocalScript] PerfectDodgeClient | par=PlayerScripts
+      d03 [LocalScript] ArmoryClient | par=PlayerScripts
+      d03 [LocalScript] WorldShopClient | par=PlayerScripts
+      d03 [LocalScript] BalloonOfferClient | par=PlayerScripts
+      d03 [LocalScript] ServerBrowserClient | par=PlayerScripts
+      d03 [LocalScript] CrateClient | par=PlayerScripts
+      d03 [LocalScript] ConnectionQualityClient | par=PlayerScripts
+      d03 [LocalScript] GuardClient | par=PlayerScripts
+      d03 [LocalScript] SpectateClient | par=PlayerScripts
+      d03 [LocalScript] QuestClient | par=PlayerScripts
+      d03 [LocalScript] CursorHintClient | par=PlayerScripts
+      d03 [LocalScript] CloneAbilityClient | par=PlayerScripts
+      d03 [LocalScript] GhostAbilityClient | par=PlayerScripts
+      d03 [LocalScript] MapVoteClient | par=PlayerScripts
+      d03 [LocalScript] StarterPackClient | par=PlayerScripts
+      d03 [LocalScript] AbilityUseClient | par=PlayerScripts
+      d03 [LocalScript] GearUseClient | par=PlayerScripts
+      d03 [LocalScript] LikeRewardClient | par=PlayerScripts
+d00 [Model] Barrel | par=ReplicatedStorage
+  d01 [Part] Part | par=Barrel
+  d01 [Part] Part | par=Barrel
+  d01 [UnionOperation] Union | par=Barrel
+  d01 [UnionOperation] Union | par=Barrel
+  d01 [UnionOperation] Union | par=Barrel
+  d01 [UnionOperation] Union | par=Barrel
+  d01 [UnionOperation] Union | par=Barrel
+d00 [RemoteEvent] GoatAnalyticsEvent | par=ReplicatedStorage
+d00 [ObjectValue] TopbarPlusReference | par=ReplicatedStorage

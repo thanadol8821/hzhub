@@ -1,0 +1,14 @@
+=== DEEPDUMP v4 SUMMARY ===
+place=107535308163741 job=7975bd7b-e2a2-422d-822a-9e8476e6225f
+files written: dd_attributes.json, dd_hidden.json, dd_globals.json, dd_map_cframes.json, dd_values.json, dd_assets.json, dd_remotes.txt, dd_props_1.jsonl, dd_props_2.jsonl, dd_Players_tree_1.txt, dd_StarterPlayer_tree_1.txt, dd_Lighting_tree_1.txt, dd_ReplicatedFirst_tree_1.txt, dd_Workspace_tree_1.txt, dd_StarterGui_tree_1.txt, dd_SoundService_tree_1.txt, dd_ReplicatedStorage_tree_1.txt, dd_index.json
+prop chunks=2 remotes=63 values=635 attrs=3142 cframes=1197 hidden=0 skipped=0
+  Players              nodes=8204 files=1 
+  StarterPlayer        nodes=267 files=1 
+  Lighting             nodes=7 files=1 
+  ReplicatedFirst      nodes=158 files=1 
+  StarterPack          nodes=0 files=0 
+  Workspace            nodes=4398 files=1 
+  StarterGui           nodes=2862 files=1 
+  Teams                nodes=0 files=0 
+  SoundService         nodes=404 files=1 
+  ReplicatedStorage    nodes=3004 files=1 

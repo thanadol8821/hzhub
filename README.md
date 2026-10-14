@@ -19,7 +19,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/thanadol8821/hzhub/ma
 <!--FILES-->
 | แมพ | ไฟล์ใน releases/ |
 |---|---|
-| Chicken or Hero (Huss Valley) | `releases/hz_valley.lua` |
+| Sniper Arena (HZ HUB) | `releases/hz_sniper.lua` |
 <!--/FILES-->
 
 (เปลี่ยนชื่อไฟล์ใน URL ตามแมพ — คีย์เดียวกันทุกแมพ)
