@@ -24,9 +24,9 @@ local C={bgTop=Color3.fromRGB(16,17,30),bgBot=Color3.fromRGB(10,11,20),edge=Colo
     on=Color3.fromRGB(64,224,140),off=Color3.fromRGB(62,66,88),txt=Color3.fromRGB(238,240,252),dim=Color3.fromRGB(138,146,178),
     row=Color3.fromRGB(24,26,42),rowH=Color3.fromRGB(33,36,58),opt=Color3.fromRGB(30,33,52),optH=Color3.fromRGB(40,44,68),
     sub=Color3.fromRGB(20,22,37),panel=Color3.fromRGB(19,21,34),deep=Color3.fromRGB(14,16,27),buy=Color3.fromRGB(44,128,72),opt2=Color3.fromRGB(40,44,66)}
-local TIERS={"Common","Uncommon","Rare","Epic","Legendary","Mythic","Exotic","Zenith","Divine","Empyrean","Infinity","Ultima","Eldritch"}
-local TCOL={Common=Color3.fromRGB(154,163,178),Uncommon=Color3.fromRGB(92,232,92),Rare=Color3.fromRGB(74,168,255),Epic=Color3.fromRGB(180,130,255),Legendary=Color3.fromRGB(255,210,60),Mythic=Color3.fromRGB(255,110,60),Exotic=Color3.fromRGB(255,74,140),Zenith=Color3.fromRGB(125,249,255),
-    Divine=Color3.fromRGB(255,240,170),Empyrean=Color3.fromRGB(140,255,215),Infinity=Color3.fromRGB(150,80,255),Ultima=Color3.fromRGB(255,80,80),Eldritch=Color3.fromRGB(120,70,190)}
+-- ระดับ+สีตรง GemData.Rarity ของเกม (index 1-8 เท่านั้น — ไม่มี Divine/Empyrean/Infinity/Ultima/Eldritch ในเกม)
+local TIERS={"Common","Uncommon","Rare","Epic","Legendary","Mythic","Exotic","Zenith"}
+local TCOL={Common=Color3.fromRGB(205,148,92),Uncommon=Color3.fromRGB(95,220,105),Rare=Color3.fromRGB(70,155,255),Epic=Color3.fromRGB(180,95,255),Legendary=Color3.fromRGB(255,170,45),Mythic=Color3.fromRGB(255,70,70),Exotic=Color3.fromRGB(255,216,74),Zenith=Color3.fromRGB(110,235,255)}
 local function tIdx(t) for i,v in ipairs(TIERS) do if v==t then return i end end return 0 end
 local function rIdx(t) local i=tIdx(t) return i>0 and i or 99 end  -- tier ไม่รู้จัก = สูงสุด (sort/เสียงแจ้ง)
 local function tfont(l) l.Font=Enum.Font.GothamMedium pcall(function() l.Font=Enum.Font.Kanit end) end
@@ -132,6 +132,22 @@ task.spawn(function()
     pcall(function() MP=require(RS:WaitForChild("MountainPool",20)) end)
     pcall(function() RD=require(RS:WaitForChild("RuneData",20)) end)
     pcall(function() WD=require(RS:WaitForChild("WeatherData",20)) end)
+    -- sync ระดับ+สีจาก GemData จริง — เกมเปลี่ยนสีเราตามอัตโนมัติ
+    pcall(function()
+        local R=require(RS:WaitForChild("GemData",20)).Rarity
+        if R then
+            local nt={}
+            for name,info in pairs(R) do
+                local c=info.color
+                TCOL[name]=(typeof(c)=="Color3") and c or (type(c)=="table" and Color3.new(c[1] or c.r or 1,c[2] or c.g or 1,c[3] or c.b or 1)) or TCOL[name]
+                if type(info.index)=="number" then nt[info.index]=name end
+            end
+            for i in pairs(TIERS) do TIERS[i]=nil end
+            for i=1,20 do if nt[i] then TIERS[i]=nt[i] end end
+            -- ทาบสีให้ของที่ track อยู่แล้วด้วย
+            for m,v in pairs(tracked) do local c=TCOL[v.rarity]; if c then v.hl.FillColor=c v.t1.TextColor3=c end end
+        end
+    end)
 end)
 
 -- ============ ESP layer ============
