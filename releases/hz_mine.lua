@@ -11,24 +11,54 @@ G.__HZMINE=(G.__HZMINE or 0)+1; local GEN=G.__HZMINE
 local function alive() return G.__HZMINE==GEN end
 for _,g in ipairs(CoreGui:GetChildren()) do if g.Name=="HZMineUI" or g.Name=="HZMineEsp" then pcall(function() g:Destroy() end) end end
 
-local function wr(f,s) if writefile then pcall(writefile,f,s) end end
-local function slog(m) local t=os.date("%H:%M:%S")
-    local old=(isfile and isfile("hz_mine_log.txt") and readfile("hz_mine_log.txt") or "")
-    if #old>200000 then old=old:sub(-100000) end   -- กันไฟล์บวม: เกิน 200KB ตัดเก็บครึ่งหลัง
-    wr("hz_mine_log.txt",old.."\n"..t.." "..m); print("[HZMINE]",m)
+-- log: เก็บในหน่วยความจำ แล้วเขียนไฟล์ทีเดียว≤1 ครั้ง/วิ (เดิม readfile+writefile ทั้งไฟล์ทุกบรรทัด = I/O บวม กระตุกตอนยิง log ถี่) — Xeno appendfile ไม่เขียน จึงต้อง writefile ทั้งไฟล์
+-- บัฟเฟอร์เดียวใน G.__HZLOG ทุก generation ใช้ร่วมกัน: handler ของรอบเก่าที่ค้างอยู่ (เช่น WIPE ซ้ำ 22 รอบในล็อกจริง) ไม่เขียนทับด้วยบัฟเฟอร์เก่า
+local slog
+do
+    local L={lines={"== HZ MINE "..os.date().." =="},dirty=true,t=0}
+    G.__HZLOG=L
+    local function flush() local c=G.__HZLOG if c and c.dirty and writefile then c.dirty=false c.t=os.clock() pcall(writefile,"hz_mine_log.txt",table.concat(c.lines,"\n")) end end
+    slog=function(m)
+        local c=G.__HZLOG or L; local ls=c.lines
+        ls[#ls+1]=os.date("%H:%M:%S").." "..tostring(m); c.dirty=true
+        if #ls>1500 then for i=1,600 do table.remove(ls,2) end end   -- เก็บหัว + 900 บรรทัดล่าสุด
+        print("[HZMINE]",m)
+        if not alive() and os.clock()-c.t>1 then flush() end         -- generation ตายแล้ว (ปิด/รันซ้ำ) = เขียนทันที แต่ไม่ถี่เกิน 1/วิ
+    end
+    task.spawn(function() while alive() do task.wait(1) flush() end flush() end)
+    flush()
 end
-wr("hz_mine_log.txt","== HZ MINE "..os.date().." ==")
 
 local C={bgTop=Color3.fromRGB(16,17,30),bgBot=Color3.fromRGB(10,11,20),edge=Color3.fromRGB(96,116,235),
     accent=Color3.fromRGB(88,140,255),accent2=Color3.fromRGB(160,110,255),accent3=Color3.fromRGB(255,110,200),
     on=Color3.fromRGB(64,224,140),off=Color3.fromRGB(62,66,88),txt=Color3.fromRGB(238,240,252),dim=Color3.fromRGB(138,146,178),
     row=Color3.fromRGB(24,26,42),rowH=Color3.fromRGB(33,36,58),opt=Color3.fromRGB(30,33,52),optH=Color3.fromRGB(40,44,68),
-    sub=Color3.fromRGB(20,22,37),panel=Color3.fromRGB(19,21,34),deep=Color3.fromRGB(14,16,27),buy=Color3.fromRGB(44,128,72),opt2=Color3.fromRGB(40,44,66)}
+    sub=Color3.fromRGB(20,22,37),panel=Color3.fromRGB(19,21,34),deep=Color3.fromRGB(14,16,27),buy=Color3.fromRGB(44,128,72),opt2=Color3.fromRGB(40,44,66),
+    good=Color3.fromRGB(120,255,160)}
 -- ระดับ+สีตรง GemData.Rarity ของเกม (index 1-8 เท่านั้น — ไม่มี Divine/Empyrean/Infinity/Ultima/Eldritch ในเกม)
 local TIERS={"Common","Uncommon","Rare","Epic","Legendary","Mythic","Exotic","Zenith"}
+local PK={TH_R={Common="ธรรมดา",Uncommon="พิเศษ",Rare="หายาก",Epic="เอพิค",Legendary="ตำนาน",Mythic="มิธิค",Exotic="เอ็กโซติก",Zenith="ซีนิธ"},thNames={},nameRarity={},nameCard={},TR=false}
+PK.ss={t0=os.clock(),n=0,val=0,sold=0}   -- 📈 สถิติรอบนี้ (เก็บ/ขาย/ต่อชั่วโมง) แสดงใน HUD
+function PK.thR(r) return PK.TH_R[r] or r or "?" end   -- โชว์ระดับเป็นไทย (ชื่อในเกมยังอังกฤษตาม server)
+function PK.isPick(t)   -- พลั่ว/สว่านจริง = Tool ที่มี Cooldown (พลั่วทั่วไป) หรือ DigCooldown (Plasma Drill ใน DrillTools/Hexfang) — ตัดคริสตัล(BagId)/รูน(RuneId)
+    return t:IsA("Tool") and (t:GetAttribute("Cooldown") or t:GetAttribute("DigCooldown")) and not t:GetAttribute("BagId") and not t:GetAttribute("RuneId") and true or false
+end
+function PK.t1(m,id,mut,fr)   -- ป้ายบรรทัดบนของแรร์: ◆ [★ของเรา] ชื่อ [✦mutation] [⛏ฝังอยู่]
+    local own=m:GetAttribute("Owner")==LP.UserId
+    return "◆ "..(own and "★ " or "")..PK.dispName(id)..(mut and (" ✦"..mut) or "")..(fr and "" or " ⛏ฝังอยู่")
+end
+function PK.dispName(id) local t=PK.thNames[id] if t then return t end return (tostring(id):gsub("(%l)(%u)","%1 %2")) end
 local TCOL={Common=Color3.fromRGB(205,148,92),Uncommon=Color3.fromRGB(95,220,105),Rare=Color3.fromRGB(70,155,255),Epic=Color3.fromRGB(180,95,255),Legendary=Color3.fromRGB(255,170,45),Mythic=Color3.fromRGB(255,70,70),Exotic=Color3.fromRGB(255,216,74),Zenith=Color3.fromRGB(110,235,255)}
 local function tIdx(t) for i,v in ipairs(TIERS) do if v==t then return i end end return 0 end
 local function rIdx(t) local i=tIdx(t) return i>0 and i or 99 end  -- tier ไม่รู้จัก = สูงสุด (sort/เสียงแจ้ง)
+-- ขนาดคริสตัลตามเกมจริง (GemData.SizeClasses — maxKg ต่อชั้น)
+PK.SIZEK={2,8,30,120,500,2000,15000,100000,1000000,math.huge}
+PK.SIZEN={"Tiny","Small","Medium","Large","Huge","Giant","Massive","Enormous","Colossal","Gargantuan"}
+PK.SIZETH={"เล็กมาก","เล็ก","กลาง","ใหญ่","ใหญ่มาก","ยักษ์","มหึมา","ใหญ่มากส้ม","ยักษ์ทอง","การ์แกนทัว"}
+function PK.sizeIdx(kg)   -- ชั้นขนาด 1-10 ตามน้ำหนักจริง (GD.sizeClassFor ถ้ามี ไม่งั้นตารางเอง)
+    for i,m in ipairs(PK.SIZEK) do if (kg or 0)<=m then return i end end
+    return #PK.SIZEK
+end
 local function tfont(l) l.Font=Enum.Font.GothamMedium pcall(function() l.Font=Enum.Font.Kanit end) end
 local function comma(n) local s=tostring(math.floor(tonumber(n) or 0)) while true do local k s,k=s:gsub("^(-?%d+)(%d%d%d)","%1,%2") if k==0 then break end end return s end
 local pickByTier={} -- Tier → ชื่อพลั่วจริง (EquippedPickaxe = เลข tier)
@@ -37,25 +67,13 @@ task.spawn(function()
     if pt then for _,t in ipairs(pt:GetChildren()) do local ti=t:GetAttribute("Tier") if ti then pickByTier[ti]=t.Name end end end
 end)
 local function corner(o,r) local c=Instance.new("UICorner"); c.CornerRadius=UDim.new(0,r); c.Parent=o return c end
-local function stroke(o,col,tr) local s=Instance.new("UIStroke"); s.Color=col; s.Transparency=tr or 0.5; s.Parent=o return s end
 local function agrad(o) local g=Instance.new("UIGradient"); g.Color=ColorSequence.new{ColorSequenceKeypoint.new(0,C.accent),ColorSequenceKeypoint.new(0.5,C.accent2),ColorSequenceKeypoint.new(1,C.accent3)}; g.Parent=o return g end
--- ✨ UI polish helpers: hover (ปุ่ม/แถวสว่างตอนเมาส์ทาบ), chip (กล่องไอคอนมนก่อน label), polishPill (ขอบเข้มให้สวิตช์)
-local function hover(b,t,base,over)  -- b=ตัวรับอีเวนต์ (ปุ่มโปร่ง) / t=ตัวที่เปลี่ยนสี (แถว)
-    b.MouseEnter:Connect(function() Tween:Create(t,TweenInfo.new(0.12),{BackgroundColor3=over}):Play() end)
-    b.MouseLeave:Connect(function() Tween:Create(t,TweenInfo.new(0.15),{BackgroundColor3=base}):Play() end)
-end
-local function chip(r,icon,col)
-    local c=Instance.new("Frame"); c.Size=UDim2.new(0,24,0,24); c.Position=UDim2.new(0,5,0.5,-12)
-    c.BackgroundColor3=col; c.BackgroundTransparency=0.8; c.BorderSizePixel=0; c.Parent=r; corner(c,7); stroke(c,col,0.55)
-    local i=Instance.new("TextLabel"); i.Size=UDim2.new(1,0,1,0); i.BackgroundTransparency=1; i.Text=icon; i.TextSize=13; i.TextColor3=Color3.new(1,1,1); i.Parent=c; tfont(i)
-end
-local function shiftLbl(l) l.Position=UDim2.new(0,36,0,0); l.Size=UDim2.new(1,-140,1,0) end
-local function polishPill(pl,kn) stroke(pl,Color3.new(0,0,0),0.72); stroke(kn,Color3.new(0,0,0),0.65) end
 local sndSvc=game:GetService("SoundService")
-local function sfx(k) pcall(function() local s=Instance.new("Sound") s.SoundId=k=="pop" and "rbxassetid://6895079853" or "rbxassetid://4499400560" s.Volume=k=="pop" and 0.4 or 0.25 sndSvc:PlayLocalSound(s) task.delay(1.2,function() pcall(function() s:Destroy() end) end) end) end
+local function sfx(k) if PK.mute then return end pcall(function() local s=Instance.new("Sound") s.SoundId=k=="pop" and "rbxassetid://6895079853" or "rbxassetid://4499400560" s.Volume=k=="pop" and 0.4 or 0.25 sndSvc:PlayLocalSound(s) task.delay(1.2,function() pcall(function() s:Destroy() end) end) end) end
 
 local Freed,DigEff,DigReq,Collected=nil,nil,nil,nil
-local Push,SellReq,TSell,TPlot,THome,GFeed,DigRes,AltY,AltS
+local PlaceC,TakeC,CfgGetR,CfgStat=nil,nil,nil,nil
+local Push,SellReq,TSell,TPlot,GFeed,DigRes,AltY,AltS,TogFav,MineHitEv
 local CBEquip,SellRes
 local MetEv,MetActive,MetPhase,MetPos,WState,WStar,MtState,MtRot,MtChoose,QuoteAll
 local BuyUp,UpState; local upState=nil -- snapshot ล่าสุดจาก UpgradeState
@@ -67,20 +85,30 @@ task.spawn(function()
     DigEff=dg and dg:WaitForChild("DigEffect",30)
     DigReq=dg and dg:WaitForChild("DigRequest",30)
     DigRes=dg and dg:WaitForChild("DigResult",30)
+    MineHitEv=gs and gs:WaitForChild("MineHit",30)   -- server→client hit ที่ยอมรับจริง (วัด hitrate)
     -- ⚠️ SetDigPower = honeypot remote: ไม่มี client จริงยิง แต่ server ฟัง → ยิง = kick 267 "Suspicious activity" (ห้ามแตะ)
     local nm=RS:WaitForChild("NotifyRemotes",30)
     Push=nm and nm:WaitForChild("Push",30)
+    local rdr=RS:WaitForChild("RadarRemotes",30)
+    PK.BuyRad=rdr and rdr:WaitForChild("BuyRadar",30)     -- ซื้อเรด้า (server เช็คเงิน+stock)
+    PK.ShopSt=rdr and rdr:WaitForChild("ShopState",30)    -- push stock ทุก ~1s
+    PK.PowFd=rdr and rdr:WaitForChild("PowerFired",30)    -- เรด้าพลัง: impact/zenith (เฉพาะคนถือเรด้า)
+    -- ⚠️ RadarUsed = remote กำพร้า ไม่มี client จริงยิง → น่าจะ honeypot ห้ามแตะ
     local gr=RS:WaitForChild("GemRemotes",30)
     SellReq=gr and gr:WaitForChild("RequestSell",30)
     QuoteAll=gr and gr:WaitForChild("QuoteSellAll",30)
     SellRes=gr and gr:WaitForChild("SellResult",30)
+    TogFav=gr and gr:WaitForChild("ToggleFavorite",30)   -- ⭐กันขาย (server เว้น favorite ตอนขาย All)
     local cbr=RS:WaitForChild("CrystalBagRemotes",30)
     CBEquip=cbr and cbr:WaitForChild("Equip",30)
     local br=RS:WaitForChild("BackpackRemotes",30)
     TSell=br and br:WaitForChild("TeleportSell",30)
     TPlot=br and br:WaitForChild("TeleportPlot",30)
-    local bm=RS:WaitForChild("BaseRemotes",30)
-    THome=bm and bm:WaitForChild("TeleportHome",30)
+    local pr2=RS:WaitForChild("PlotRemotes",30)
+    PlaceC=pr2 and pr2:WaitForChild("PlaceCrystal",30)
+    TakeC=pr2 and pr2:WaitForChild("TakeOut",30)
+    CfgGetR=pr2 and pr2:WaitForChild("ConfigGet",30)
+    CfgStat=pr2 and pr2:WaitForChild("ConfigStats",30)
     GFeed=RS:WaitForChild("GlobalFindFeed",30)
     AltY=RS:WaitForChild("AltitudeBaseY",30); AltS=RS:WaitForChild("AltitudeScale",30)
     local met=RS:WaitForChild("MeteorRemotes",30)
@@ -99,26 +127,39 @@ task.spawn(function()
     local ur=RS:WaitForChild("UpgradeRemotes",30)
     BuyUp=ur and ur:WaitForChild("BuyUpgrade",30)
     UpState=ur and ur:WaitForChild("UpgradeState",30)
-    slog("remotes freed="..tostring(Freed~=nil).." sell="..tostring(SellReq~=nil).." met="..tostring(MetEv~=nil).." mt="..tostring(MtChoose~=nil).." w="..tostring(WState~=nil))
+    local shr=RS:WaitForChild("ShopRemotes",30)            -- ร้านพลั่ว: BuyPickaxe(index,"cash") · EquipPickaxe(index) · ShopState(owned[],equipped,err) (168_ShopClient:352-423)
+    PK.BuyPick=shr and shr:WaitForChild("BuyPickaxe",30)
+    PK.EqPick=shr and shr:WaitForChild("EquipPickaxe",30)
+    PK.PickSt=shr and shr:WaitForChild("ShopState",30)
+    local bmr=RS:WaitForChild("BaseRemotes",30)
+    PK.THome=bmr and bmr:WaitForChild("TeleportHome",30)   -- วาปกลับฐาน (108_BaseClient:209) — ใช้ตอนหนาวจัด
+    PK.UsePot=RS:FindFirstChild("UsePotion")               -- UsePotion(name) · GetPotions() → {name=n} · UpdatePotions(name,n) · SyncAllPotions({..}) (156_ShopLocalHandler:478-819)
+    PK.GetPot=RS:FindFirstChild("GetPotions"); PK.UpdPot=RS:FindFirstChild("UpdatePotions"); PK.SyncPot=RS:FindFirstChild("SyncAllPotions")
+    slog("remotes freed="..tostring(Freed~=nil).." sell="..tostring(SellReq~=nil).." met="..tostring(MetEv~=nil).." mt="..tostring(MtChoose~=nil).." w="..tostring(WState~=nil).." pick="..tostring(PK.BuyPick~=nil).." home="..tostring(PK.THome~=nil).." pot="..tostring(PK.UsePot~=nil))
 end)
 
-local cfg={esp=true,minTier=1,ttl=150,pickMode=false,players=true,autodig=false,autocollect=false,autosell=false,selfOn=false,farmBot=false,botTier=1,
-    met=true,runes=true,mtn=true,autoup=false,
-    sub={espHl=true,espName=true,ghost=true,ghostLbl=true,        -- เรดาร์แรร์: ตัวทรง/ป้าย/ghost/ป้ายghost
+local cfg={esp=true,minTier=1,ttl=150,pickMode=false,players=true,autodig=false,autocollect=false,autosell=false,selfOn=false,botTier=1,
+    met=true,runes=true,mtn=true,autoup=false,garden=false,radarSnipe=false,
+    sub={espHl=true,espName=true,espAbove=true,espLuck=false,espSize=1,espFar=true,espBld=true,streamFar=false,   -- เรดาร์แรร์: ตัวทรง/ป้าย/≥ระดับ/ค่าโชค/ขนาด/มาร์กไกล/หิน
          pHl=true,pName=true,pDig=true,                            -- ผู้เล่น: ตัว/ป้าย/แท็กขุด
          smartDig=true,colRange=true,                              -- ขุด:เล็งแรร์ฝัง · เก็บ:เช็คระยะ
-         turboDig=false,instaPick=true,                            -- ขุดโหด:turbo · เก็บ:Hold=0
-         remoteSell=false,                                         -- ขาย:ยิง RequestSell ตรงๆ ไม่วาป (ทดลอง)
+         turboDig=false,instaPick=true,aoeDig=true,hitE=true,digFar=false,      -- ขุดโหด:turbo · เก็บ:Hold=0 · ขุดหลายเป้าพร้อมกัน · กด E ตีแรร์ที่ขุดโผล่
+
+         remoteSell=true,                                          -- ขาย:ยิง RequestSell ตรงๆ ไม่วาป (ยืนยันในเกมแล้ว: ไม่เช็คระยะ — NOTES 2026-10-14)
          spd15=false,spd2=false,                                   -- วิ่งไว: 1.5x (ปลอดภัย) / 2x (=Pass_Speed2x จริง)
-         botBest=true,botWarm=true,botPot=false,                   -- บอท: เล็งเป้าคุ้ม / กันตายหนาว / กินยาอัตโนมัติ
+         jet=false,                                                -- 🚀 เจ็ทแพ็ค: clone โมเดลตัวโชว์เข้าตัว → JetpackClient ของเกมหยิบเอง (ทดลอง)
+         skillAuto=true,                                           -- ⚔️ ยิงสกิล Shatter/Swarm อัตโนมัติเมื่อถือเคียว/ค้างคาว + cooldown พร้อม (gate ด้วย Holding attr ที่ server ตั้ง)
          hpBar=true,                                               -- แรร์: ❤HP ตอนโดนขุด
+         snCrystal=false,snRarity=false,snBoulder=true,snRune=false,snMeteor=true,snZenith=true,  -- เรด้าสอยสต็อก: เลือกชนิดที่จะสอย
+         snEquip=true,snRadarHold=false,snRadarPin=true,
          metMark=true,metFeed=true,                                -- เมเทียร์: ป้ายจุดตก/แจ้งเตือน
          runeHl=true,runeLbl=true,                                 -- รูน: ตัว/ป้าย
          mtnAuto=false,mtnList=true,                              -- ภูเขา: auto-ขึ้นดีสุด/แผงเลือก
-         upCarry=true,upWarm=true}}                               -- อัพเกรด: ซื้อ carry/warmth อัตโนมัติ
+         upCarry=true,upWarm=true,upSoon=true,upPick=true,autoPot=false,coldHome=true,   -- อัพเกรด: carry/warmth · ซื้อทันที · พลั่ว · ยา | ตัวเรา: กันตายหนาว
+         gdSwap=true,gdTier=3,gdKeep=true,gdTrip=true}}            -- สวน: สลับชิ้นluckต่ำออก / วางเฉพาะ≥tier / เก็บชิ้นโชคกันขาย / วาปไปลงสวนเอง
 local picks={}     -- {gemName=true} — โหมดเฉพาะที่เลือก
 local tracked={}   -- [model]={hl,bb,txt,name,rarity,kg}
-local pings={}     -- {pos,rarity,kg,t,ghost,hl,bb,txt}
+local pings={}     -- {pos,rarity,kg,t,sticky?,id?,miss?} — registry พิกัดล้วน (เอา ghost visual ออกแล้ว)
 local marks={}     -- {part,bb,txt,pos,until} — ป้าย event (เมเทียร์/ดาวตก)
 local rtrack={}    -- [runeModel]={hl,bb,t1,t2}
 local knownPos={}  -- [model]=Vector3 — พิกัดล่าสุดที่เห็น (revalidate ตัว unstream)
@@ -127,14 +168,14 @@ local promptSet={} -- [ProximityPrompt]=true — Pickup ทั้งแมพส
 local buriedCache={}; local buriedT=0 -- cache เป้าขุด (refresh 2 วิ)
 
 -- modules จริงของเกม (read-only data — ใช้สี/ชื่อ/rarity ตรงกับเกม)
-local MP,RD,WD=nil,nil,nil
+local MP,RD,GD=nil,nil,nil
 task.spawn(function()
     pcall(function() MP=require(RS:WaitForChild("MountainPool",20)) end)
     pcall(function() RD=require(RS:WaitForChild("RuneData",20)) end)
-    pcall(function() WD=require(RS:WaitForChild("WeatherData",20)) end)
+    pcall(function() PK.PD=require(RS:WaitForChild("PickaxeData",20)) end)   -- ตารางพลั่วจริง: price/power/radius/mineSize/limited (dump_2026-10-14/06_modules_all.txt)
     -- sync ระดับ+สีจาก GemData จริง — เกมเปลี่ยนสีเราตามอัตโนมัติ
     pcall(function()
-        local R=require(RS:WaitForChild("GemData",20)).Rarity
+        GD=require(RS:WaitForChild("GemData",20)); local R=GD and GD.Rarity
         if R then
             local nt={}
             for name,info in pairs(R) do
@@ -169,7 +210,7 @@ local wipeN,wipeT0=0,0
 local wiping,wipeEnd=false,0
 local function doWipe(reason)
     for m in pairs(known) do known[m]=nil knownPos[m]=nil missK[m]=nil end
-    for _,e in ipairs(pings) do pcall(function() e.ghost:Destroy() e.hl:Destroy() e.bb:Destroy() end) end
+    for _,e in ipairs(pings) do if e._a then pcall(function() e._a:Destroy() end) end end
     for i=#pings,1,-1 do pings[i]=nil end
     for i=#pending,1,-1 do pending[i]=nil end
     for m in pairs(pendSet) do pendSet[m]=nil end
@@ -196,16 +237,26 @@ local function trackModel(m)
     t2.TextColor3=Color3.fromRGB(220,225,245); t2.TextStrokeTransparency=0.4; t2.TextSize=11; t2.Parent=bb; tfont(t2)
     local mut=m:GetAttribute("Mutations"); if mut=="" then mut=nil end
     local sz=m:GetAttribute("SizeLetter")
-    t1.Text="◆ "..name..(mut and (" ✦"..mut) or "")..(m:GetAttribute("Freed") and "" or " ⛏ฝังอยู่")
-    t2.Text=string.format("%s%s · %.1fkg · $%s",rarity,sz and (" ["..sz.."]") or "",kg,tostring(val))
-    tracked[m]={hl=hl,bb=bb,t1=t1,t2=t2,rarity=rarity,name=name,id=(m:GetAttribute("GemName") or m.Name),kg=kg,mut=mut,sz=sz}
+    local lk=""   -- 🍀 ค่าโชคของชิ้นนี้ (สูตรเกมจริง) — ใส่บนป้ายเมื่อ espLuck เปิด
+    if cfg.sub.espLuck and GD and GD.effectiveLuck then
+        local ok,l=pcall(GD.effectiveLuck,rarity,kg,mut,nil,m:GetAttribute("CoreLuck"),m:GetAttribute("GemName"))
+        if ok and type(l)=="number" then lk=(" · 🍀%.0f"):format(l) end
+    end
+    t1.Text=PK.t1(m,m:GetAttribute("GemName") or m.Name,mut,m:GetAttribute("Freed"))
+    t2.Text=string.format("%s%s · %.1fkg · $%s%s",PK.thR(rarity),sz and (" ["..sz.."]") or "",kg,tostring(val),lk)
+    tracked[m]={hl=hl,bb=bb,t1=t1,t2=t2,rarity=rarity,name=name,id=(m:GetAttribute("GemName") or m.Name),kg=kg,mut=mut,sz=sz,core=m:GetAttribute("CoreLuck"),owner=m:GetAttribute("Owner")}
     known[m]=rarity
+    -- 🎯 เจาะจง: ชื่อที่เลือกเกิด → แจ้งใน feed + เสียง
+    if feedAdd and picks[tracked[m].id] then
+        sfx("pop")
+        feedAdd(("🎯 %s เกิด! (%.1fkg %s)"):format(PK.dispName(tracked[m].id),kg or 0,PK.thR(rarity)),TCOL[rarity])
+    end
     -- เคลียร์ ping ที่ตรงจุดนี้ — ใช้ FreedPos หรือ pivot (แรร์ฝังไม่มี FreedPos แต่ตำแหน่งก็ตรง)
     local fp=m:GetAttribute("FreedPos")
     if not fp then local ok,p=pcall(function() return m:GetPivot().Position end) fp=ok and p or nil end
     if fp then
         for i=#pings,1,-1 do
-            if (pings[i].pos-fp).Magnitude<18 then pcall(function() pings[i].ghost:Destroy() pings[i].hl:Destroy() pings[i].bb:Destroy() end); table.remove(pings,i) end
+            if (pings[i].pos-fp).Magnitude<18 then local pe=pings[i] if PK.rmFar then PK.rmFar(pe) end table.remove(pings,i) end
         end
     end
     -- เสียงแจ้งเฉพาะ Exotic+ (feed ตัดออกแล้ว — สแปม)
@@ -230,7 +281,7 @@ local function consider(m)
     local ok,p=pcall(function() return m:GetPivot().Position end)
     knownPos[m]=m:GetAttribute("FreedPos") or (ok and p) or knownPos[m]
     -- สร้างภาพเฉพาะตัวที่ผ่าน filter — ไม่สร้าง Highlight ทิ้งเปล่าให้พันตัว
-    if wantShow(r, m:GetAttribute("GemName") or m.Name) then queueTrack(m) end
+    if wantShow(r, m:GetAttribute("GemName") or m.Name, m:GetAttribute("Kg")) then queueTrack(m) end
 end
 
 local function scan()
@@ -239,6 +290,8 @@ local function scan()
     if sgm then
         for _,d in ipairs(sgm:GetDescendants()) do if isGemModel(d) then consider(d) end end
     end
+    local blf=workspace:FindFirstChild("Boulders")   -- 🪨 หินก้อนใหญ่ (ค่าเดียวกับ BoulderRadar อ่าน)
+    if blf then for _,d in ipairs(blf:GetChildren()) do if PK.isBoulder(d) then PK.trackBoulder(d) end end end
     for _,d in ipairs(workspace:GetChildren()) do
         if isGemModel(d) then consider(d)
         elseif d:IsA("Model") and d:GetAttribute("RuneId") and trackRune then trackRune(d) end
@@ -273,8 +326,9 @@ local function trackPlayer(p)
     ptracked[p]={hl=hl,bb=bb,t1=t1,t2=t2,digUntil=0}
 end
 for _,p in ipairs(Players:GetPlayers()) do trackPlayer(p) end
-Players.PlayerAdded:Connect(trackPlayer)
+Players.PlayerAdded:Connect(function(p) if alive() then trackPlayer(p) end end)
 Players.PlayerRemoving:Connect(function(p)
+    if not alive() then return end
     local e=ptracked[p]
     if e then pcall(function() e.hl:Destroy() e.bb:Destroy() end) end
     ptracked[p]=nil
@@ -292,8 +346,8 @@ workspace.DescendantAdded:Connect(function(d)
         task.defer(function() if d.Parent and trackRune and d:GetAttribute("RuneId") then trackRune(d) end end)
     end
 end)
-workspace.DescendantRemoving:Connect(function(d) if d:IsA("ProximityPrompt") then promptSet[d]=nil end end)
-task.spawn(function() while alive() do scan(); task.wait(4) end end)
+workspace.DescendantRemoving:Connect(function(d) if alive() and d:IsA("ProximityPrompt") then promptSet[d]=nil end end)
+task.spawn(function() task.wait(1) while alive() do pcall(scan); task.wait(4) end end)   -- รอ 1s ให้ chunk โหลดครบก่อน (เดิม scan รอบแรกรันตอนโหลด wantShow/isBoulder ยังไม่ประกาศ → error ฆ่าลูปนี้ตั้งแต่เริ่ม)
 
 -- FULL-MAP SCAN: ขอ stream grid ทั้งแมพ + scan lockstep (request → รอโหลด → scan ทันทีก่อน unstream)
 local streamIdx=0
@@ -311,106 +365,64 @@ local function fullScan()
     end
 end
 
--- burst แรก: ยิงทั้ง 36 จุดพร้อมกัน → รอโหลด → กวาดทั้ง workspace ทีเดียว (ยอมกระตุก 1 วิ)
+-- burst แรก: (ถ้าเปิด streamFar) ขอ stream ทั้ง 36 จุด → รอโหลด → กวาดทั้ง workspace (fullScan เก็บ prompt/แรร์ — ทำเสมอ)
+-- ⚠️ เดิม `LP.ReplicationFocus=CFrame.new(..)` = ผิดชนิด (property เป็น Instance) → error ใน pcall → บรรทัด RequestStreamAroundAsync ถัดไปไม่เคยรัน
+--    ฟีเจอร์ดึงแมพไกลเลยไม่เคยทำงานจริง · แก้เป็นเรียก RequestStreamAroundAsync(Vector3) ตรงๆ + ซ่อนหลังสวิตช์ streamFar (หนัก/อาจกระตุก ปิดเป็นค่าเริ่ม)
+local function pullPos(pos)
+    if cfg.sub.streamFar and LP.RequestStreamAroundAsync then pcall(function() LP:RequestStreamAroundAsync(pos,4) end) end
+end
 task.spawn(function()
     task.wait(2)
-    if LP.RequestStreamAroundAsync then
-        for _,g in ipairs(grid) do
-            task.spawn(function() pcall(function()
-                LP.ReplicationFocus=CFrame.new(g)
-                LP:RequestStreamAroundAsync(g,8)
-            end) end)
-            task.wait(0.1)
-        end
+    if cfg.sub.streamFar then
+        for _,g in ipairs(grid) do task.spawn(pullPos,g); task.wait(0.15) end
     end
     task.wait(2.5)
     fullScan()
     slog("burst scan done")
     task.wait(1.5)
     fullScan()
-    pcall(function() LP.ReplicationFocus=nil end)
 end)
 
--- loop ต่อเนื่อง: ย้าย ReplicationFocus ไปแต่ละจุด → server stream พื้นที่นั้นจริง (ไกลกว่าเดิมได้) → scan ก่อน unstream
-local function pullPos(pos)
-    pcall(function()
-        LP.ReplicationFocus=CFrame.new(pos)
-        LP:RequestStreamAroundAsync(pos,8)
-    end)
-end
+-- loop ต่อเนื่อง (เฉพาะเปิด streamFar): ดึง ping 3 จุด + grid 1 จุด/รอบ → รอโหลด → scan ก่อน unstream
 task.spawn(function() while alive() do
-    if LP.RequestStreamAroundAsync then
+    if cfg.sub.streamFar and LP.RequestStreamAroundAsync then
         if #pings>0 then
             local best={}
             for _,e in ipairs(pings) do best[#best+1]=e end
             table.sort(best,function(a,b) return rIdx(a.rarity)>rIdx(b.rarity) end)
             streamIdx=streamIdx%#best
-            for j=0,math.min(4,#best-1) do
+            for j=0,math.min(2,#best-1) do
                 pullPos(best[(streamIdx+j)%#best+1].pos)
-                task.wait(0.4)
+                task.wait(0.5)
             end
-            streamIdx+=5
+            streamIdx+=3
         end
-        for _=1,4 do
-            gridIdx=gridIdx%#grid+1
-            pullPos(grid[gridIdx])
-            task.wait(0.4)
-        end
-        -- รอ stream เข้า → scan → คืน focus ให้ตัวเรา
+        gridIdx=gridIdx%#grid+1
+        pullPos(grid[gridIdx])
         task.wait(1.2)
-        scan()
-        pcall(function() LP.ReplicationFocus=nil end)
+        pcall(scan)
     end
     task.wait(3)
 end end)
 
--- ghost clone: ต้นแบบทรงคริสตัลของแต่ละ tier จาก GemModels (โชว์ทรงจริงตั้งแต่ไกล)
+-- โฟลเดอร์จอด marker (เหลือไว้สำหรับ event marks — ghost clone เอาออกแล้วเน้นบอท AFK)
+for _,n in ipairs({"HZGhost","HZFar"}) do local o=workspace:FindFirstChild(n) if o then pcall(function() o:Destroy() end) end end   -- รันซ้ำ: ล้างโฟลเดอร์ของรอบก่อน (เดิมค้างซ้อนกันเรื่อยๆ)
 local ghostParent=Instance.new("Folder"); ghostParent.Name="HZGhost"; ghostParent.Parent=workspace
-local tierRep={}
-task.spawn(function()
-    local gm=RS:WaitForChild("GemModels",30)
-    if not gm then return end
-    for _,m in ipairs(gm:GetChildren()) do
-        if m:IsA("Model") then
-            local r=m:GetAttribute("Rarity") or "Common"
-            if not tierRep[r] then tierRep[r]=m end
-        end
-    end
-    slog("tierRep "..tostring(#gm:GetChildren()))
-end)
 
-local function mkGhost(pos,rarity,kg)
-    -- tier ที่ไม่มีต้นแบบ → ใช้ต้นแบบ tier สูงสุดที่มี (Zenith) แทน Common
-    local src=tierRep[rarity]
-    if not src then for i=#TIERS,1,-1 do if tierRep[TIERS[i]] then src=tierRep[TIERS[i]] break end end end
-    local cl
-    if src then
-        local ok,c=pcall(function() return src:Clone() end)
-        if ok then cl=c end
-    end
-    if not cl then
-        -- fallback: ทรงกลมลอยตัว — ยังเห็นจุดทะลุกำแพงได้
-        local p=Instance.new("Part"); p.Shape=Enum.PartType.Ball; p.Size=Vector3.new(4,4,4)
-        p.Anchored=true; p.CanCollide=false; p.CanQuery=false; p.CanTouch=false
-        p.Material=Enum.Material.Neon; p.Color=TCOL[rarity] or Color3.new(1,1,1); p.Transparency=0.4
-        local m0=Instance.new("Model"); p.Parent=m0; m0.PrimaryPart=p; m0:PivotTo(CFrame.new(pos)); m0.Parent=ghostParent
-        cl=m0
-    else
-        for _,d in ipairs(cl:GetDescendants()) do
-            if d:IsA("BasePart") then d.Anchored=true; d.CanCollide=false; d.CanQuery=false; d.CanTouch=false; d.Transparency=0.45 end
-            if d:IsA("BillboardGui") or d:IsA("ProximityPrompt") or d:IsA("Attachment") then d:Destroy() end
-        end
-        cl:PivotTo(CFrame.new(pos)); cl.Parent=ghostParent
-    end
-    local hl=Instance.new("Highlight"); hl.FillColor=TCOL[rarity] or Color3.new(1,1,1); hl.OutlineColor=Color3.new(1,1,1)
-    hl.FillTransparency=0.5; hl.OutlineTransparency=0.1; hl.Adornee=cl; hl.Parent=hlFolder
-    local bb=Instance.new("BillboardGui"); bb.Size=UDim2.new(0,220,0,36); bb.StudsOffsetWorldSpace=Vector3.new(0,4,0)
-    bb.AlwaysOnTop=true; bb.Adornee=cl; bb.Parent=hlFolder
-    local t=Instance.new("TextLabel"); t.Size=UDim2.new(1,0,1,0); t.BackgroundTransparency=1
-    t.TextColor3=TCOL[rarity] or Color3.new(1,1,1); t.TextStrokeTransparency=0.3; t.TextSize=12; t.Parent=bb; tfont(t); t.Font=Enum.Font.GothamBold
-    t.Text=string.format("◆ %s · %.1fkg",rarity,kg)
-    return cl,hl,bb,t
+-- 📡 far markers: part มองไม่เห็น + billboard ต่อ ping — เห็นได้ทุกระยะ (model ไม่ stream ก็ยังมีป้าย)
+local farFolder=Instance.new("Folder"); farFolder.Name="HZFar"; farFolder.Parent=workspace
+function PK.mkFar(e)   -- สร้าง anchor+billboard ให้ ping e (ทำครั้งเดียวต่อจุด)
+    local a=Instance.new("Part"); a.Anchored=true; a.CanCollide=false; a.CanQuery=false; a.CanTouch=false
+    a.Size=Vector3.new(1,1,1); a.Transparency=1; a.Position=e.pos; a.Parent=farFolder
+    local bb=Instance.new("BillboardGui"); bb.Size=UDim2.new(0,190,0,34); bb.StudsOffsetWorldSpace=Vector3.new(0,2.5,0)
+    bb.AlwaysOnTop=true; bb.Adornee=a; bb.Parent=hlFolder
+    local l1=Instance.new("TextLabel"); l1.Size=UDim2.new(1,0,0,16); l1.BackgroundTransparency=1
+    l1.Font=Enum.Font.GothamBold; l1.TextSize=12; l1.TextStrokeTransparency=0.25; l1.Parent=bb; tfont(l1)
+    local l2=Instance.new("TextLabel"); l2.Size=UDim2.new(1,0,0,14); l2.Position=UDim2.new(0,0,0,16); l2.BackgroundTransparency=1
+    l2.TextSize=10; l2.TextStrokeTransparency=0.35; l2.TextColor3=Color3.fromRGB(215,220,240); l2.Parent=bb; tfont(l2)
+    e._a=a; e._t1=l1; e._t2=l2
 end
+function PK.rmFar(e) if e._a then pcall(function() e._a:Destroy() end) e._a=nil e._t1=nil e._t2=nil end end
 
 local RAW_N=0
 local function addPing(...)
@@ -420,25 +432,48 @@ local function addPing(...)
         local parts={}; for i,v in ipairs(a) do parts[#parts+1]=typeof(v)..":"..tostring(v) end
         slog("RAW["..RAW_N.."] "..table.concat(parts," | "))
     end
-    local pos,rarity,kg
-    for _,v in ipairs(a) do if typeof(v)=="Vector3" then pos=v end end
-    if not pos and typeof(a[1])=="number" then pos=Vector3.new(a[1],a[2] or 0,a[3] or 0) end
-    for _,v in ipairs(a) do
-        if typeof(v)=="string" and not rarity then rarity=v end  -- รับทุกชื่อ tier รวมอนาคต
-        if typeof(v)=="number" and not kg and v>0 and v<100000 then kg=v end
+    local pos,rarity,kg,owner
+    if typeof(a[1])=="Vector3" and typeof(a[2])=="string" and typeof(a[3])=="number" then   -- รูปแบบจริงจาก log: (Vector3, rarity, kg, ownerUserId) — kg ไม่จำกัดขนาด (เดิมตัด ≥100000kg เป็น 0)
+        pos,rarity,kg,owner=a[1],a[2],a[3],(typeof(a[4])=="number" and a[4] or nil)
+    else
+        for _,v in ipairs(a) do if typeof(v)=="Vector3" then pos=v end end
+        if not pos and typeof(a[1])=="number" then pos=Vector3.new(a[1],a[2] or 0,a[3] or 0) end
+        for _,v in ipairs(a) do
+            if typeof(v)=="string" and not rarity then rarity=v end  -- รับทุกชื่อ tier รวมอนาคต
+            if typeof(v)=="number" and not kg and v>0 and v<100000 then kg=v end
+        end
     end
     rarity=rarity or "Common"; kg=tonumber(kg) or 0
     if not pos then return end
     for _,e in ipairs(pings) do if (e.pos-pos).Magnitude<10 then e.t=os.clock() return end end
     for m in pairs(known) do local fp=m:GetAttribute("FreedPos") if fp and (fp-pos).Magnitude<15 then return end end
-    local cl,hl,bb,t=mkGhost(pos,rarity,kg)
-    if not cl then return end
-    pings[#pings+1]={pos=pos,rarity=rarity,kg=kg,t=os.clock(),ghost=cl,hl=hl,bb=bb,txt=t}
-    slog(string.format("GHOST %s %.1fkg @ %.0f,%.0f,%.0f",rarity,kg,pos.X,pos.Y,pos.Z))
+    pings[#pings+1]={pos=pos,rarity=rarity,kg=kg,t=os.clock(),owner=owner}   -- registry ล้วน — ไม่มี ghost model แล้ว (owner = UserId เจ้าของ → ป้าย ★ ถ้าเป็นของเรา)
+    slog(string.format("PING %s %.1fkg @ %.0f,%.0f,%.0f%s",rarity,kg,pos.X,pos.Y,pos.Z,owner==LP.UserId and " ★ของเรา" or ""))
     -- ขอ server stream พื้นที่นี้ → model จริงโหลด → ทรง/ชื่อจริงแทน ghost
     if LP.RequestStreamAroundAsync then
         task.spawn(function() pcall(function() LP:RequestStreamAroundAsync(pos,8) end) end)
     end
+end
+
+-- ============ 🪨 Boulder ESP — intel เดียวกัน BoulderRadar (ชื่อ/สี/พลั่วที่ต้อง/ฝัง) + HP + เทียบพลั่วเราขุดได้ไหม ============
+PK.btracked={}
+function PK.isBoulder(m) return m:IsA("Model") and m:FindFirstChild("Mesh_0")~=nil end
+function PK.trackBoulder(m)
+    if PK.btracked[m] or m:GetAttribute("Broken") then return end
+    local mesh=m:FindFirstChild("Mesh_0")
+    local col=m:GetAttribute("LabelColor") or (mesh and mesh.Color) or Color3.fromRGB(170,150,120)
+    local geode=m:GetAttribute("IsGeode")==true
+    local hl=Instance.new("Highlight")
+    hl.FillColor=col; hl.OutlineColor=Color3.new(1,1,1); hl.FillTransparency=0.68; hl.OutlineTransparency=0.2
+    hl.Adornee=m; hl.Parent=hlFolder
+    local bb=Instance.new("BillboardGui"); bb.Size=UDim2.new(0,210,0,38); bb.StudsOffsetWorldSpace=Vector3.new(0,4.5,0)
+    bb.AlwaysOnTop=true; bb.Adornee=m; bb.Parent=hlFolder
+    local t1=Instance.new("TextLabel"); t1.Size=UDim2.new(1,0,0,18); t1.BackgroundTransparency=1
+    t1.Font=Enum.Font.GothamBold; t1.TextSize=13; t1.TextStrokeTransparency=0.3; t1.TextColor3=col; t1.Parent=bb; tfont(t1)
+    local t2=Instance.new("TextLabel"); t2.Size=UDim2.new(1,0,0,14); t2.Position=UDim2.new(0,0,0,18); t2.BackgroundTransparency=1
+    t2.TextSize=11; t2.TextStrokeTransparency=0.4; t2.TextColor3=Color3.fromRGB(225,225,240); t2.Parent=bb; tfont(t2)
+    t1.Text=(geode and "💎 " or "🪨 ")..(m:GetAttribute("DisplayName") or (tostring(m:GetAttribute("BoulderId") or "?").." Boulder"))
+    PK.btracked[m]={hl=hl,bb=bb,t1=t1,t2=t2,geode=geode}
 end
 
 -- ============ event markers (เมเทียร์/ดาวตก — part จิ๋วมองไม่เห็น + ป้ายบนจอ) ============
@@ -490,327 +525,1653 @@ local function scanRunes()
     if pr then for _,d in ipairs(pr:GetDescendants()) do if d:IsA("Model") and d:GetAttribute("RuneId") then trackRune(d) end end end
 end
 
--- ============ panel ============
-local PW,FULL_H=300,420
-local sg=Instance.new("ScreenGui"); sg.Name="HZMineUI"; sg.ResetOnSpawn=false; sg.DisplayOrder=100; sg.Parent=CoreGui
-local sh=Instance.new("Frame"); sh.Name="HZShadow"; sh.Size=UDim2.new(0,PW+16,0,FULL_H+16); sh.Position=UDim2.new(0,52,0,52)
-sh.BackgroundColor3=Color3.new(0,0,0); sh.BackgroundTransparency=0.55; sh.BorderSizePixel=0; sh.Parent=sg; corner(sh,20); sh=nil
-local f=Instance.new("Frame"); f.Size=UDim2.new(0,PW,0,FULL_H); f.Position=UDim2.new(0,60,0,60)
-f.BackgroundTransparency=0.03; f.BorderSizePixel=0; f.Active=true; f.ClipsDescendants=true; f.Parent=sg; corner(f,14); stroke(f,C.edge,0.45)
-local fg=Instance.new("UIGradient"); fg.Color=ColorSequence.new(C.bgTop,C.bgBot); fg.Rotation=90; fg.Parent=f
-local topBar=Instance.new("Frame"); topBar.Size=UDim2.new(1,0,0,2); topBar.BackgroundColor3=Color3.new(1,1,1); topBar.BorderSizePixel=0; topBar.Parent=f
-local tg=agrad(topBar); tg.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.5),NumberSequenceKeypoint.new(0.5,0),NumberSequenceKeypoint.new(1,0.5)}
-do
-    local logo=Instance.new("Frame"); logo.Size=UDim2.new(0,30,0,30); logo.Position=UDim2.new(0,12,0,9); logo.BackgroundColor3=C.accent2; logo.BorderSizePixel=0; logo.Parent=f; corner(logo,15); agrad(logo)
-    local lo=Instance.new("TextLabel"); lo.Size=UDim2.new(1,0,1,0); lo.BackgroundTransparency=1; lo.Text="⛏"; lo.TextSize=15; lo.TextColor3=Color3.new(1,1,1); lo.Parent=logo; tfont(lo)
-end
-local title=Instance.new("TextLabel"); title.Size=UDim2.new(1,-120,0,28); title.Position=UDim2.new(0,50,0,8)
-title.BackgroundTransparency=1; title.Text="HZ HUB"; title.TextXAlignment=Enum.TextXAlignment.Left; title.TextSize=17; title.TextColor3=Color3.new(1,1,1); title.Parent=f; title.Font=Enum.Font.GothamBlack; agrad(title)
-local sub=Instance.new("TextLabel"); sub.Size=UDim2.new(1,-120,0,14); sub.Position=UDim2.new(0,50,0,34)
-sub.BackgroundTransparency=1; sub.Text="Rare ESP · v5 · เบต้า"; sub.TextXAlignment=Enum.TextXAlignment.Left; sub.TextSize=10; sub.TextColor3=C.dim; sub.Parent=f; tfont(sub)
-local closeB=Instance.new("TextButton"); closeB.Size=UDim2.new(0,28,0,28); closeB.Position=UDim2.new(1,-36,0,8)
-closeB.BackgroundColor3=Color3.fromRGB(190,55,70); closeB.Text="X"; closeB.TextColor3=C.txt; closeB.TextSize=14; closeB.Font=Enum.Font.GothamBold; closeB.Parent=f; corner(closeB,8); hover(closeB,closeB,Color3.fromRGB(190,55,70),Color3.fromRGB(230,75,90))
-closeB.Activated:Connect(function()
-    sfx("tick")
-    -- ✕ = ปิดสคริปต์จริง: ฆ่า generation → ทุก loop/hook หยุด (รันใหม่ได้ปกติ)
-    G.__HZMINE=G.__HZMINE+1
-    sg:Destroy() esp:Destroy()
-    pcall(function() ghostParent:Destroy() end)
-    slog("closed+killed")
-end)
--- ปุ่มพับจอสร้างหลัง body (ต้องเห็นตัวแปร) — อยู่บล็อกถัดไป
-local drag,ds,sp
-f.InputBegan:Connect(function(i) if (i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch) and (i.Position.Y-f.AbsolutePosition.Y)<46 then drag=true; ds=i.Position; sp=f.Position end end)
-f.InputEnded:Connect(function(i) if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=false end end)
-UIS.InputChanged:Connect(function(i) if drag and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then local d=i.Position-ds; f.Position=UDim2.new(sp.X.Scale,sp.X.Offset+d.X,sp.Y.Scale,sp.Y.Offset+d.Y) local sd=sg:FindFirstChild("HZShadow") if sd then sd.Position=f.Position-UDim2.new(0,8,0,8) end end end)
-
-local body=Instance.new("ScrollingFrame"); body.Size=UDim2.new(1,-20,1,-54); body.Position=UDim2.new(0,10,0,48)
-body.BackgroundTransparency=1; body.Parent=f; body.ScrollBarThickness=3; body.ScrollBarImageColor3=C.accent; body.AutomaticCanvasSize=Enum.AutomaticSize.Y; body.CanvasSize=UDim2.new(0,0,0,0)
--- ปุ่มพับจอ: ย่อเหลือแถบ header คลิกขยายกลับ (state เก็บใน cfg ไม่กิน register)
-do
-    local minB=Instance.new("TextButton"); minB.Size=UDim2.new(0,28,0,28); minB.Position=UDim2.new(1,-68,0,8)
-    minB.BackgroundColor3=C.opt2; minB.Text="-"; minB.TextColor3=C.txt; minB.TextSize=16; minB.Parent=f; corner(minB,8); tfont(minB); hover(minB,minB,C.opt2,C.optH)
-    minB.Activated:Connect(function()
-        cfg._fold=not cfg._fold; sfx("tick")
-        body.Visible=not cfg._fold
-        Tween:Create(f,TweenInfo.new(0.18,Enum.EasingStyle.Quad),{Size=cfg._fold and UDim2.new(0,PW,0,50) or UDim2.new(0,PW,0,FULL_H)}):Play()
-        local sd=sg:FindFirstChild("HZShadow")
-        if sd then Tween:Create(sd,TweenInfo.new(0.18),{Size=cfg._fold and UDim2.new(0,PW+16,0,66) or UDim2.new(0,PW+16,0,FULL_H+16)}):Play() end
-        minB.Text=cfg._fold and "+" or "-"
-    end)
-end
-
-local row1=Instance.new("Frame"); row1.Size=UDim2.new(1,0,0,32); row1.BackgroundColor3=C.row; row1.Parent=body; corner(row1,9); stroke(row1,C.edge,0.8)
-do local rl=Instance.new("TextLabel"); rl.Size=UDim2.new(1,-120,1,0); rl.Position=UDim2.new(0,10,0,0); rl.BackgroundTransparency=1; rl.Text="เรดาร์แรร์ ESP"; rl.TextSize=13; rl.TextColor3=C.txt; rl.TextXAlignment=Enum.TextXAlignment.Left; rl.Parent=row1; tfont(rl)
-local pill=Instance.new("Frame"); pill.Size=UDim2.new(0,40,0,18); pill.Position=UDim2.new(1,-48,0.5,-9); pill.BackgroundColor3=C.on; pill.Parent=row1; corner(pill,9)
-local knob=Instance.new("Frame"); knob.Size=UDim2.new(0,14,0,14); knob.Position=UDim2.new(1,-16,0.5,-7); knob.BackgroundColor3=Color3.new(1,1,1); knob.Parent=pill; corner(knob,7)
-local hit=Instance.new("TextButton"); hit.Size=UDim2.new(1,0,1,0); hit.BackgroundTransparency=1; hit.Text=""; hit.Parent=row1
-chip(row1,"🛰",C.accent) shiftLbl(rl) polishPill(pill,knob) hover(hit,row1,C.row,C.rowH)
-hit.Activated:Connect(function()
-    cfg.esp=not cfg.esp; sfx("pop")
-    Tween:Create(pill,TweenInfo.new(0.15),{BackgroundColor3=cfg.esp and C.on or C.off}):Play()
-    Tween:Create(knob,TweenInfo.new(0.15),{Position=cfg.esp and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)}):Play()
-    applyFilter()
-end) end
-
-local row2=Instance.new("Frame"); row2.Size=UDim2.new(1,0,0,32); row2.Position=UDim2.new(0,0,0,38); row2.BackgroundColor3=C.row; row2.Parent=body; corner(row2,9); stroke(row2,C.edge,0.8)
-local r2l=Instance.new("TextLabel"); r2l.Size=UDim2.new(0.6,0,1,0); r2l.Position=UDim2.new(0,10,0,0); r2l.BackgroundTransparency=1; r2l.Text="แสดงเฉพาะระดับ"; r2l.TextSize=12; r2l.TextColor3=C.dim; r2l.TextXAlignment=Enum.TextXAlignment.Left; r2l.Parent=row2; tfont(r2l)
-chip(row2,"🏷",C.dim) shiftLbl(r2l)
-local tierBtn=Instance.new("TextButton"); tierBtn.Size=UDim2.new(0.36,0,0,22); tierBtn.Position=UDim2.new(0.62,0,0.5,-11); tierBtn.BackgroundColor3=C.opt2; tierBtn.TextSize=12; tierBtn.Parent=row2; corner(tierBtn,7); tfont(tierBtn); hover(tierBtn,tierBtn,C.opt2,C.optH)
-wantShow=function(rarity,name)
+-- ===== UI-V6-BEGIN (สร้างจาก ui/*.lua ด้วย build_ui.py — แก้ที่ต้นทาง อย่าแก้ตรงนี้) =====
+-- ============ 🎨 UI v6 (PC) — หน้าต่างสำหรับคอม ============
+-- แท็บ(ภาพรวม/ฟาร์ม/เรดาร์/ตัวเรา/โลก/กระเป๋า/ตั้งค่า) · ค้นหา · ปุ่มลัด(ตั้งเองได้) · tooltip · toast+บันทึกกิจกรรม · จำค่า(hz_mine_cfg.json) · ลาก/ปรับขนาด/ซูม/โปร่งใส
+-- cfg.* คือแหล่งความจริงเดียว — UI แค่สะท้อน + สั่ง (callback เรียก logic เดิมเหมือนเดิมทุกจุด)
+wantShow=function(rarity,name,kg)
+    if cfg.pickMode and picks[name] then return true end  -- 🎯 ชื่อที่เลือก track เสมอ แม้ ESP ปิด (ยังแจ้งเตือน/ขุดได้)
     if not cfg.esp then return false end
-    if cfg.pickMode then return picks[name]==true end
+    if cfg.pickMode then return false end  -- pickMode ON แต่ไม่ใช่ชื่อที่เลือก → ซ่อน
     local idx=tIdx(rarity)
-    if idx==0 then return true end  -- tier ใหม่ที่ยังไม่รู้จัก → โชว์เสมอ ไม่ให้หลุด
-    return idx==cfg.minTier         -- เลือกระดับไหนเห็นแค่ระดับนั้น
+    local pass=(idx==0) or (cfg.sub.espAbove and idx>=cfg.minTier) or idx==cfg.minTier   -- ≥ หรือ เฉพาะเท่ากับ
+    if pass and (cfg.sub.espSize or 1)>1 then pass=PK.sizeIdx(kg or 0)>=(cfg.sub.espSize or 1) end   -- 📏 กรองขนาดเหมือนเกม
+    return pass
 end
 applyFilter=function()
     -- ทำลายภาพของตัวที่ไม่ผ่าน filter + เข้าคิวสร้างตัวที่ผ่าน — ภาพมีเท่าที่แสดงจริง
     for m,e in pairs(tracked) do
-        if wantShow(e.rarity,e.id) then
+        if wantShow(e.rarity,e.id,e.kg) then
             e.hl.Enabled=true; e.bb.Enabled=true
         else
             pcall(function() e.hl:Destroy() e.bb:Destroy() end); tracked[m]=nil
         end
     end
     for m,r in pairs(known) do
-        if m.Parent and wantShow(r, m:GetAttribute("GemName") or m.Name) then queueTrack(m) end
+        if m.Parent and wantShow(r, m:GetAttribute("GemName") or m.Name, m:GetAttribute("Kg")) then queueTrack(m) end
     end
 end
-local function paintTier() local t=TIERS[cfg.minTier]; tierBtn.Text="= "..t; tierBtn.TextColor3=TCOL[t] end
-tierBtn.Activated:Connect(function() cfg.minTier=cfg.minTier%#TIERS+1; sfx("tick") paintTier() applyFilter() end)
-paintTier()
 
--- toggle ESP ผู้เล่น
-local rowP=Instance.new("Frame"); rowP.Size=UDim2.new(1,0,0,32); rowP.Position=UDim2.new(0,0,0,74); rowP.BackgroundColor3=C.row; rowP.Parent=body; corner(rowP,9); stroke(rowP,C.edge,0.8)
-do local pl2=Instance.new("TextLabel"); pl2.Size=UDim2.new(1,-120,1,0); pl2.Position=UDim2.new(0,10,0,0); pl2.BackgroundTransparency=1; pl2.Text="ESP ผู้เล่น (ใครอยู่ไหน)"; pl2.TextSize=13; pl2.TextColor3=C.txt; pl2.TextXAlignment=Enum.TextXAlignment.Left; pl2.Parent=rowP; tfont(pl2)
-local pillP=Instance.new("Frame"); pillP.Size=UDim2.new(0,40,0,18); pillP.Position=UDim2.new(1,-48,0.5,-9); pillP.BackgroundColor3=C.on; pillP.Parent=rowP; corner(pillP,9)
-local knobP=Instance.new("Frame"); knobP.Size=UDim2.new(0,14,0,14); knobP.Position=UDim2.new(1,-16,0.5,-7); knobP.BackgroundColor3=Color3.new(1,1,1); knobP.Parent=pillP; corner(knobP,7)
-local hitP=Instance.new("TextButton"); hitP.Size=UDim2.new(1,0,1,0); hitP.BackgroundTransparency=1; hitP.Text=""; hitP.Parent=rowP
-chip(rowP,"👥",Color3.fromRGB(80,200,255)) shiftLbl(pl2) polishPill(pillP,knobP) hover(hitP,rowP,C.row,C.rowH)
-hitP.Activated:Connect(function()
-    cfg.players=not cfg.players; sfx("pop")
-    Tween:Create(pillP,TweenInfo.new(0.15),{BackgroundColor3=cfg.players and C.on or C.off}):Play()
-    Tween:Create(knobP,TweenInfo.new(0.15),{Position=cfg.players and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)}):Play()
-end) end
 
--- toggle ขุดออโต้
-local rowD=Instance.new("Frame"); rowD.Size=UDim2.new(1,0,0,32); rowD.Position=UDim2.new(0,0,0,110); rowD.BackgroundColor3=C.row; rowD.Parent=body; corner(rowD,9); stroke(rowD,C.edge,0.8)
-do local dl=Instance.new("TextLabel"); dl.Size=UDim2.new(1,-120,1,0); dl.Position=UDim2.new(0,10,0,0); dl.BackgroundTransparency=1; dl.Text="ขุดออโต้ (ถือพลั่วอยู่)"; dl.TextSize=13; dl.TextColor3=C.txt; dl.TextXAlignment=Enum.TextXAlignment.Left; dl.Parent=rowD; tfont(dl)
-local pillD=Instance.new("Frame"); pillD.Size=UDim2.new(0,40,0,18); pillD.Position=UDim2.new(1,-48,0.5,-9); pillD.BackgroundColor3=C.off; pillD.Parent=rowD; corner(pillD,9)
-local knobD=Instance.new("Frame"); knobD.Size=UDim2.new(0,14,0,14); knobD.Position=UDim2.new(0,2,0.5,-7); knobD.BackgroundColor3=Color3.new(1,1,1); knobD.Parent=pillD; corner(knobD,7)
-local hitD=Instance.new("TextButton"); hitD.Size=UDim2.new(1,0,1,0); hitD.BackgroundTransparency=1; hitD.Text=""; hitD.Parent=rowD
-chip(rowD,"⛏",Color3.fromRGB(255,170,60)) shiftLbl(dl) polishPill(pillD,knobD) hover(hitD,rowD,C.row,C.rowH)
-hitD.Activated:Connect(function()
-    cfg.autodig=not cfg.autodig; sfx("pop")
-    Tween:Create(pillD,TweenInfo.new(0.15),{BackgroundColor3=cfg.autodig and C.on or C.off}):Play()
-    Tween:Create(knobD,TweenInfo.new(0.15),{Position=cfg.autodig and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)}):Play()
-    slog("autodig "..tostring(cfg.autodig))
-end) end
+local UI={}; PK.ui=UI
+do
+local HttpS=game:GetService("HttpService")
+local WHITE=Color3.new(1,1,1)
+C.side=Color3.fromRGB(12,13,24); C.warn=Color3.fromRGB(255,190,80); C.bad=Color3.fromRGB(255,110,110); C.line=Color3.fromRGB(40,44,70)
+UI.paints={}; UI.cards={}; UI.tabList={}; UI.tabBy={}
 
--- toggle เก็บออโต้
-local rowC=Instance.new("Frame"); rowC.Size=UDim2.new(1,0,0,32); rowC.Position=UDim2.new(0,0,0,146); rowC.BackgroundColor3=C.row; rowC.Parent=body; corner(rowC,9); stroke(rowC,C.edge,0.8)
-do local cl=Instance.new("TextLabel"); cl.Size=UDim2.new(1,-120,1,0); cl.Position=UDim2.new(0,10,0,0); cl.BackgroundTransparency=1; cl.Text="เก็บแรร์ออโต้"; cl.TextSize=13; cl.TextColor3=C.txt; cl.TextXAlignment=Enum.TextXAlignment.Left; cl.Parent=rowC; tfont(cl)
-local pillC=Instance.new("Frame"); pillC.Size=UDim2.new(0,40,0,18); pillC.Position=UDim2.new(1,-48,0.5,-9); pillC.BackgroundColor3=C.off; pillC.Parent=rowC; corner(pillC,9)
-local knobC=Instance.new("Frame"); knobC.Size=UDim2.new(0,14,0,14); knobC.Position=UDim2.new(0,2,0.5,-7); knobC.BackgroundColor3=Color3.new(1,1,1); knobC.Parent=pillC; corner(knobC,7)
-local hitC=Instance.new("TextButton"); hitC.Size=UDim2.new(1,0,1,0); hitC.BackgroundTransparency=1; hitC.Text=""; hitC.Parent=rowC
-chip(rowC,"✋",Color3.fromRGB(120,255,170)) shiftLbl(cl) polishPill(pillC,knobC) hover(hitC,rowC,C.row,C.rowH)
-hitC.Activated:Connect(function()
-    cfg.autocollect=not cfg.autocollect; sfx("pop")
-    Tween:Create(pillC,TweenInfo.new(0.15),{BackgroundColor3=cfg.autocollect and C.on or C.off}):Play()
-    Tween:Create(knobC,TweenInfo.new(0.15),{Position=cfg.autocollect and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)}):Play()
-    slog("autocollect "..tostring(cfg.autocollect))
-end) end
-
--- toggle ขายออโต้ (BagFull → TeleportSell → ขายหมด → กลับจุดเดิม)
-local rowS=Instance.new("Frame"); rowS.Size=UDim2.new(1,0,0,32); rowS.Position=UDim2.new(0,0,0,182); rowS.BackgroundColor3=C.row; rowS.Parent=body; corner(rowS,9); stroke(rowS,C.edge,0.8)
-do local sl=Instance.new("TextLabel"); sl.Size=UDim2.new(1,-120,1,0); sl.Position=UDim2.new(0,10,0,0); sl.BackgroundTransparency=1; sl.Text="ขายออโต้ (กระเป๋าเต็ม)"; sl.TextSize=13; sl.TextColor3=C.txt; sl.TextXAlignment=Enum.TextXAlignment.Left; sl.Parent=rowS; tfont(sl)
-local pillS=Instance.new("Frame"); pillS.Size=UDim2.new(0,40,0,18); pillS.Position=UDim2.new(1,-48,0.5,-9); pillS.BackgroundColor3=C.off; pillS.Parent=rowS; corner(pillS,9)
-local knobS=Instance.new("Frame"); knobS.Size=UDim2.new(0,14,0,14); knobS.Position=UDim2.new(0,2,0.5,-7); knobS.BackgroundColor3=Color3.new(1,1,1); knobS.Parent=pillS; corner(knobS,7)
-local hitS=Instance.new("TextButton"); hitS.Size=UDim2.new(1,0,1,0); hitS.BackgroundTransparency=1; hitS.Text=""; hitS.Parent=rowS
-chip(rowS,"💰",Color3.fromRGB(255,220,90)) shiftLbl(sl) polishPill(pillS,knobS) hover(hitS,rowS,C.row,C.rowH)
-hitS.Activated:Connect(function()
-    cfg.autosell=not cfg.autosell; sfx("pop")
-    Tween:Create(pillS,TweenInfo.new(0.15),{BackgroundColor3=cfg.autosell and C.on or C.off}):Play()
-    Tween:Create(knobS,TweenInfo.new(0.15),{Position=cfg.autosell and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)}):Play()
-    slog("autosell "..tostring(cfg.autosell))
-end) end
-
--- ============ แถวใหม่ (toggle ล้วน — sub สร้างรวมทีเดียวด้านล่าง) ============
-local function mkRow(icon,txt,col,on,get,set)
-    local r=Instance.new("Frame"); r.Size=UDim2.new(1,0,0,32); r.BackgroundColor3=C.row; r.Parent=body; corner(r,9); stroke(r,C.edge,0.8)
-    local l=Instance.new("TextLabel"); l.Size=UDim2.new(1,-140,1,0); l.Position=UDim2.new(0,36,0,0); l.BackgroundTransparency=1
-    l.Text=txt; l.TextSize=13; l.TextColor3=C.txt; l.TextXAlignment=Enum.TextXAlignment.Left; l.Parent=r; tfont(l)
-    local pl=Instance.new("Frame"); pl.Size=UDim2.new(0,40,0,18); pl.Position=UDim2.new(1,-48,0.5,-9)
-    pl.BackgroundColor3=on and C.on or C.off; pl.Parent=r; corner(pl,9)
-    local kn=Instance.new("Frame"); kn.Size=UDim2.new(0,14,0,14); kn.Position=on and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)
-    kn.BackgroundColor3=Color3.new(1,1,1); kn.Parent=pl; corner(kn,7)
-    local h=Instance.new("TextButton"); h.Size=UDim2.new(1,0,1,0); h.BackgroundTransparency=1; h.Text=""; h.Parent=r
-    h.Activated:Connect(function()
-        local v=not get(); set(v); sfx("pop")
-        Tween:Create(pl,TweenInfo.new(0.15),{BackgroundColor3=v and C.on or C.off}):Play()
-        Tween:Create(kn,TweenInfo.new(0.15),{Position=v and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)}):Play()
-    end)
-    chip(r,icon,col) polishPill(pl,kn) hover(h,r,C.row,C.rowH)
-    return r,l
+-- ───────── helpers ─────────
+local ords=setmetatable({},{__mode="k"})
+local function nxt(p) local n=(ords[p] or 0)+1 ords[p]=n return n end
+local function mk(cls,props,parent)
+    local o=Instance.new(cls)
+    if props then for k,v in pairs(props) do o[k]=v end end
+    if parent then o.Parent=parent end
+    return o
 end
-local rowMet=mkRow("☄","เมเทียร์ + ดาวตก",Color3.fromRGB(255,130,90),cfg.met,function() return cfg.met end,function(v) cfg.met=v end)
-local rowRun,rowRunL=mkRow("🔮","รูน ESP",Color3.fromRGB(190,130,255),cfg.runes,function() return cfg.runes end,function(v) cfg.runes=v applyFilter() end)
-local rowMtn,rowMtnL=mkRow("🏔","ภูเขา",Color3.fromRGB(160,220,255),cfg.mtn,function() return cfg.mtn end,function(v) cfg.mtn=v sfx("tick") end)
-local rowUp,rowUpL=mkRow("⬆","อัพเกรดอัตโนมัติ",C.accent2,cfg.autoup,function() return cfg.autoup end,function(v) cfg.autoup=v slog("autoup "..tostring(v)) end)
-
--- HUD สถานะตัวเรา (attrs สดจาก server)
-local hud=Instance.new("TextLabel"); hud.Size=UDim2.new(1,0,0,26); hud.BackgroundTransparency=1
-hud.Text="—"; hud.TextSize=10; hud.TextColor3=C.txt; hud.TextXAlignment=Enum.TextXAlignment.Left; hud.TextWrapped=true; hud.Parent=body; tfont(hud)
-
--- ตัวนับตามระดับ (2 แถว × 4 ช่อง)
-local cnt=Instance.new("TextLabel"); cnt.Size=UDim2.new(1,0,0,14); cnt.Position=UDim2.new(0,0,0,184); cnt.BackgroundTransparency=1
-cnt.Text="แรร์ในเซิร์ฟเวอร์"; cnt.TextSize=10; cnt.TextColor3=C.dim; cnt.TextXAlignment=Enum.TextXAlignment.Left; cnt.Parent=body; tfont(cnt)
-local tierRows=math.ceil(#TIERS/4)
-local tierBox=Instance.new("Frame"); tierBox.Size=UDim2.new(1,0,0,tierRows*21+6); tierBox.Position=UDim2.new(0,0,0,200); tierBox.BackgroundColor3=C.panel; tierBox.Parent=body; corner(tierBox,8); stroke(tierBox,C.edge,0.85)
-local tierLbl={}
-for i,t in ipairs(TIERS) do
-    local l=Instance.new("TextLabel"); l.Size=UDim2.new(0.25,0,0,21); l.BackgroundTransparency=1
-    l.Position=UDim2.new(((i-1)%4)*0.25,0,0,math.floor((i-1)/4)*21+3)
-    l.Text=t..": 0"; l.TextSize=10; l.TextColor3=TCOL[t] or Color3.new(1,1,1); l.TextXAlignment=Enum.TextXAlignment.Center; l.Parent=tierBox; tfont(l)
-    tierLbl[t]=l
+local function lbl(parent,p)
+    local l=Instance.new("TextLabel")
+    l.BackgroundTransparency=1; l.TextSize=12; l.TextColor3=C.txt; l.TextXAlignment=Enum.TextXAlignment.Left; l.BorderSizePixel=0
+    tfont(l)
+    for k,v in pairs(p) do l[k]=v end
+    l.Parent=parent return l
 end
--- ช่อง "อื่นๆ" รวม tier ที่ยังไม่รู้จัก (กันอนาคต)
-local otherLbl=Instance.new("TextLabel"); otherLbl.Size=UDim2.new(0.25,0,0,21); otherLbl.BackgroundTransparency=1
-otherLbl.Position=UDim2.new((#TIERS%4)*0.25,0,0,math.floor(#TIERS/4)*21+3)
-otherLbl.Text="?: 0"; otherLbl.TextSize=10; otherLbl.TextColor3=Color3.new(1,1,1); otherLbl.TextXAlignment=Enum.TextXAlignment.Center; otherLbl.Parent=tierBox; tfont(otherLbl)
+local function btn(parent,p)
+    local b=Instance.new("TextButton")
+    b.AutoButtonColor=false; b.BackgroundTransparency=1; b.BorderSizePixel=0; b.Text=""; b.TextSize=12; b.TextColor3=C.txt
+    tfont(b)
+    for k,v in pairs(p) do b[k]=v end
+    b.Parent=parent return b
+end
+local function stroke(o,col,tr)   -- UIStroke แบบขอบ (Border) — ค่า Contextual บน TextButton/TextLabel จะวิ่งรอบ "ตัวอักษร" ไม่ใช่กรอบ
+    local s=Instance.new("UIStroke"); s.ApplyStrokeMode=Enum.ApplyStrokeMode.Border; s.Color=col; s.Transparency=tr or 0.5; s.Parent=o return s
+end
+local function guard(sig,f)   -- ต่อสัญญาณแล้วถอดตัวเองเมื่อ generation ตาย (รันสคริปต์ซ้ำ/กดปิด) — ไม่ให้ handler เก่าสะสมใน UserInputService
+    local c
+    c=sig:Connect(function(...) if not alive() then c:Disconnect() return end f(...) end)
+    return c
+end
+local function tw(o,t,props) pcall(function() Tween:Create(o,TweenInfo.new(t,Enum.EasingStyle.Quad),props):Play() end) end
+local function hoverFx(b,target,base,over)
+    b.MouseEnter:Connect(function() tw(target,0.1,{BackgroundColor3=over}) end)
+    b.MouseLeave:Connect(function() tw(target,0.14,{BackgroundColor3=base}) end)
+end
+local function hex(c) return string.format("%02x%02x%02x",math.floor(c.R*255+0.5),math.floor(c.G*255+0.5),math.floor(c.B*255+0.5)) end
+local function esc(s) s=tostring(s) s=s:gsub("&","&amp;") s=s:gsub("<","&lt;") s=s:gsub(">","&gt;") return s end
+local function trim(s) s=tostring(s or "") s=s:gsub("^%s+","") s=s:gsub("%s+$","") return s end
+UI.mk,UI.lbl,UI.btn,UI.tw,UI.nxt,UI.guard=mk,lbl,btn,tw,nxt,guard
 
-local feed=Instance.new("Frame"); feed.Size=UDim2.new(1,0,0,64); feed.Position=UDim2.new(0,0,0,252); feed.BackgroundColor3=C.panel; feed.Parent=body; corner(feed,9); stroke(feed,C.edge,0.85)
-local fl=Instance.new("UIListLayout",feed); fl.Padding=UDim.new(0,1); fl.SortOrder=Enum.SortOrder.LayoutOrder
-local fp=Instance.new("UIPadding",feed); fp.PaddingTop=UDim.new(0,4); fp.PaddingLeft=UDim.new(0,8)
-local feedN=0
-feedAdd=function(txt,col)
-    feedN+=1
-    local l=Instance.new("TextLabel"); l.Size=UDim2.new(1,-8,0,15); l.BackgroundTransparency=1; l.LayoutOrder=-feedN
-    l.Text=txt; l.TextSize=11; l.TextColor3=col or C.txt; l.TextXAlignment=Enum.TextXAlignment.Left; l.Parent=feed; tfont(l)
-    local c=0; for _,k in ipairs(feed:GetChildren()) do if k:IsA("TextLabel") then c+=1; if c>6 then k:Destroy() end end end
+-- ───────── 🎮 ไอคอนจากเกมจริง (require โมดูลข้อมูลของเกม — อัปเดตตามเวอร์ชันเอง · fail/mock → fallback emoji) ─────────
+UI.icon={coin="rbxassetid://15589362394"}
+pcall(function()
+    local okR,RS=pcall(function() return game:GetService("ReplicatedStorage") end)
+    if not okR or not RS then return end
+    local function req(n) local m=RS:FindFirstChild(n) if not m then return nil end local ok2,v=pcall(require,m) return ok2 and v or nil end
+    local GD=req("GemData"); if GD and type(GD.Icons)=="table" then UI.icon.gem=GD.Icons end          -- Rarity_*/Size_*/Luck_*/Value_<ระดับ>
+    local RD=req("RadarData"); if RD then UI.icon.radar={} for _,e in pairs(RD.ById or RD.List or {}) do if type(e)=="table" and e.id then UI.icon.radar[e.id]=e.icon end end end
+    local MD=req("MountainData"); if MD then UI.icon.mtn={} for _,e in pairs(MD) do if type(e)=="table" and e.id and e.image and e.image~="" then UI.icon.mtn[e.id]=e.image end end end
+    local PD=req("PlotData"); if PD and type(PD.Icons)=="table" then UI.icon.garden=PD.Icons end    -- crystal/clover/arrow
+    local SD=req("ScytheData"); if SD and SD.Icon then UI.icon.scythe=SD.Icon end
+    local BD=req("BatwingData"); if BD and BD.Icon then UI.icon.batwing=BD.Icon end
+end)
+function UI.gemIcon(t) local G=UI.icon.gem return G and G["Rarity_"..tostring(t)] end
+function UI.szIcon(t) local G=UI.icon.gem return G and G["Size_"..tostring(t)] end
+function UI.radarIcon(id) return UI.icon.radar and UI.icon.radar[id] end
+function UI.mtnImage(id) return UI.icon.mtn and UI.icon.mtn[id] end
+function UI.gdIcon(k) return UI.icon.garden and UI.icon.garden[k] end
+-- มี asset → ImageLabel / ไม่มี → TextLabel emoji (fallback เสมอ)
+function UI.iconOrEmoji(parent,asset,emoji,pos,size,textSize,z)
+    if asset then
+        return mk("ImageLabel",{BackgroundTransparency=1,Image=asset,Position=pos or UDim2.new(0,0,0,0),Size=size or UDim2.new(1,0,1,0),ZIndex=z or 3,ScaleType=Enum.ScaleType.Fit},parent)
+    end
+    return lbl(parent,{Text=emoji or "",Position=pos or UDim2.new(0,0,0,0),Size=size or UDim2.new(1,0,1,0),TextSize=textSize or 15,ZIndex=z or 3,TextXAlignment=Enum.TextXAlignment.Center})
 end
 
-local stat=Instance.new("TextLabel"); stat.Size=UDim2.new(1,0,0,16); stat.Position=UDim2.new(0,0,0,0); stat.BackgroundTransparency=1
-stat.Text="RightShift = ซ่อน"; stat.TextSize=10; stat.TextColor3=C.dim; stat.TextXAlignment=Enum.TextXAlignment.Left; stat.Parent=body; tfont(stat)
-
--- ============ ฟีเจอร์ย่อย (กด ▸ ขยายใต้แถว) ============
-local layout -- fwd
-local function subFrame(n)
-    local s=Instance.new("Frame"); s.Size=UDim2.new(1,0,0,n*30+6); s.BackgroundColor3=C.sub
-    s.Visible=false; s.Parent=body; corner(s,8); stroke(s,C.edge,0.85)
-    return s
+-- ───────── 💾 ตั้งค่าถาวร (hz_mine_cfg.json) ─────────
+cfg.ui={x=60,y=60,w=700,h=520,scale=1,opacity=0.04,tab="dash",sound=true,toast=true,pill=true,autosave=true,autostart=false,open={},
+    keys={ui="RightShift",autodig="F1",autocollect="F2",autosell="F3",autoup="F4",garden="F5",esp="F6",selfOn="F7",panic="F8"}}
+local FLAGS={"esp","minTier","players","autodig","autocollect","autosell","selfOn","botTier","met","runes","mtn","autoup","garden","radarSnipe","pickMode"}
+local ACT={autodig=1,autocollect=1,autosell=1,selfOn=1,autoup=1,garden=1,radarSnipe=1}   -- สวิตช์ที่ "ลงมือทำ" — คืนค่าเฉพาะเมื่อเปิด autostart (ESP/ฟิลเตอร์คืนเสมอ)
+UI.DEF={flags={},sub={},ui={}}
+for _,k in ipairs(FLAGS) do UI.DEF.flags[k]=cfg[k] end
+for k,v in pairs(cfg.sub) do UI.DEF.sub[k]=v end
+for k,v in pairs(cfg.ui) do if type(v)~="table" then UI.DEF.ui[k]=v end end
+UI.DEF.keys={} for k,v in pairs(cfg.ui.keys) do UI.DEF.keys[k]=v end
+UI.FILE="hz_mine_cfg.json"
+function UI.snapshot()
+    local t={v=6,flags={},sub={},ui={},picks={}}
+    for _,k in ipairs(FLAGS) do t.flags[k]=cfg[k] end
+    for k,v in pairs(cfg.sub) do if type(v)=="boolean" or type(v)=="number" then t.sub[k]=v end end
+    for k,v in pairs(cfg.ui) do if type(v)~="table" then t.ui[k]=v end end
+    t.ui.keys={} for k,v in pairs(cfg.ui.keys) do t.ui.keys[k]=v end
+    t.ui.open={} for k,v in pairs(cfg.ui.open) do if v then t.ui.open[k]=true end end
+    for nm in pairs(picks) do t.picks[#t.picks+1]=nm end
+    table.sort(t.picks)
+    return t
 end
-local function mOpt(par,txt,key,y)
-    local b=Instance.new("TextButton"); b.Size=UDim2.new(1,-16,0,26); b.Position=UDim2.new(0,8,0,3+y); b.BackgroundColor3=C.opt; b.Text=""; b.Parent=par; corner(b,6); hover(b,b,C.opt,C.optH)
-    local l=Instance.new("TextLabel"); l.Size=UDim2.new(1,-46,1,0); l.Position=UDim2.new(0,8,0,0); l.BackgroundTransparency=1
-    l.Text=txt; l.TextSize=11; l.TextColor3=C.txt; l.TextXAlignment=Enum.TextXAlignment.Left; l.Parent=b; tfont(l)
-    local pl=Instance.new("Frame"); pl.Size=UDim2.new(0,32,0,14); pl.Position=UDim2.new(1,-38,0.5,-7); pl.Parent=b; corner(pl,7)
-    local kn=Instance.new("Frame"); kn.Size=UDim2.new(0,10,0,10); kn.Parent=pl; kn.BackgroundColor3=Color3.new(1,1,1); corner(kn,5)
-    local function paint() local on=cfg.sub[key]; pl.BackgroundColor3=on and C.on or C.off; kn.Position=on and UDim2.new(1,-12,0.5,-5) or UDim2.new(0,2,0.5,-5) end
-    b.Activated:Connect(function() cfg.sub[key]=not cfg.sub[key] sfx("tick") paint() end)
-    paint()
+function UI.save()
+    if not writefile then return false end
+    local ok,js=pcall(function() return HttpS:JSONEncode(UI.snapshot()) end)
+    if not ok or type(js)~="string" then return false end
+    return pcall(writefile,UI.FILE,js)
 end
-local subEsp=subFrame(5) mOpt(subEsp,"Highlight ทรงแรร์","espHl",0) mOpt(subEsp,"ป้ายชื่อ + ระยะ","espName",30) mOpt(subEsp,"ghost จุดไกล (ทรงจำลอง)","ghost",60) mOpt(subEsp,"ป้าย ghost","ghostLbl",90) mOpt(subEsp,"❤ HP ตัวที่โดนขุด","hpBar",120)
-local subP=subFrame(3) mOpt(subP,"Highlight ตัวละคร","pHl",0) mOpt(subP,"ป้ายชื่อ + ระยะ","pName",30) mOpt(subP,"แท็ก ⛏กำลังขุด","pDig",60)
-local subD=subFrame(2) mOpt(subD,"เล็งแรร์ฝังใต้ดิน (smart)","smartDig",0) mOpt(subD,"🔥 Turbo ขุดเร็วขึ้น (เสี่ยง ถ้า server จับ)","turboDig",30)
-local subC=subFrame(2) mOpt(subC,"เช็คระยะ prompt ก่อนยิง","colRange",0) mOpt(subC,"⚡ เก็บทันที (Hold=0 ทริค pass จริง)","instaPick",30)
-local subMet=subFrame(2) mOpt(subMet,"ป้ายจุดตกบนแมพ","metMark",0) mOpt(subMet,"แจ้งเตือนใน feed","metFeed",30)
-local subUp=subFrame(2) mOpt(subUp,"🎒 ซื้อ Carry (กระเป๋าใหญ่)","upCarry",0) mOpt(subUp,"🔥 ซื้อ Warmth (ขึ้นสูงได้)","upWarm",30)
-local subRun=subFrame(2) mOpt(subRun,"Highlight รูน","runeHl",0) mOpt(subRun,"ป้ายชื่อรูน + ระยะ","runeLbl",30)
-
--- ภูเขา: sub = auto-toggle + รายการภูเขา (สร้างเมื่อ MountainPool พร้อม)
-local subMtn=Instance.new("Frame"); subMtn.Size=UDim2.new(1,0,0,196); subMtn.BackgroundColor3=C.sub
-subMtn.Visible=false; subMtn.Parent=body; corner(subMtn,8); stroke(subMtn,C.edge,0.85)
-mOpt(subMtn,"🔁 auto ขึ้นภูเขาดีสุด (ใช้สวิตช์)","mtnAuto",0)
-local mtnSw=Instance.new("TextLabel"); mtnSw.Size=UDim2.new(1,-16,0,22); mtnSw.Position=UDim2.new(0,8,0,33); mtnSw.BackgroundTransparency=1
-mtnSw.Text="สวิตช์: — · หมุนใน: —"; mtnSw.TextSize=10; mtnSw.TextColor3=C.dim; mtnSw.TextXAlignment=Enum.TextXAlignment.Left; mtnSw.Parent=subMtn; tfont(mtnSw)
-local mtList=Instance.new("ScrollingFrame"); mtList.Size=UDim2.new(1,-16,0,128); mtList.Position=UDim2.new(0,8,0,58)
-mtList.BackgroundColor3=C.deep; mtList.ScrollBarThickness=3; mtList.ScrollBarImageColor3=C.accent; mtList.AutomaticCanvasSize=Enum.AutomaticSize.Y
-mtList.CanvasSize=UDim2.new(); mtList.Parent=subMtn; corner(mtList,6)
-local mtLay=Instance.new("UIListLayout",mtList); mtLay.Padding=UDim.new(0,3); mtLay.SortOrder=Enum.SortOrder.LayoutOrder
-
--- ขาย: sub = ขายระยะไกล + ปุ่มขายหมดตรงนี้ + รายการกระเป๋า (เลือกขายชิ้น)
-local subS=Instance.new("Frame"); subS.Size=UDim2.new(1,0,0,172); subS.BackgroundColor3=C.sub
-subS.Visible=false; subS.Parent=body; corner(subS,8); stroke(subS,C.edge,0.85)
-mOpt(subS,"📡 ขายระยะไกล — ไม่วาป (ทดลอง)","remoteSell",0)
-local sellAllB=Instance.new("TextButton"); sellAllB.Size=UDim2.new(1,-16,0,24); sellAllB.Position=UDim2.new(0,8,0,33)
-sellAllB.BackgroundColor3=C.buy; sellAllB.Text="💰 ขายทั้งหมดตรงนี้ (ไม่วาป)"; sellAllB.TextColor3=C.txt
-sellAllB.TextSize=11; sellAllB.Parent=subS; corner(sellAllB,6); tfont(sellAllB); hover(sellAllB,sellAllB,C.buy,Color3.fromRGB(56,150,84))
-local bagList=Instance.new("ScrollingFrame"); bagList.Size=UDim2.new(1,-16,0,102); bagList.Position=UDim2.new(0,8,0,62)
-bagList.BackgroundColor3=C.deep; bagList.ScrollBarThickness=3; bagList.ScrollBarImageColor3=C.accent; bagList.AutomaticCanvasSize=Enum.AutomaticSize.Y
-bagList.CanvasSize=UDim2.new(); bagList.Parent=subS; corner(bagList,6)
-local bagLay=Instance.new("UIListLayout",bagList); bagLay.Padding=UDim.new(0,2); bagLay.SortOrder=Enum.SortOrder.LayoutOrder
-
-local subs={[subEsp]=true,[subP]=true,[subD]=true,[subC]=true,[subMet]=true,[subRun]=true,[subMtn]=true,[subUp]=true,[subS]=true}
-local flow={row1,subEsp,row2,rowP,subP,rowD,subD,rowC,subC,rowS,subS,rowUp,subUp,rowMet,subMet,rowRun,subRun,rowMtn,subMtn,hud,cnt,tierBox,feed,stat}
-layout=function()
-    local y=0
-    for _,el in ipairs(flow) do
-        if not (subs[el] and not el.Visible) then
-            el.Position=UDim2.new(0,0,0,y); y+=el.Size.Y.Offset+6
+function UI.apply(t)   -- ใส่ค่าที่โหลดมา (เช็คชนิดทุกค่า — ไฟล์เก่า/เสียไม่ทำให้พัง)
+    if type(t)~="table" then return false end
+    local fl=type(t.flags)=="table" and t.flags or {}
+    for _,k in ipairs(FLAGS) do
+        local v=fl[k]
+        if v~=nil and type(v)==type(UI.DEF.flags[k]) then
+            if ACT[k] then UI.pendM=UI.pendM or {} UI.pendM[k]=v else cfg[k]=v end
         end
     end
-    body.CanvasSize=UDim2.new(0,0,0,y)
+    if type(t.sub)=="table" then for k,v in pairs(t.sub) do if UI.DEF.sub[k]~=nil and type(v)==type(UI.DEF.sub[k]) then cfg.sub[k]=v end end end
+    local u=type(t.ui)=="table" and t.ui or {}
+    for k,v in pairs(u) do if k~="keys" and k~="open" and UI.DEF.ui[k]~=nil and type(v)==type(UI.DEF.ui[k]) then cfg.ui[k]=v end end
+    if type(u.keys)=="table" then for k,v in pairs(u.keys) do if type(v)=="string" then cfg.ui.keys[k]=v end end end
+    if type(u.open)=="table" then for k,v in pairs(u.open) do if v==true then cfg.ui.open[k]=true end end end
+    if type(t.picks)=="table" then for _,nm in ipairs(t.picks) do if type(nm)=="string" then picks[nm]=true end end end
+    cfg.ui.scale=math.clamp(tonumber(cfg.ui.scale) or 1,0.7,1.5); cfg.ui.opacity=math.clamp(tonumber(cfg.ui.opacity) or 0.04,0,0.6)
+    cfg.ui.w=math.clamp(tonumber(cfg.ui.w) or 700,560,1400); cfg.ui.h=math.clamp(tonumber(cfg.ui.h) or 520,400,1000)
+    return true
 end
-local function chev(row,sub)
-    local b=Instance.new("TextButton"); b.Size=UDim2.new(0,20,0,20); b.Position=UDim2.new(1,-74,0.5,-10); b.BackgroundColor3=C.opt2
-    b.Text=">"; b.TextColor3=C.dim; b.TextSize=12; b.TextXAlignment=Enum.TextXAlignment.Center; b.Parent=row; corner(b,5); hover(b,b,C.opt2,C.optH); tfont(b)
-    b.Activated:Connect(function() sub.Visible=not sub.Visible; b.Text=sub.Visible and "v" or ">"; b.TextColor3=sub.Visible and C.accent or C.dim; sfx("tick") layout() end)
+function UI.load()
+    if not (readfile and isfile) then return false end
+    local ok,s=pcall(function() if isfile(UI.FILE) then return readfile(UI.FILE) end end)
+    if not ok or type(s)~="string" or s=="" then return false end
+    local ok2,t=pcall(function() return HttpS:JSONDecode(s) end)
+    if not ok2 then return false end
+    return UI.apply(t)
 end
-chev(row1,subEsp); chev(rowP,subP); chev(rowD,subD); chev(rowC,subC); chev(rowS,subS); chev(rowUp,subUp); chev(rowMet,subMet); chev(rowRun,subRun); chev(rowMtn,subMtn)
-layout()
+function UI.dirty() UI.dT=os.clock() end
+task.spawn(function()
+    while alive() do
+        task.wait(1)
+        if UI.dT and os.clock()-UI.dT>1.5 and cfg.ui.autosave then UI.dT=nil UI.save() end
+    end
+    if UI.dT and cfg.ui.autosave then UI.save() end
+end)
+if G.__HZSAVE then pcall(G.__HZSAVE) end   -- รันสคริปต์ซ้ำ: เซฟส่วนที่ generation ก่อนหน้ายังค้างอยู่ก่อนโหลดค่า (ไม่งั้นการตั้งค่าล่าสุดหาย)
+G.__HZSAVE=function() if UI.dT and cfg.ui.autosave then UI.dT=nil UI.save() end end
+UI.loaded=UI.load()
+PK.mute=(cfg.ui.sound==false)
 
--- ============ แถว 🧍 ตัวเรา (do-block กัน register) — อยู่หลัง ขุดออโต้ ใน flow ============
-do
-    local rowF=Instance.new("Frame"); rowF.Size=UDim2.new(1,0,0,32); rowF.BackgroundColor3=C.row; rowF.Parent=body; corner(rowF,9); stroke(rowF,C.edge,0.8)
-    local fl=Instance.new("TextLabel"); fl.Size=UDim2.new(1,-120,1,0); fl.Position=UDim2.new(0,10,0,0); fl.BackgroundTransparency=1; fl.Text="ตัวเรา (วิ่งไว)"; fl.TextSize=13; fl.TextColor3=C.txt; fl.TextXAlignment=Enum.TextXAlignment.Left; fl.Parent=rowF; tfont(fl)
-    local pillF=Instance.new("Frame"); pillF.Size=UDim2.new(0,40,0,18); pillF.Position=UDim2.new(1,-48,0.5,-9); pillF.BackgroundColor3=C.off; pillF.Parent=rowF; corner(pillF,9)
-    local knobF=Instance.new("Frame"); knobF.Size=UDim2.new(0,14,0,14); knobF.Position=UDim2.new(0,2,0.5,-7); knobF.BackgroundColor3=Color3.new(1,1,1); knobF.Parent=pillF; corner(knobF,7)
-    local hitF=Instance.new("TextButton"); hitF.Size=UDim2.new(1,0,1,0); hitF.BackgroundTransparency=1; hitF.Text=""; hitF.Parent=rowF
-    chip(rowF,"🧍",Color3.fromRGB(140,255,220)) shiftLbl(fl) polishPill(pillF,knobF) hover(hitF,rowF,C.row,C.rowH)
-    hitF.Activated:Connect(function()
-        cfg.selfOn=not cfg.selfOn; sfx("pop")
-        Tween:Create(pillF,TweenInfo.new(0.15),{BackgroundColor3=cfg.selfOn and C.on or C.off}):Play()
-        Tween:Create(knobF,TweenInfo.new(0.15),{Position=cfg.selfOn and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)}):Play()
-        slog("self "..tostring(cfg.selfOn))
-    end)
-    local subF=subFrame(2)
-    mOpt(subF,"🏃 วิ่งไว 1.5x (ปลอดภัย)","spd15",0) mOpt(subF,"🏃💨 วิ่งไว 2x (=pass จริง)","spd2",30)
-    subs[subF]=true
-    table.insert(flow,8,rowF); table.insert(flow,9,subF)   -- หลัง subD (idx7) ก่อน rowC
-    chev(rowF,subF); layout()
+-- ───────── สวิตช์หลัก (แหล่งเดียว: การ์ด / ไทล์ภาพรวม / ปุ่มลัด ใช้ get/set ชุดเดียวกัน) ─────────
+local function slogSet(k,v) slog(k.." "..tostring(v)) end
+UI.M={
+ {id="esp",tab="radar",icon="🛰",col=C.accent,name="เรดาร์แรร์ ESP",short="ESP",desc="Highlight + ป้ายชื่อ/ระยะ/น้ำหนัก ของแรร์ทุกตัวที่เห็น",
+    get=function() return cfg.esp end,set=function(v) cfg.esp=v applyFilter() end},
+ {id="autodig",tab="farm",icon="⛏",col=Color3.fromRGB(255,170,60),name="ขุดออโต้ + ตีแรร์",short="ขุด",desc="ขุดแรร์ฝังของเรา · กด E ตีจนแตก+เก็บให้",
+    get=function() return cfg.autodig end,set=function(v) cfg.autodig=v PK.rc.pr=nil slogSet("autodig",v) end},
+ {id="autocollect",tab="farm",icon="✋",col=Color3.fromRGB(120,255,170),name="เก็บแรร์ออโต้",short="เก็บ",desc="กด E เก็บของที่ตก/แรร์ที่ขุดโผล่ในระยะ",
+    get=function() return cfg.autocollect end,set=function(v) cfg.autocollect=v slogSet("autocollect",v) end},
+ {id="autosell",tab="farm",icon="💰",col=Color3.fromRGB(255,220,90),name="ขายออโต้",short="ขาย",desc="ขายเมื่อกระเป๋าเต็ม/≥92% (ข้ามชิ้น ⭐)",
+    get=function() return cfg.autosell end,set=function(v) cfg.autosell=v slogSet("autosell",v) end},
+ {id="autoup",tab="farm",icon="⬆",col=C.accent2,name="อัพเกรดอัตโนมัติ",short="อัพ",desc="ซื้อกระเป๋า/ความอบอุ่น/พลั่วให้ตามเงินที่มี",
+    get=function() return cfg.autoup end,set=function(v) cfg.autoup=v slogSet("autoup",v) end},
+ {id="garden",tab="farm",icon="🌱",col=Color3.fromRGB(90,230,140),name="สวนโชคออโต้",short="สวน",desc="วางแรร์โชคสูงลงสวนให้เอง",
+    get=function() return cfg.garden end,set=function(v) cfg.garden=v slogSet("garden",v) end},
+ {id="selfOn",tab="self",icon="🧍",col=Color3.fromRGB(140,255,220),name="ตัวเรา",short="ตัวเรา",desc="วิ่งไว · เจ็ทแพ็ค · สกิลเคียว/ค้างคาวออโต้ · กันตกเหว",
+    get=function() return cfg.selfOn end,set=function(v) cfg.selfOn=v slogSet("self",v) end},
+ {id="players",tab="radar",icon="👥",col=Color3.fromRGB(80,200,255),name="ESP ผู้เล่น",short="ผู้เล่น",desc="ใครอยู่ไหน · ใครกำลังขุด",
+    get=function() return cfg.players end,set=function(v) cfg.players=v end},
+ {id="runes",tab="radar",icon="🔮",col=Color3.fromRGB(190,130,255),name="รูน ESP",short="รูน",desc="รูนที่ปักในโลก (ชื่อ/ระยะ/ของเรา)",
+    get=function() return cfg.runes end,set=function(v) cfg.runes=v applyFilter() end},
+ {id="pickMode",tab="radar",icon="🎯",col=Color3.fromRGB(255,120,120),name="เจาะจงชื่อแรร์",short="เจาะจง",desc="ESP/ขุด/เก็บ เฉพาะชื่อที่เลือก",
+    get=function() return cfg.pickMode end,set=function(v) cfg.pickMode=v if UI.paintPick then UI.paintPick() end applyFilter() slogSet("pickMode",v) end},
+ {id="radarSnipe",tab="radar",icon="📡",col=Color3.fromRGB(90,200,255),name="เรด้าสอยสต็อก",short="สอยเรด้า",desc="สต็อกเรด้ามา + เงินพอ = ซื้อทันที",
+    get=function() return cfg.radarSnipe end,set=function(v) cfg.radarSnipe=v slogSet("radarSnipe",v) end},
+ {id="radarFake",tab="radar",icon="📡",col=Color3.fromRGB(90,235,255),name="เรด้าเดิน ฟรี",short="เรด้าฟรี",desc="HUD เรด้าค้าง 60 นาที ขุดได้ตลอด",
+    get=function() return cfg.radarFake end,set=function(v) PK.fakeRadar(v) task.delay(0.7,function() if UI.syncAll then UI.syncAll() end end) end},
+ {id="met",tab="world",icon="☄",col=Color3.fromRGB(255,130,90),name="เมเทียร์ + ดาวตก",short="เมเทียร์",desc="ป้ายจุดตก + แจ้งเตือนอีเวนต์",
+    get=function() return cfg.met end,set=function(v) cfg.met=v end},
+}
+UI.mBy={} for _,m in ipairs(UI.M) do UI.mBy[m.id]=m end
+function UI.setM(id,v)
+    local m=UI.mBy[id]; if not m then return end
+    if v==nil then v=not m.get() end
+    local ok,err=pcall(m.set,v and true or false)
+    if not ok then slog("setM "..id.." error: "..tostring(err)) feedAdd("❌ สลับ "..m.name.." ไม่สำเร็จ: "..tostring(err),C.bad) end
+    sfx("pop"); UI.syncAll(); UI.dirty()
+end
+function UI.panic()   -- ⛔ ปิดสวิตช์ที่ "ลงมือทำ" ทั้งหมดทันที (ปุ่มลัดฉุกเฉิน)
+    for _,m in ipairs(UI.M) do if (ACT[m.id] or m.id=="radarFake") and m.get() then m.set(false) end end
+    sfx("pop"); UI.syncAll(); UI.dirty(); feedAdd("⛔ หยุดทุกระบบแล้ว",C.bad)
+end
+function UI.farmOn()   -- ▶ เปิดชุดฟาร์มหลัก (ขุด+เก็บ+ขาย)
+    for _,id in ipairs({"autodig","autocollect","autosell"}) do local m=UI.mBy[id] if not m.get() then m.set(true) end end
+    sfx("pop"); UI.syncAll(); UI.dirty(); feedAdd("▶ เปิดชุดฟาร์ม: ขุด + เก็บ + ขาย",C.good)
+end
+local function activeCount()
+    local n=0
+    for _,id in ipairs({"autodig","autocollect","autosell","autoup","garden","selfOn","radarSnipe","radarFake"}) do if UI.mBy[id].get() then n+=1 end end
+    return n
 end
 
--- ============ แถว 🤖 บอทฟาร์ม (do-block กัน register) — ยืนขุดวง/เก็บ/ขายเอง ============
-do
-    local rowB=Instance.new("Frame"); rowB.Size=UDim2.new(1,0,0,32); rowB.BackgroundColor3=C.row; rowB.Parent=body; corner(rowB,9); stroke(rowB,C.edge,0.8)
-    local bl=Instance.new("TextLabel"); bl.Size=UDim2.new(1,-120,1,0); bl.Position=UDim2.new(0,10,0,0); bl.BackgroundTransparency=1; bl.Text="บอทฟาร์ม เบต้า (ยืนขุดวง/เก็บ/ขายเอง)"; bl.TextSize=13; bl.TextColor3=C.txt; bl.TextXAlignment=Enum.TextXAlignment.Left; bl.Parent=rowB; tfont(bl)
-    local pillB=Instance.new("Frame"); pillB.Size=UDim2.new(0,40,0,18); pillB.Position=UDim2.new(1,-48,0.5,-9); pillB.BackgroundColor3=C.off; pillB.Parent=rowB; corner(pillB,9)
-    local knobB=Instance.new("Frame"); knobB.Size=UDim2.new(0,14,0,14); knobB.Position=UDim2.new(0,2,0.5,-7); knobB.BackgroundColor3=Color3.new(1,1,1); knobB.Parent=pillB; corner(knobB,7)
-    local hitB=Instance.new("TextButton"); hitB.Size=UDim2.new(1,0,1,0); hitB.BackgroundTransparency=1; hitB.Text=""; hitB.Parent=rowB
-    chip(rowB,"🤖",C.accent3) shiftLbl(bl) polishPill(pillB,knobB) hover(hitB,rowB,C.row,C.rowH)
-    hitB.Activated:Connect(function()
-        cfg.farmBot=not cfg.farmBot; sfx("pop")
-        Tween:Create(pillB,TweenInfo.new(0.15),{BackgroundColor3=cfg.farmBot and C.on or C.off}):Play()
-        Tween:Create(knobB,TweenInfo.new(0.15),{Position=cfg.farmBot and UDim2.new(1,-16,0.5,-7) or UDim2.new(0,2,0.5,-7)}):Play()
-        -- บอทเปิด = เปิดลูปขุด/เก็บ/ขายให้เอง (pill เดิมไม่ต้องกด)
-        slog("farmBot "..tostring(cfg.farmBot))
-    end)
-    table.insert(flow,10,rowB)   -- หลัง subF (idx9) ก่อน rowC
-    local subB=subFrame(4)
-    mOpt(subB,"🎯 เล็งเป้าคุ้มสุด (Value/ระยะ)","botBest",0)
-    mOpt(subB,"🌡 กันตายหนาว (ไม่ขึ้นเกิน Warmth)","botWarm",30)
-    mOpt(subB,"🧪 กินยา Mining/Luck/Coins ทุก 60s","botPot",60)
-    -- ปุ่มโฟกัส tier: ฟาร์มเฉพาะแรร์ ≥ ระดับที่เลือก (กดวน)
-    local btB=Instance.new("TextButton"); btB.Size=UDim2.new(1,-16,0,26); btB.Position=UDim2.new(0,8,0,93)
-    btB.BackgroundColor3=C.opt2; btB.TextSize=11; btB.Parent=subB; corner(btB,6); tfont(btB); hover(btB,btB,C.opt2,C.optH)
-    local function paintBT() local t=TIERS[cfg.botTier]; btB.Text="💎 โฟกัสแรร์ ≥ "..t; btB.TextColor3=TCOL[t] end
-    btB.Activated:Connect(function() cfg.botTier=cfg.botTier%#TIERS+1 sfx("tick") paintBT() end)
-    paintBT()
-    subs[subB]=true; table.insert(flow,11,subB)
-    chev(rowB,subB); layout()
+-- ───────── ปุ่มลัด ─────────
+UI.act={{id="ui",name="ซ่อน/แสดงหน้าต่าง",fn=function() UI.show(not UI.win.Visible) end},
+    {id="panic",name="⛔ หยุดทุกระบบ (ฉุกเฉิน)",fn=function() UI.panic() end},
+    {id="farmOn",name="▶ เปิดชุดฟาร์ม (ขุด+เก็บ+ขาย)",fn=function() UI.farmOn() end}}
+for _,m in ipairs(UI.M) do UI.act[#UI.act+1]={id=m.id,name="สลับ: "..m.name,fn=function() UI.setM(m.id) end} end
+UI.actBy={} for _,a in ipairs(UI.act) do UI.actBy[a.id]=a end
+function UI.rebuildKeys()
+    UI.keyMap={}
+    for id,k in pairs(cfg.ui.keys) do if type(k)=="string" and k~="" and UI.actBy[id] then UI.keyMap[k]=id end end
 end
+function UI.keyOf(id) local k=cfg.ui.keys[id] return (k and k~="") and k or nil end
+UI.rebuildKeys()
+
+-- ───────── หน้าต่างหลัก ─────────
+local sg=Instance.new("ScreenGui"); sg.Name="HZMineUI"; sg.ResetOnSpawn=false; sg.IgnoreGuiInset=true; sg.DisplayOrder=100
+sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling; sg.Parent=CoreGui
+local root=mk("Frame",{Name="Root",BackgroundTransparency=1,BorderSizePixel=0,Size=UDim2.new(1,0,1,0)},sg)
+local uiScale=mk("UIScale",{Scale=cfg.ui.scale},root)
+UI.sg,UI.root,UI.uiScale=sg,root,uiScale
+local SB,FOOT,BAR=150,24,46
+local function vp()   -- ขนาดจอในหน่วยของ root (หารซูมแล้ว)
+    local a=sg.AbsoluteSize; local s=uiScale.Scale
+    if not a or a.X<=0 then local cam=workspace.CurrentCamera local v=cam and cam.ViewportSize a=v or Vector2.new(1280,720) end
+    return a.X/s,a.Y/s
+end
+function UI.applyScale(s)
+    s=math.clamp(s,0.7,1.5); cfg.ui.scale=s; uiScale.Scale=s; root.Size=UDim2.new(1/s,0,1/s,0)
+end
+UI.applyScale(cfg.ui.scale)
+
+local shadow=mk("Frame",{Name="Shadow",BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=0.78,BorderSizePixel=0,Size=UDim2.new(0,cfg.ui.w+12,0,cfg.ui.h+12),Position=UDim2.new(0,cfg.ui.x-6,0,cfg.ui.y-6)},root)
+corner(shadow,19)
+local win=mk("Frame",{Name="Window",BackgroundColor3=WHITE,BackgroundTransparency=cfg.ui.opacity,BorderSizePixel=0,Active=true,ClipsDescendants=true,
+    Size=UDim2.new(0,cfg.ui.w,0,cfg.ui.h),Position=UDim2.new(0,cfg.ui.x,0,cfg.ui.y)},root)
+corner(win,13); stroke(win,C.edge,0.4)
+mk("UIGradient",{Color=ColorSequence.new(C.bgTop,C.bgBot),Rotation=90},win)
+UI.win,UI.shadow=win,shadow
+local function syncShadow()
+    shadow.Position=UDim2.new(win.Position.X.Scale,win.Position.X.Offset-6,win.Position.Y.Scale,win.Position.Y.Offset-6)
+    shadow.Size=UDim2.new(0,win.Size.X.Offset+12,0,win.Size.Y.Offset+12)
+    shadow.Visible=win.Visible
+end
+UI.syncShadow=syncShadow
+local function clampWin()
+    local vx,vy=vp()
+    local w=win.Size.X.Offset
+    local x=math.clamp(win.Position.X.Offset,-(w-140),vx-140)
+    local y=math.clamp(win.Position.Y.Offset,0,vy-BAR)
+    win.Position=UDim2.new(0,x,0,y); cfg.ui.x=x; cfg.ui.y=y
+end
+
+-- เส้นไล่สีบนสุด
+do
+    local tb=mk("Frame",{Size=UDim2.new(1,0,0,2),BackgroundColor3=WHITE,BorderSizePixel=0,ZIndex=5},win)
+    local g=agrad(tb); g.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.5),NumberSequenceKeypoint.new(0.5,0),NumberSequenceKeypoint.new(1,0.5)}
+end
+-- แถบหัว (ลากเพื่อย้าย)
+local bar=mk("Frame",{Name="Bar",Size=UDim2.new(1,0,0,BAR),BackgroundTransparency=1,Active=true},win)
+do
+    local logo=mk("Frame",{Size=UDim2.new(0,30,0,30),Position=UDim2.new(0,12,0,9),BackgroundColor3=C.accent2,BorderSizePixel=0,ClipsDescendants=true},bar); corner(logo,15); agrad(logo)
+    UI.iconOrEmoji(logo,UI.gemIcon("Zenith"),"⛏",UDim2.new(0,4,0,4),UDim2.new(1,-8,1,-8),16)   -- พื้นหลัง = ไอคอนซีนิธ (fallback ⛏) ระหว่างรอโหลดไอคอนแมพ
+    local gico=mk("ImageLabel",{Name="GameIcon",BackgroundTransparency=1,Image="",Size=UDim2.new(1,0,1,0),ZIndex=4},logo)   -- ไอคอนแมพจริงทับข้างบน
+    local ti=lbl(bar,{Text="HZ HUB",Position=UDim2.new(0,50,0,6),Size=UDim2.new(0,110,0,22),TextSize=17,TextColor3=WHITE,Font=Enum.Font.GothamBlack}); agrad(ti)
+    local sub=lbl(bar,{Text="Mine Antarctica · v6 PC",Position=UDim2.new(0,50,0,28),Size=UDim2.new(0,150,0,14),TextSize=10,TextColor3=C.dim})
+    task.spawn(function()   -- ดึงไอคอน+ชื่อแมพจริงจาก MarketplaceService (วิธีเดียวกับ UI เก่า FishUI) — ไม่โหลด = โชว์ซีนิธต่อ
+        local ok,info=pcall(function() return game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId) end)
+        if ok and info then
+            if info.IconImageAssetId and info.IconImageAssetId>0 then gico.Image="rbxassetid://"..info.IconImageAssetId mk("UICorner",{CornerRadius=UDim.new(0.5,0)},gico) end
+            if info.Name and info.Name~="" then sub.Text=info.Name.." · v6 PC" end
+        end
+    end)
+end
+-- ชิปสถานะ (ทำงานกี่ระบบ) — ย่อหน้าต่างแล้วโชว์สรุปแทน
+local chipSt=mk("Frame",{Size=UDim2.new(0,128,0,24),Position=UDim2.new(0,208,0,11),BackgroundColor3=C.opt,BorderSizePixel=0},bar); corner(chipSt,12); stroke(chipSt,C.edge,0.7)
+local chipLbl=lbl(chipSt,{Text="○ หยุดอยู่",Size=UDim2.new(1,0,1,0),TextSize=11,TextColor3=C.dim,TextXAlignment=Enum.TextXAlignment.Center})
+UI.chipSt,UI.chipLbl=chipSt,chipLbl
+local miniL=lbl(bar,{Text="",Position=UDim2.new(0,208,0,0),Size=UDim2.new(1,-208-120,1,0),TextSize=11,TextColor3=C.txt,Visible=false,TextTruncate=Enum.TextTruncate.AtEnd})
+UI.mini=miniL
+-- แถบสถานะลอย (โผล่ตอนซ่อนหน้าต่าง — ดูสถานะ AFK ได้โดยไม่ต้องเปิดหน้าต่าง · คลิก = เปิดหน้าต่างกลับ)
+local pill=mk("TextButton",{Name="Pill",AnchorPoint=Vector2.new(0.5,0),Position=UDim2.new(0.5,0,0,46),Size=UDim2.new(0,0,0,26),AutomaticSize=Enum.AutomaticSize.X,
+    BackgroundColor3=C.panel,BackgroundTransparency=0.1,BorderSizePixel=0,AutoButtonColor=false,Text="",TextSize=12,TextColor3=C.txt,Visible=false,ZIndex=120},root)
+tfont(pill); corner(pill,13); stroke(pill,C.edge,0.45)
+mk("UIPadding",{PaddingLeft=UDim.new(0,14),PaddingRight=UDim.new(0,14)},pill)
+UI.pill=pill
+-- ปุ่มปิด/ย่อ
+local closeB=btn(bar,{Name="CloseBtn",Size=UDim2.new(0,28,0,28),Position=UDim2.new(1,-36,0,9),BackgroundTransparency=0,BackgroundColor3=Color3.fromRGB(190,55,70),Text="×",TextSize=17,Font=Enum.Font.GothamBold})
+corner(closeB,8); hoverFx(closeB,closeB,Color3.fromRGB(190,55,70),Color3.fromRGB(230,75,90))
+local minB=btn(bar,{Size=UDim2.new(0,28,0,28),Position=UDim2.new(1,-70,0,9),BackgroundTransparency=0,BackgroundColor3=C.opt2,Text="–",TextSize=16})
+corner(minB,8); hoverFx(minB,minB,C.opt2,C.optH)
+-- ช่องค้นหา
+local qBox=mk("Frame",{Size=UDim2.new(0,180,0,26),Position=UDim2.new(1,-70-180-8,0,10),BackgroundColor3=C.opt,BorderSizePixel=0},bar); corner(qBox,8); stroke(qBox,C.edge,0.75)
+lbl(qBox,{Text="🔍",Position=UDim2.new(0,7,0,0),Size=UDim2.new(0,18,1,0),TextSize=12,TextColor3=C.dim})
+local q=mk("TextBox",{Size=UDim2.new(1,-50,1,0),Position=UDim2.new(0,26,0,0),BackgroundTransparency=1,Text="",PlaceholderText="ค้นหาฟีเจอร์…  (Ctrl+F)",PlaceholderColor3=C.dim,
+    TextSize=11,TextColor3=C.txt,TextXAlignment=Enum.TextXAlignment.Left,ClearTextOnFocus=false,BorderSizePixel=0},qBox); tfont(q)
+local qClr=btn(qBox,{Size=UDim2.new(0,20,0,20),Position=UDim2.new(1,-23,0.5,-10),Text="×",TextSize=13,TextColor3=C.dim,Visible=false})
+UI.q,UI.qClr=q,qClr
+-- เส้นคั่นใต้แถบหัว
+mk("Frame",{Size=UDim2.new(1,0,0,1),Position=UDim2.new(0,0,0,BAR),BackgroundColor3=C.line,BackgroundTransparency=0.3,BorderSizePixel=0},win)
+
+-- แถบข้าง (แท็บ)
+local side=mk("Frame",{Name="Side",Size=UDim2.new(0,SB,1,-BAR-1-FOOT),Position=UDim2.new(0,0,0,BAR+1),BackgroundColor3=C.side,BackgroundTransparency=0.2,BorderSizePixel=0},win)
+mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},side)
+mk("UIPadding",{PaddingTop=UDim.new(0,10),PaddingBottom=UDim.new(0,8),PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8)},side)
+mk("Frame",{Size=UDim2.new(0,1,1,-BAR-1-FOOT),Position=UDim2.new(0,SB,0,BAR+1),BackgroundColor3=C.line,BackgroundTransparency=0.4,BorderSizePixel=0},win)
+local content=mk("Frame",{Name="Content",Size=UDim2.new(1,-SB-1,1,-BAR-1-FOOT),Position=UDim2.new(0,SB+1,0,BAR+1),BackgroundTransparency=1,ClipsDescendants=true},win)
+local foot=mk("Frame",{Name="Foot",Size=UDim2.new(1,0,0,FOOT),Position=UDim2.new(0,0,1,-FOOT),BackgroundColor3=C.side,BackgroundTransparency=0.1,BorderSizePixel=0},win)
+local footL=lbl(foot,{Text="",Position=UDim2.new(0,12,0,0),Size=UDim2.new(1,-190,1,0),TextSize=10,TextColor3=C.dim,TextTruncate=Enum.TextTruncate.AtEnd})
+local footR=lbl(foot,{Text="",Position=UDim2.new(1,-170,0,0),Size=UDim2.new(0,150,1,0),TextSize=10,TextColor3=C.dim,TextXAlignment=Enum.TextXAlignment.Right})
+local grip=btn(win,{Size=UDim2.new(0,20,0,20),Position=UDim2.new(1,-20,1,-20),Text="◢",TextSize=11,TextColor3=C.dim,ZIndex=20})
+UI.side,UI.content,UI.foot,UI.footL,UI.footR,UI.grip=side,content,foot,footL,footR,grip
+
+-- ลาก/ปรับขนาด (หาร scale — i.Position เป็นพิกเซลจอ)
+local drag,rsz
+local function isDown(i) return i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch end
+local lastClk=0
+bar.InputBegan:Connect(function(i)
+    if not isDown(i) then return end
+    local now=os.clock()
+    if now-lastClk<0.35 then lastClk=0 UI.fold(not UI.folded) return end   -- ดับเบิลคลิกหัวหน้าต่าง = ย่อ/ขยาย
+    lastClk=now
+    drag={m=i.Position,x=win.Position.X.Offset,y=win.Position.Y.Offset}
+end)
+grip.InputBegan:Connect(function(i) if isDown(i) then rsz={m=i.Position,w=win.Size.X.Offset,h=win.Size.Y.Offset} end end)
+guard(UIS.InputChanged,function(i)
+    if not (drag or rsz) then return end
+    if i.UserInputType~=Enum.UserInputType.MouseMovement and i.UserInputType~=Enum.UserInputType.Touch then return end
+    local s=uiScale.Scale
+    if drag then
+        local d=(i.Position-drag.m)/s
+        win.Position=UDim2.new(0,drag.x+d.X,0,drag.y+d.Y); clampWin(); syncShadow()
+    elseif rsz then
+        local d=(i.Position-rsz.m)/s
+        local vx,vy=vp()
+        local w=math.clamp(rsz.w+d.X,560,math.min(1400,vx-win.Position.X.Offset))
+        local h=math.clamp(rsz.h+d.Y,400,math.min(1000,vy-win.Position.Y.Offset))
+        win.Size=UDim2.new(0,w,0,h); cfg.ui.w=w; cfg.ui.h=h; syncShadow()
+    end
+end)
+guard(UIS.InputEnded,function(i) if (drag or rsz) and isDown(i) then drag=nil rsz=nil UI.dirty() end end)
+
+function UI.show(v)
+    win.Visible=v and true or false; syncShadow()
+    pill.Visible=(not win.Visible) and cfg.ui.pill~=false
+    if not v then UI.tipObj=nil end
+end
+pill.Activated:Connect(function() sfx("tick") UI.show(true) end)
+function UI.fold(v)
+    UI.folded=v and true or false
+    side.Visible=not UI.folded; content.Visible=not UI.folded; foot.Visible=not UI.folded; grip.Visible=not UI.folded
+    chipSt.Visible=not UI.folded; miniL.Visible=UI.folded; qBox.Visible=not UI.folded
+    minB.Text=UI.folded and "+" or "–"
+    local h=UI.folded and BAR or cfg.ui.h
+    tw(win,0.16,{Size=UDim2.new(0,cfg.ui.w,0,h)})
+    tw(shadow,0.16,{Size=UDim2.new(0,cfg.ui.w+12,0,h+12)})
+end
+minB.Activated:Connect(function() sfx("tick") UI.fold(not UI.folded) end)
+closeB.Activated:Connect(function()
+    sfx("tick")
+    pcall(UI.save)
+    G.__HZMINE=G.__HZMINE+1   -- ✕ = ปิดสคริปต์จริง: ฆ่า generation → ทุก loop/hook หยุด (รันใหม่ได้ปกติ)
+    sg:Destroy() esp:Destroy()
+    pcall(function() ghostParent:Destroy() end)
+    pcall(function() farFolder:Destroy() end)
+    slog("closed+killed")
+end)
+UI.kill=function() closeB.Activated:Fire() end
+
+-- ───────── tooltip ─────────
+local tipF=mk("Frame",{Name="Tip",Visible=false,BackgroundColor3=Color3.fromRGB(8,9,18),BackgroundTransparency=0.04,BorderSizePixel=0,ZIndex=200,
+    AutomaticSize=Enum.AutomaticSize.XY,Size=UDim2.new(0,0,0,0)},root)
+corner(tipF,7); stroke(tipF,C.edge,0.35)
+mk("UIPadding",{PaddingLeft=UDim.new(0,9),PaddingRight=UDim.new(0,9),PaddingTop=UDim.new(0,6),PaddingBottom=UDim.new(0,6)},tipF)
+local tipL=lbl(tipF,{Text="",TextSize=11,TextWrapped=true,AutomaticSize=Enum.AutomaticSize.XY,Size=UDim2.new(0,0,0,0),ZIndex=201})
+mk("UISizeConstraint",{MaxSize=Vector2.new(300,500)},tipL)
+function UI.tip(o,text)
+    if not text or text=="" then return end
+    o.MouseEnter:Connect(function() UI.tipObj=o UI.tipText=text UI.tipT=os.clock()+0.45 end)
+    o.MouseLeave:Connect(function() if UI.tipObj==o then UI.tipObj=nil end end)
+end
+task.spawn(function()
+    while alive() do
+        task.wait(0.07)
+        local o=UI.tipObj
+        if o and win.Visible then
+            local now=os.clock()
+            if not tipF.Visible and now>=UI.tipT then
+                tipL.Text=UI.tipText; tipF.Visible=true; UI.tipShown=now
+            end
+            if tipF.Visible then
+                local m=UIS:GetMouseLocation(); local s=uiScale.Scale
+                local ap=root.AbsolutePosition or Vector2.new(0,0)
+                local sz=tipF.AbsoluteSize or Vector2.new(200,40)
+                local vx,vy=vp()
+                local x=math.clamp((m.X-ap.X)/s+16,4,math.max(4,vx-sz.X/s-6))
+                local y=(m.Y-ap.Y)/s+20
+                if y+sz.Y/s>vy-6 then y=(m.Y-ap.Y)/s-sz.Y/s-10 end
+                tipF.Position=UDim2.new(0,x,0,math.max(4,y))
+                if now-UI.tipShown>12 then UI.tipObj=nil end
+            end
+        elseif tipF.Visible then tipF.Visible=false end
+    end
+end)
+
+-- ───────── toast + บันทึกกิจกรรม ─────────
+local toastBox=mk("Frame",{Name="Toasts",BackgroundTransparency=1,AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,-14,0,54),Size=UDim2.new(0,310,0,0),AutomaticSize=Enum.AutomaticSize.Y,ZIndex=150},root)
+mk("UIListLayout",{Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder,HorizontalAlignment=Enum.HorizontalAlignment.Right},toastBox)
+UI.toasts={}; UI.toastN=0
+function UI.toast(text,col)
+    if not cfg.ui.toast then return end
+    UI.toastN+=1
+    col=col or C.accent
+    local t=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundColor3=C.panel,BackgroundTransparency=0.06,BorderSizePixel=0,LayoutOrder=-UI.toastN,ZIndex=151},toastBox)
+    corner(t,8); stroke(t,col,0.45)
+    mk("Frame",{Size=UDim2.new(0,4,1,0),BackgroundColor3=col,BorderSizePixel=0,ZIndex=152},t)
+    local body=mk("Frame",{Size=UDim2.new(1,-14,0,0),Position=UDim2.new(0,12,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,ZIndex=152},t)
+    mk("UIPadding",{PaddingTop=UDim.new(0,7),PaddingBottom=UDim.new(0,7),PaddingRight=UDim.new(0,6)},body)
+    local l=lbl(body,{Text=tostring(text),TextSize=12,TextWrapped=true,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,ZIndex=153})
+    local list=UI.toasts; list[#list+1]=t
+    while #list>4 do local o=table.remove(list,1) pcall(function() o:Destroy() end) end
+    local hit=btn(t,{Size=UDim2.new(1,0,1,0),ZIndex=154}); hit.Activated:Connect(function() pcall(function() t:Destroy() end) end)
+    task.delay(4.5,function()
+        if not t.Parent then return end
+        tw(t,0.35,{BackgroundTransparency=1}) tw(l,0.35,{TextTransparency=1})
+        task.delay(0.4,function() pcall(function() t:Destroy() end) end)
+    end)
+end
+local TOAST_PAT={"🆕","❌","⚠","⛔","🥶","🌱 พา","🌱 ลงสวน","🔄","💰 ขาย","⬆","⛏ ซื้อ","⛏ ใส่","🧪","🎯","☄","💥","⭐ ดาวตก","🏔","📡 เรด้า","🛡","💡","📏","🌦"}
+local function wantToast(s) for _,p in ipairs(TOAST_PAT) do if s:find(p,1,true) then return true end end return false end
+UI.logs={}
+feedAdd=function(txt,a,b)   -- รับทั้ง (txt,สี) และ (txt,วินาที,สี) — signature เดิม
+    if not alive() then return end   -- generation ตายแล้ว (กดปิด/รันซ้ำ) UI ถูกทำลาย → ห้ามสร้าง toast/บรรทัดใหม่ (Parent ถูกล็อก)
+    txt=tostring(txt)
+    local col=typeof(a)=="Color3" and a or (typeof(b)=="Color3" and b) or nil
+    local nowF=os.clock()
+    if txt==PK.lastFeed and nowF-(PK.lastFeedT or 0)<8 then return end   -- ข้อความเดิมซ้ำใน 8s = ไม่ต่อบรรทัดใหม่
+    PK.lastFeed=txt; PK.lastFeedT=nowF
+    local e={t=os.date("%H:%M:%S"),s=txt,c=col}
+    local L=UI.logs; L[#L+1]=e; if #L>150 then table.remove(L,1) end
+    if UI.logRender then UI.logRender(e) end
+    if wantToast(txt) then UI.toast(txt,col) end
+end
+
+-- ───────── ส่วนประกอบ (สวิตช์ · แถวตัวเลือก · ชิปเลือกระดับ · ปุ่ม · สไลเดอร์ · การ์ด) ─────────
+local function mkSwitch(parent,w,h,get,pos)
+    local pad=2; local k=h-pad*2
+    local pill=mk("Frame",{Size=UDim2.new(0,w,0,h),AnchorPoint=Vector2.new(1,0.5),Position=pos,BackgroundColor3=C.off,BorderSizePixel=0},parent); corner(pill,h/2); stroke(pill,Color3.new(0,0,0),0.7)
+    local kn=mk("Frame",{Size=UDim2.new(0,k,0,k),BackgroundColor3=WHITE,BorderSizePixel=0,Position=UDim2.new(0,pad,0.5,-k/2)},pill); corner(kn,k/2)
+    local last
+    local function paint(instant)
+        local on=get() and true or false
+        if on==last then return end
+        last=on
+        local p=on and UDim2.new(1,-(k+pad),0.5,-k/2) or UDim2.new(0,pad,0.5,-k/2)
+        local c=on and C.on or C.off
+        if instant==true then pill.BackgroundColor3=c kn.Position=p else tw(pill,0.14,{BackgroundColor3=c}) tw(kn,0.14,{Position=p}) end
+    end
+    paint(true)
+    UI.paints[#UI.paints+1]=paint
+    return paint,pill
+end
+UI.mkSwitch=mkSwitch
+
+function UI.toggleRow(parent,text,get,set,tip,after,img)   -- img=rbxassetid ไอคอนเกมจริงหน้าข้อความ (ไม่บังเมื่อไม่มี)
+    local r=mk("Frame",{Size=UDim2.new(1,0,0,30),BackgroundColor3=C.opt,BorderSizePixel=0,LayoutOrder=nxt(parent)},parent); corner(r,7)
+    local tx=10
+    if img then mk("ImageLabel",{BackgroundTransparency=1,Image=img,Size=UDim2.new(0,18,0,18),Position=UDim2.new(0,8,0.5,-9),ZIndex=2},r) tx=32 end
+    local l=lbl(r,{Text=text,Position=UDim2.new(0,tx,0,0),Size=UDim2.new(1,-tx-52,1,0),TextSize=12,TextTruncate=Enum.TextTruncate.AtEnd})
+    local paint=mkSwitch(r,34,18,get,UDim2.new(1,-8,0.5,0))
+    local h=btn(r,{Size=UDim2.new(1,0,1,0)})
+    hoverFx(h,r,C.opt,C.optH)
+    h.Activated:Connect(function() local v=not get() set(v) sfx("tick") UI.syncAll() if after then pcall(after,v) end UI.dirty() end)
+    UI.tip(h,tip)
+    local c=UI.curCard; if c then local t=text:lower() c.kw=c.kw.." "..t c.okw=c.okw.." "..t end
+    return l,paint,r
+end
+function UI.opt(parent,text,key,onFlip,tip,img)   -- แถวตัวเลือก ผูก cfg.sub[key] — คืน label (ให้ logic อัปเดตข้อความสด เช่นสต็อกเรด้า) · img=ไอคอนเกมจริง
+    return UI.toggleRow(parent,text,function() return cfg.sub[key] end,function(v) cfg.sub[key]=v end,tip,onFlip,img)
+end
+function UI.note(parent,text,col)
+    return lbl(parent,{Text=text,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,TextWrapped=true,TextSize=11,TextColor3=col or C.dim,LayoutOrder=nxt(parent)})
+end
+function UI.group(parent,title)
+    local g=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundColor3=C.opt,BorderSizePixel=0,LayoutOrder=nxt(parent)},parent); corner(g,8)
+    mk("UIPadding",{PaddingTop=UDim.new(0,7),PaddingBottom=UDim.new(0,9),PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)},g)
+    mk("UIListLayout",{Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder},g)
+    if title then
+        lbl(g,{Text=title,Size=UDim2.new(1,0,0,14),TextSize=11,TextColor3=C.dim,LayoutOrder=nxt(g)})
+        local c=UI.curCard; if c then c.kw=c.kw.." "..title:lower() c.okw=c.okw.." "..title:lower() end
+    end
+    return g
+end
+function UI.grid(parent,cols,h,pad)
+    pad=pad or 8
+    local g=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,LayoutOrder=nxt(parent)},parent)
+    local lay=mk("UIGridLayout",{CellSize=UDim2.new(1/cols,-math.ceil(pad*(cols-1)/cols),0,h),CellPadding=UDim2.new(0,pad,0,pad),SortOrder=Enum.SortOrder.LayoutOrder},g)
+    lay:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()   -- กันพลาด: ถ้า AutomaticSize ใช้กับกริดไม่ได้ ให้ตั้งความสูงจากเนื้อหาเอง
+        local y=lay.AbsoluteContentSize.Y
+        if y>0 then g.Size=UDim2.new(1,0,0,y) end
+    end)
+    return g
+end
+function UI.chips(parent,items,get,set,cols,h)   -- items={{ข้อความ,สี},..} · เลือก 1 ใน N (index) · วางเป็นกริด
+    local box=UI.grid(parent,cols or 4,h or 26,6)
+    local bs={}
+    for i,it in ipairs(items) do
+        local b=btn(box,{BackgroundTransparency=0,BackgroundColor3=C.panel,Text=it[1],TextSize=11,LayoutOrder=i,TextColor3=it[2] or C.txt}); corner(b,7)
+        if it[3] then   -- it[3]=rbxassetid ไอคอนเกมจริง (ชิดซ้าย ข้อความขยับ)
+            b.TextXAlignment=Enum.TextXAlignment.Left
+            mk("UIPadding",{PaddingLeft=UDim.new(0,24)},b)
+            mk("ImageLabel",{BackgroundTransparency=1,Image=it[3],Size=UDim2.new(0,15,0,15),Position=UDim2.new(0,5,0.5,-7),ZIndex=2},b)
+        end
+        local st=stroke(b,it[2] or C.accent,1); st.Thickness=1.5
+        b.Activated:Connect(function() set(i) sfx("tick") UI.syncAll() UI.dirty() end)
+        bs[i]={b=b,st=st}
+    end
+    local function paint()
+        local cur=get()
+        for i,x in ipairs(bs) do
+            local on=(i==cur); local col=items[i][2] or C.accent
+            x.b.BackgroundColor3=on and col or C.panel; x.b.BackgroundTransparency=on and 0.72 or 0
+            x.st.Transparency=on and 0.05 or 0.85
+            x.b.TextColor3=on and WHITE or (items[i][2] or C.txt)
+        end
+    end
+    UI.paints[#UI.paints+1]=paint; paint()
+    return box,paint
+end
+function UI.button(parent,text,col,cb,tip,h)
+    local base=col or C.opt2
+    local b=btn(parent,{Size=UDim2.new(1,0,0,h or 30),BackgroundTransparency=0,BackgroundColor3=base,Text=text,TextSize=12,LayoutOrder=nxt(parent)})
+    corner(b,8); stroke(b,C.edge,0.8)
+    hoverFx(b,b,base,Color3.new(math.min(1,base.R+0.07),math.min(1,base.G+0.07),math.min(1,base.B+0.07)))
+    b.Activated:Connect(function() sfx("tick") cb(b) end)
+    UI.tip(b,tip)
+    return b
+end
+function UI.row2(parent,h)   -- แถวปุ่มคู่ (ซ้าย/ขวา เท่ากัน)
+    local r=mk("Frame",{Size=UDim2.new(1,0,0,h or 30),BackgroundTransparency=1,LayoutOrder=nxt(parent)},parent)
+    mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,8),SortOrder=Enum.SortOrder.LayoutOrder},r)
+    return r
+end
+function UI.half(row,text,col,cb,tip)   -- ปุ่มครึ่งแถวใน row2
+    local base=col or C.opt2
+    local b=btn(row,{Size=UDim2.new(0.5,-4,1,0),BackgroundTransparency=0,BackgroundColor3=base,Text=text,TextSize=11,LayoutOrder=nxt(row)})
+    corner(b,8); stroke(b,C.edge,0.8)
+    hoverFx(b,b,base,Color3.new(math.min(1,base.R+0.07),math.min(1,base.G+0.07),math.min(1,base.B+0.07)))
+    b.Activated:Connect(function() sfx("tick") cb(b) end)
+    UI.tip(b,tip)
+    return b
+end
+function UI.confirmButton(parent,text,col,cb,tip)   -- กดครั้งแรก = ขอยืนยัน (3 วิ) กันกดพลาด
+    local b; local armed=false
+    b=UI.button(parent,text,col,function()
+        if not armed then armed=true b.Text="⚠ กดอีกครั้งเพื่อยืนยัน" task.delay(3,function() if armed then armed=false b.Text=text end end) return end
+        armed=false b.Text=text cb()
+    end,tip)
+    return b
+end
+function UI.slider(parent,title,min,max,get,set,fmt,after,deferApply)   -- deferApply: ลากแค่โชว์ค่า แล้วค่อยใช้ตอนปล่อยเมาส์ (ซูมเปลี่ยนเลย์เอาต์ ถ้าใช้ระหว่างลากรางจะวิ่งหนีเมาส์)
+    local row=mk("Frame",{Size=UDim2.new(1,0,0,44),BackgroundColor3=C.opt,BorderSizePixel=0,LayoutOrder=nxt(parent)},parent); corner(row,8)
+    lbl(row,{Text=title,Position=UDim2.new(0,10,0,5),Size=UDim2.new(0.6,-10,0,16),TextSize=11})
+    local vl=lbl(row,{Text="",Position=UDim2.new(0.6,0,0,5),Size=UDim2.new(0.4,-10,0,16),TextSize=11,TextColor3=C.accent,TextXAlignment=Enum.TextXAlignment.Right})
+    local track=mk("Frame",{Size=UDim2.new(1,-20,0,6),Position=UDim2.new(0,10,0,29),BackgroundColor3=C.off,BorderSizePixel=0},row); corner(track,3)
+    local fill=mk("Frame",{Size=UDim2.new(0,0,1,0),BackgroundColor3=C.accent,BorderSizePixel=0},track); corner(fill,3)
+    local kn=mk("Frame",{Size=UDim2.new(0,14,0,14),AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0,0,0.5,0),BackgroundColor3=WHITE,BorderSizePixel=0,ZIndex=2},track); corner(kn,7)
+    local pending
+    local function paint()
+        local v=pending or get(); local a=math.clamp((v-min)/(max-min),0,1)
+        fill.Size=UDim2.new(a,0,1,0); kn.Position=UDim2.new(a,0,0.5,0); vl.Text=fmt and fmt(v) or tostring(v)
+    end
+    local hit=btn(row,{Size=UDim2.new(1,-10,0,26),Position=UDim2.new(0,5,0,20)})
+    UI.sliders=UI.sliders or {}; UI.sliders[title]={hit=hit,track=track,min=min,max=max}
+    local dragging=false
+    local function setX(x)
+        local ap=track.AbsolutePosition; local as=track.AbsoluteSize
+        if not ap or not as or as.X<=0 then return end
+        local a=math.clamp((x-ap.X)/as.X,0,1)
+        local val=min+(max-min)*a
+        if deferApply then pending=val else set(val) end
+        paint()
+        if after then pcall(after) end
+    end
+    hit.InputBegan:Connect(function(i) if isDown(i) then dragging=true setX(i.Position.X) end end)
+    guard(UIS.InputChanged,function(i) if dragging and (i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch) then setX(i.Position.X) end end)
+    guard(UIS.InputEnded,function(i)
+        if dragging and isDown(i) then
+            dragging=false
+            if pending then local v=pending pending=nil set(v) paint() end
+            UI.dirty()
+        end
+    end)
+    paint(); UI.paints[#UI.paints+1]=paint
+    local c=UI.curCard; if c then c.kw=c.kw.." "..title:lower() c.okw=c.okw.." "..title:lower() end
+    return paint,row
+end
+function UI.section(page,text)
+    local s=mk("Frame",{Size=UDim2.new(1,0,0,22),BackgroundTransparency=1,LayoutOrder=nxt(page)},page)
+    local b=mk("Frame",{Size=UDim2.new(0,3,0,13),Position=UDim2.new(0,2,0.5,-6),BackgroundColor3=C.accent,BorderSizePixel=0},s); corner(b,2)
+    lbl(s,{Text=text,Position=UDim2.new(0,12,0,0),Size=UDim2.new(1,-12,1,0),TextSize=12,TextColor3=Color3.fromRGB(176,184,214)})
+    return s
+end
+function UI.pageHead(page,icon,title,desc)
+    local h=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,LayoutOrder=nxt(page)},page)
+    mk("UIListLayout",{SortOrder=Enum.SortOrder.LayoutOrder,Padding=UDim.new(0,2)},h)
+    lbl(h,{Text=icon.." "..title,Size=UDim2.new(1,0,0,24),TextSize=16,LayoutOrder=1})
+    lbl(h,{Text=desc,Size=UDim2.new(1,0,0,16),TextSize=11,TextColor3=C.dim,LayoutOrder=2})
+end
+
+-- การ์ดฟีเจอร์: หัว(ไอคอน+ชื่อ+คำอธิบาย+ปุ่มลัด+ลูกศรกาง+สวิตช์) + พื้นที่ตัวเลือกย่อย (กาง/พับ จำค่าไว้)
+function UI.card(page,s)
+    local c={id=s.id,page=page,kw=((s.title or "").." "..(s.desc or "").." "..(s.kw or "")):lower(),okw=""}
+    local fr=mk("Frame",{Name="Card_"..s.id,Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundColor3=C.row,BorderSizePixel=0,LayoutOrder=nxt(page)},page)
+    corner(fr,10); stroke(fr,C.edge,0.82)
+    mk("UIListLayout",{SortOrder=Enum.SortOrder.LayoutOrder},fr)
+    local H=s.desc and 56 or 44
+    local head=mk("Frame",{Size=UDim2.new(1,0,0,H),BackgroundTransparency=1,LayoutOrder=1},fr)
+    local col=s.col or C.accent
+    local ic=mk("Frame",{Size=UDim2.new(0,32,0,32),Position=UDim2.new(0,10,0.5,-16),BackgroundColor3=col,BackgroundTransparency=0.82,BorderSizePixel=0},head); corner(ic,9); stroke(ic,col,0.55)
+    UI.iconOrEmoji(ic,s.iconImg,s.icon or "•",UDim2.new(0,4,0,4),UDim2.new(1,-8,1,-8),16)   -- iconImg=rbxassetid ไอคอนเกมจริง (fallback emoji)
+    local swW=s.get and 52 or 0
+    local chW=s.subs and 32 or 0
+    local kbW=s.act and 36 or 0
+    local rightW=8+swW+chW+kbW
+    local title=lbl(head,{Text=s.title,Position=UDim2.new(0,52,0,s.desc and 8 or 0),Size=UDim2.new(1,-52-rightW,0,s.desc and 20 or H),TextSize=14,TextTruncate=Enum.TextTruncate.AtEnd})
+    local desc=s.desc and lbl(head,{Text=s.desc,Position=UDim2.new(0,52,0,29),Size=UDim2.new(1,-52-rightW,0,18),TextSize=11,TextColor3=C.dim,TextTruncate=Enum.TextTruncate.AtEnd}) or nil
+    local hit=btn(head,{Size=UDim2.new(1,0,1,0),ZIndex=1})
+    hoverFx(hit,fr,C.row,C.rowH)
+    if s.get then mkSwitch(head,42,22,s.get,UDim2.new(1,-10,0.5,0)) end
+    local chev
+    if s.subs then
+        chev=btn(head,{Size=UDim2.new(0,26,0,26),AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-(10+swW),0.5,0),BackgroundTransparency=0,BackgroundColor3=C.opt2,
+            Text=">",TextSize=13,TextColor3=C.dim,ZIndex=3}); corner(chev,7)
+        UI.tip(chev,"ตัวเลือกเพิ่มเติม — คลิกเพื่อกาง/พับ (จำค่าไว้)")
+    end
+    local kb
+    if s.act then
+        kb=lbl(head,{Text="",AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-(10+swW+chW),0.5,0),Size=UDim2.new(0,30,0,18),TextSize=10,TextColor3=C.dim,BackgroundTransparency=0,
+            BackgroundColor3=C.opt2,TextXAlignment=Enum.TextXAlignment.Center,ZIndex=3}); corner(kb,5)
+    end
+    local sub
+    if s.subs then
+        sub=mk("Frame",{Name="Sub",Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,LayoutOrder=2,Visible=false},fr)
+        mk("UIListLayout",{Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder},sub)
+        mk("UIPadding",{PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8),PaddingTop=UDim.new(0,2),PaddingBottom=UDim.new(0,10)},sub)
+        UI.curCard=c; s.subs(sub,c); UI.curCard=nil
+    end
+    c.frame=fr; c.home=page; c.ord=fr.LayoutOrder; c.title=title; c.descL=desc; c.sub=sub; c.head=head
+    function c.setOpen(v,temp)
+        if not sub then return end
+        v=v and true or false
+        sub.Visible=v; chev.Rotation=v and 90 or 0; chev.TextColor3=v and C.accent or C.dim
+        if not temp then cfg.ui.open[s.id]=v or nil UI.dirty() end
+    end
+    function c.keyUpd()
+        local k=s.act and UI.keyOf(s.act)
+        if kb then kb.Text=k or "" kb.Visible=k~=nil end
+        c.tipText=(s.tip or (s.title..(s.desc and (" — "..s.desc) or "")))..(k and ("\nปุ่มลัด: "..k) or "")
+    end
+    c.keyUpd()
+    hit.MouseEnter:Connect(function() UI.tipObj=hit UI.tipText=c.tipText UI.tipT=os.clock()+0.5 end)
+    hit.MouseLeave:Connect(function() if UI.tipObj==hit then UI.tipObj=nil end end)
+    hit.Activated:Connect(function()
+        if s.get then
+            if UI.mBy[s.id] then UI.setM(s.id)
+            else s.set(not s.get()) sfx("pop") UI.syncAll() UI.dirty() end
+        elseif sub then c.setOpen(not sub.Visible) sfx("tick") end
+    end)
+    if chev then chev.Activated:Connect(function() c.setOpen(not sub.Visible) sfx("tick") end) end
+    if sub and (cfg.ui.open[s.id] or (s.open and cfg.ui.open[s.id]==nil)) then c.setOpen(true,true) end
+    UI.cards[#UI.cards+1]=c
+    return c
+end
+
+-- ───────── แท็บ ─────────
+local function makePage(id)
+    local page=mk("ScrollingFrame",{Name="Page_"..id,Size=UDim2.new(1,0,1,0),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=5,ScrollBarImageColor3=C.accent,
+        AutomaticCanvasSize=Enum.AutomaticSize.Y,CanvasSize=UDim2.new(0,0,0,0),ScrollingDirection=Enum.ScrollingDirection.Y,Visible=false},content)
+    mk("UIPadding",{PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,16),PaddingTop=UDim.new(0,12),PaddingBottom=UDim.new(0,14)},page)
+    mk("UIListLayout",{Padding=UDim.new(0,8),SortOrder=Enum.SortOrder.LayoutOrder},page)
+    return page
+end
+local function addTab(id,icon,name,tip)
+    local page=makePage(id)
+    local b=btn(side,{Size=UDim2.new(1,0,0,38),LayoutOrder=#UI.tabList+1,BackgroundTransparency=1,BackgroundColor3=C.rowH}); corner(b,9)
+    local ind=mk("Frame",{Size=UDim2.new(0,3,0,20),Position=UDim2.new(0,0,0.5,-10),BackgroundColor3=C.accent,BorderSizePixel=0,Visible=false},b); corner(ind,2)
+    lbl(b,{Text=icon,Position=UDim2.new(0,10,0,0),Size=UDim2.new(0,24,1,0),TextSize=16,TextXAlignment=Enum.TextXAlignment.Center})
+    local nl=lbl(b,{Text=name,Position=UDim2.new(0,40,0,0),Size=UDim2.new(1,-72,1,0),TextSize=12,TextColor3=C.dim,TextTruncate=Enum.TextTruncate.AtEnd})
+    local badge=mk("Frame",{Size=UDim2.new(0,20,0,16),AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-8,0.5,0),BackgroundColor3=C.on,BorderSizePixel=0,Visible=false},b); corner(badge,8)
+    local bl=lbl(badge,{Text="0",Size=UDim2.new(1,0,1,0),TextSize=10,TextColor3=Color3.fromRGB(8,30,18),TextXAlignment=Enum.TextXAlignment.Center})
+    local t={id=id,page=page,btn=b,ind=ind,name=nl,badge=badge,badgeL=bl}
+    UI.tabList[#UI.tabList+1]=t; UI.tabBy[id]=t
+    b.MouseEnter:Connect(function() if UI.curTab~=id or UI.searching then tw(b,0.1,{BackgroundTransparency=0.7}) end end)
+    b.MouseLeave:Connect(function() if UI.curTab~=id or UI.searching then tw(b,0.12,{BackgroundTransparency=1}) end end)
+    b.Activated:Connect(function() sfx("tick") if UI.searching then q.Text="" UI.search("") end UI.go(id) end)
+    UI.tip(b,tip)
+    return page
+end
+UI.resPage=makePage("search"); UI.resPage.Name="Page_search"
+UI.resNote=lbl(UI.resPage,{Text="",Size=UDim2.new(1,0,0,18),TextSize=11,TextColor3=C.accent,LayoutOrder=1})
+function UI.go(id)
+    local t=UI.tabBy[id] or UI.tabBy.dash
+    if UI.capturing then UI.capturing.restore() UI.capturing=nil end
+    UI.curTab=t.id; cfg.ui.tab=t.id; UI.tipObj=nil; UI.resPage.Visible=false
+    if UI.last and UI.hud then UI.hud(UI.last) end   -- เปลี่ยนแท็บแล้วอัปเดตตัวเลขทันที ไม่ต้องรอรอบถัดไป
+    for _,x in ipairs(UI.tabList) do
+        local on=(x==t)
+        x.page.Visible=on; x.ind.Visible=on
+        x.btn.BackgroundTransparency=on and 0.3 or 1
+        x.name.TextColor3=on and C.txt or C.dim
+    end
+    UI.dirty()
+end
+
+-- ───────── ค้นหา: ย้ายการ์ดที่ตรงมาไว้หน้า "ผลค้นหา" (ยังกดใช้ได้ปกติ) · ล้างคำค้น = คืนที่เดิม ─────────
+function UI.search(text)
+    local qs=trim(text):lower()
+    if qs=="" then
+        if UI.searching then
+            for _,c in ipairs(UI.cards) do
+                if c.frame.Parent==UI.resPage then c.frame.Parent=c.home c.frame.LayoutOrder=c.ord end
+                c.setOpen(cfg.ui.open[c.id]==true,true)
+            end
+            UI.searching=false
+            UI.go(UI.prevTab or cfg.ui.tab)
+        end
+        UI.qClr.Visible=false
+        return
+    end
+    UI.qClr.Visible=true
+    if not UI.searching then UI.searching=true UI.prevTab=UI.curTab end
+    local n=0
+    for _,c in ipairs(UI.cards) do
+        if c.kw:find(qs,1,true) then
+            n+=1; c.frame.Parent=UI.resPage; c.frame.LayoutOrder=n+1
+            c.setOpen(c.okw:find(qs,1,true)~=nil,true)
+        elseif c.frame.Parent==UI.resPage then
+            c.frame.Parent=c.home; c.frame.LayoutOrder=c.ord; c.setOpen(cfg.ui.open[c.id]==true,true)
+        end
+    end
+    UI.resNote.Text=n>0 and ("พบ "..n.." รายการที่ตรงกับ \""..trim(text).."\"") or ("ไม่พบ \""..trim(text).."\" — ลองคำอื่น เช่น ขุด / ขาย / เรด้า / ปุ่มลัด")
+    for _,x in ipairs(UI.tabList) do x.page.Visible=false x.ind.Visible=false x.btn.BackgroundTransparency=1 x.name.TextColor3=C.dim end
+    UI.resPage.Visible=true; UI.tipObj=nil
+end
+q:GetPropertyChangedSignal("Text"):Connect(function() UI.search(q.Text) end)
+qClr.Activated:Connect(function() q.Text="" UI.search("") end)
+
+-- ───────── สถานะรวม (ชิปหัว · ป้ายแท็บ · สรุปตอนย่อ) ─────────
+function UI.updMini()
+    local ic={}
+    for _,m in ipairs(UI.M) do if m.get() and m.tab~="radar" and m.tab~="world" or (m.id=="radarFake" and m.get()) then ic[#ic+1]=m.icon end end
+    local h=UI.last
+    local money=h and ("  💰 $"..comma(h.coins)) or ""
+    local hr=(h and h.hrate and h.hrate>0) and string.format("  ⚔ %.1f/วิ",h.hrate) or ""
+    local sumTxt=(#ic>0 and table.concat(ic," ") or "○ หยุดอยู่")
+    miniL.Text=sumTxt..money..hr
+    if pill.Visible then
+        local pct=(h and h.cap and h.cap>0) and string.format("  🎒 %d%%",math.floor(h.bag/h.cap*100)) or ""
+        pill.Text="HZ  "..sumTxt..money..pct..hr
+    end
+end
+function UI.syncAll()
+    for _,p in ipairs(UI.paints) do p() end
+    local per={}
+    for _,m in ipairs(UI.M) do if m.get() then per[m.tab]=(per[m.tab] or 0)+1 end end
+    for _,t in ipairs(UI.tabList) do local n=per[t.id] or 0 t.badge.Visible=n>0 t.badgeL.Text=tostring(n) end
+    local n=activeCount()
+    chipLbl.Text=n>0 and ("● ทำงาน "..n.." ระบบ") or "○ หยุดอยู่"
+    chipLbl.TextColor3=n>0 and C.on or C.dim
+    UI.updMini()
+end
+
+-- ───────── ตัวช่วยสร้างรายการระดับ/ขนาด (สี+ชื่อไทยตามเกม) ─────────
+local function tierItems()
+    local t={} for i,n in ipairs(TIERS) do t[i]={PK.thR(n),TCOL[n],UI.gemIcon(n)} end return t
+end
+local function sizeItems()
+    local t={} for i,n in ipairs(PK.SIZETH) do t[i]={n,C.accent} end return t
+end
+
+-- ═════════════ 📊 ภาพรวม ═════════════
+local P=addTab("dash","📊","ภาพรวม","สถานะสด · สวิตช์ด่วน · บันทึกกิจกรรม")
+UI.pageHead(P,"📊","ภาพรวม","สถานะสดของตัวละคร · สวิตช์ด่วน · บันทึกกิจกรรม")
+do
+    local r=UI.row2(P,34)
+    UI.half(r,"⛔ หยุดทุกระบบ",Color3.fromRGB(150,45,60),function() UI.panic() end,"ปิดสวิตช์ที่ลงมือทำทั้งหมด (ขุด/เก็บ/ขาย/อัพ/สวน/ตัวเรา/สอยเรด้า/เรด้าฟรี) — ปุ่มลัดฉุกเฉิน")
+    UI.half(r,"▶ เปิดชุดฟาร์ม (ขุด+เก็บ+ขาย)",C.buy,function() UI.farmOn() end,"เปิด ขุดออโต้+ตีแรร์ / เก็บแรร์ออโต้ / ขายออโต้ พร้อมกันในคลิกเดียว")
+end
+UI.section(P,"สวิตช์ด่วน — คลิก หรือกดปุ่มลัด")
+do
+    local g=UI.grid(P,4,48,8)
+    for i,id in ipairs({"autodig","autocollect","autosell","autoup","garden","esp","selfOn","radarSnipe"}) do
+        local m=UI.mBy[id]
+        local t=mk("Frame",{BackgroundColor3=C.row,BorderSizePixel=0,LayoutOrder=i},g); corner(t,10)
+        local st=stroke(t,C.edge,0.8)
+        lbl(t,{Text=m.icon,Position=UDim2.new(0,8,0,0),Size=UDim2.new(0,28,1,0),TextSize=20,TextXAlignment=Enum.TextXAlignment.Center})
+        lbl(t,{Text=m.short or m.name,Position=UDim2.new(0,40,0,7),Size=UDim2.new(1,-44,0,16),TextSize=12,TextTruncate=Enum.TextTruncate.AtEnd})
+        local sl=lbl(t,{Text="ปิด",Position=UDim2.new(0,40,0,25),Size=UDim2.new(1,-44,0,14),TextSize=10,TextColor3=C.dim,TextTruncate=Enum.TextTruncate.AtEnd})
+        local h=btn(t,{Size=UDim2.new(1,0,1,0)})
+        h.Activated:Connect(function() UI.setM(id) end)
+        h.MouseEnter:Connect(function() UI.tipObj=h UI.tipText=m.name.." — "..m.desc..(UI.keyOf(id) and ("\nปุ่มลัด: "..UI.keyOf(id)) or "") UI.tipT=os.clock()+0.5 end)
+        h.MouseLeave:Connect(function() if UI.tipObj==h then UI.tipObj=nil end end)
+        UI.paints[#UI.paints+1]=function()
+            local on=m.get() and true or false
+            local k=UI.keyOf(id)
+            sl.Text=(on and "● เปิด" or "○ ปิด")..(k and ("  "..k) or "")
+            sl.TextColor3=on and C.on or C.dim
+            st.Color=on and C.on or C.edge; st.Transparency=on and 0.25 or 0.8
+            t.BackgroundColor3=on and C.rowH or C.row
+        end
+    end
+end
+
+UI.section(P,"สถานะตอนนี้")
+UI.w={}
+do
+    local g=UI.grid(P,3,64,8)
+    local function tile(i,key,icon,title,bar,img)   -- img=rbxassetid ไอคอนเกมจริงแทน emoji
+        local t=mk("Frame",{BackgroundColor3=C.row,BorderSizePixel=0,LayoutOrder=i},g); corner(t,10); stroke(t,C.edge,0.85)
+        if img then mk("ImageLabel",{BackgroundTransparency=1,Image=img,Size=UDim2.new(0,13,0,13),Position=UDim2.new(0,10,0,6)},t) end
+        lbl(t,{Text=(img and "" or (icon.." "))..title,Position=UDim2.new(0,img and 27 or 10,0,6),Size=UDim2.new(1,img and -31 or -14,0,14),TextSize=10,TextColor3=C.dim})
+        local v=lbl(t,{Text="—",Position=UDim2.new(0,10,0,21),Size=UDim2.new(1,-14,0,20),TextSize=15,Font=Enum.Font.GothamBold,TextTruncate=Enum.TextTruncate.AtEnd})
+        local s=lbl(t,{Text="",Position=UDim2.new(0,10,0,43),Size=UDim2.new(1,-14,0,14),TextSize=10,TextColor3=C.dim,TextTruncate=Enum.TextTruncate.AtEnd})
+        local w={v=v,s=s}
+        if bar then
+            local tr=mk("Frame",{Size=UDim2.new(1,-20,0,4),Position=UDim2.new(0,10,1,-8),BackgroundColor3=C.off,BorderSizePixel=0},t); corner(tr,2)
+            w.bar=mk("Frame",{Size=UDim2.new(0,0,1,0),BackgroundColor3=C.on,BorderSizePixel=0},tr); corner(w.bar,2)
+        end
+        UI.w[key]=w
+    end
+    tile(1,"money",nil,"เงิน",nil,UI.icon.coin)
+    tile(2,"bag","🎒","กระเป๋า",true)
+    tile(3,"pick","⛏","พลั่ว")
+    tile(4,"warm","🌡","ความอบอุ่น")
+    tile(5,"hit","⚔","หมัดแรร์ / วิ")
+    tile(6,"reach","📏","ระยะ ขุด / E")
+    tile(7,"got","📥","เก็บได้ (เซสชันนี้)")
+    tile(8,"sold","💵","ขายได้ (เซสชันนี้)")
+    tile(9,"mtn","🏔","ภูเขา / รอบหมุน")
+    tile(10,"misc","🌦","สภาพอากาศ")
+    tile(11,"dry","🎲","DryStreak (โชคแห้ง)")
+    tile(12,"time","⏱","เวลาที่รันสคริปต์")
+end
+
+UI.section(P,"แรร์ในเซิร์ฟเวอร์ — คลิกชิปเพื่อกรองระดับที่แสดงบนเรดาร์")
+UI.tierC={}
+do
+    local g=UI.grid(P,3,44,8)
+    local function chip(i,key,name,col)
+        local b=btn(g,{BackgroundTransparency=0,BackgroundColor3=C.row,LayoutOrder=i}); corner(b,9)
+        local st=stroke(b,col,0.75); st.Thickness=1.5
+        local im=UI.gemIcon(key)
+        if im then mk("ImageLabel",{BackgroundTransparency=1,Image=im,Size=UDim2.new(0,14,0,14),Position=UDim2.new(0,7,0,4)},b) end
+        local nl=lbl(b,{Text=name,Position=UDim2.new(0,im and 26 or 10,0,5),Size=UDim2.new(1,im and -30 or -14,0,14),TextSize=11,TextColor3=col,TextTruncate=Enum.TextTruncate.AtEnd})
+        local vl=lbl(b,{Text="0",Position=UDim2.new(0,10,0,20),Size=UDim2.new(1,-14,0,20),TextSize=16,Font=Enum.Font.GothamBold})
+        UI.tierC[key]={b=b,st=st,nl=nl,vl=vl,idx=i}
+        return b
+    end
+    for i,t in ipairs(TIERS) do
+        local b=chip(i,t,PK.thR(t),TCOL[t] or C.accent)
+        b.Activated:Connect(function() cfg.minTier=i sfx("tick") applyFilter() UI.syncAll() UI.dirty() end)
+        UI.tip(b,"คลิก = แสดงเรดาร์เฉพาะระดับ "..PK.thR(t).." ขึ้นไป (ตั้งใน ‘เรดาร์ → ระดับ/ขนาดที่แสดง’ ได้เหมือนกัน)")
+    end
+    chip(#TIERS+1,"?","อื่นๆ",C.dim)
+    UI.paints[#UI.paints+1]=function()
+        for i,t in ipairs(TIERS) do
+            local x=UI.tierC[t]
+            if x then local on=(cfg.minTier==i) x.st.Transparency=on and 0.05 or 0.75 x.b.BackgroundColor3=on and C.rowH or C.row end
+        end
+    end
+end
+function UI.counts(count,oc)
+    for i,t in ipairs(TIERS) do local x=UI.tierC[t] if x then x.vl.Text=tostring(count[t] or 0) elseif count[t] then oc+=count[t] end end
+    local o=UI.tierC["?"]; if o then o.vl.Text=tostring(oc) end
+end
+
+UI.section(P,"บันทึกกิจกรรม")
+do
+    local box=mk("Frame",{Size=UDim2.new(1,0,0,240),BackgroundColor3=C.deep,BorderSizePixel=0,LayoutOrder=nxt(P)},P); corner(box,10); stroke(box,C.edge,0.85)
+    local sc=mk("ScrollingFrame",{Size=UDim2.new(1,-8,1,-8),Position=UDim2.new(0,4,0,4),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=4,ScrollBarImageColor3=C.accent,
+        AutomaticCanvasSize=Enum.AutomaticSize.Y,CanvasSize=UDim2.new(0,0,0,0),ScrollingDirection=Enum.ScrollingDirection.Y},box)
+    mk("UIListLayout",{Padding=UDim.new(0,1),SortOrder=Enum.SortOrder.LayoutOrder},sc)
+    mk("UIPadding",{PaddingLeft=UDim.new(0,6),PaddingRight=UDim.new(0,8),PaddingTop=UDim.new(0,2)},sc)
+    local lines={}; UI.logSc=sc
+    UI.logRender=function(e)
+        local near=true
+        pcall(function() near=sc.CanvasPosition.Y>=sc.AbsoluteCanvasSize.Y-sc.AbsoluteWindowSize.Y-40 end)
+        local l=lbl(sc,{Text=string.format('<font color="#6b7396">%s</font>  <font color="#%s">%s</font>',e.t,hex(e.c or C.txt),esc(e.s)),RichText=true,TextWrapped=true,
+            Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,TextSize=11,LayoutOrder=nxt(sc)})
+        lines[#lines+1]=l
+        while #lines>120 do local o=table.remove(lines,1) pcall(function() o:Destroy() end) end
+        if near then task.defer(function() pcall(function() sc.CanvasPosition=Vector2.new(0,1e6) end) end) end
+    end
+    for _,e in ipairs(UI.logs) do UI.logRender(e) end   -- ข้อความที่มาก่อนสร้างแผง
+    local r=UI.row2(P,28)
+    UI.half(r,"🧹 ล้างบันทึก",nil,function() for _,l in ipairs(lines) do pcall(function() l:Destroy() end) end lines={} UI.logs={} end)
+    UI.half(r,"📋 คัดลอกทั้งหมด",nil,function()
+        local t={} for _,e in ipairs(UI.logs) do t[#t+1]=e.t.." "..e.s end
+        if setclipboard then pcall(setclipboard,table.concat(t,"\n")) feedAdd("📋 คัดลอกบันทึก "..#t.." บรรทัดแล้ว",C.good) else feedAdd("❌ executor ไม่มี setclipboard",C.bad) end
+    end,"คัดลอกบันทึกกิจกรรมไปคลิปบอร์ด (ใช้ส่งให้ช่วยดูปัญหา)")
+end
+
+-- ═════════════ ⛏ ฟาร์ม ═════════════
+P=addTab("farm","⛏","ฟาร์ม","ขุด · ตีแรร์ · เก็บ · ขาย · อัพเกรด · สวน")
+UI.pageHead(P,"⛏","ฟาร์มอัตโนมัติ","ขุด → ตีแรร์ (E) → เก็บ → ขาย → อัพเกรด → ลงสวน ทำเองทั้งหมดขณะ AFK")
+UI.section(P,"ขุดและตีแรร์")
+do
+    local m=UI.mBy.autodig
+    UI.card(P,{id="autodig",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="autodig",kw="dig mine e hit ขุด ตี แรร์",
+        tip="ยิงขุดดินรอบตัวและที่ตำแหน่งแรร์ฝังของเรา แล้วกด E (Pickup prompt) ตีแรร์ที่โผล่จนแตก + เก็บให้",
+        subs=function(sub)
+            UI.opt(sub,"เล็งแรร์ฝังใต้ดิน (ของเราเท่านั้น)","smartDig",nil,"ยิงขุดที่ตำแหน่งแรร์ฝังที่ Owner = เรา ก่อนขุดทั่วไป")
+            UI.opt(sub,"⚔ ขุดหลายเป้าพร้อมกัน (AoE ≤10)","aoeDig",nil,"ยิงขุดแรร์ฝังได้สูงสุด 10 เป้า/รอบ — เรียงแรร์สูงก่อน แล้วใกล้ก่อน")
+            UI.opt(sub,"🔥 Turbo ขุดถี่ขึ้น ~3x (เสี่ยง)","turboDig",nil,"ยิงถี่กว่า cooldown ~3 เท่า + สุ่มจังหวะ — server คุมต่อหมัดอยู่แล้ว เสี่ยงโดนจับ ใช้เมื่อจำเป็น")
+            UI.opt(sub,"🅴 กด E ตีแรร์ที่ขุดโผล่ให้เอง","hitE",nil,"กด Pickup prompt ของแรร์ที่ขุดโผล่ (= หมัดตีแรร์) จนแตก แล้วกดเก็บ")
+            UI.opt(sub,"🔭 ปลดแรร์ไกลเกินระยะ E ด้วย","digFar",nil,"ปกติขุดเฉพาะในระยะที่กด E ถึง — เปิด = ขุดเต็มระยะที่ server รับ (แรร์ที่โผล่ไกลต้องเดินไปเก็บเอง)")
+            local g=UI.group(sub,"🎯 ขุด/ตีเฉพาะแรร์ ≥ ระดับ")
+            UI.chips(g,tierItems(),function() return cfg.botTier end,function(i) cfg.botTier=i buriedT=0 end,4,26)
+        end})
+    m=UI.mBy.autocollect
+    UI.card(P,{id="autocollect",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="autocollect",kw="collect pickup เก็บ",
+        subs=function(sub)
+            UI.opt(sub,"เช็คระยะ prompt ก่อนกด","colRange",nil,"กดเฉพาะแรร์ที่อยู่ในระยะ prompt (ปิด = กดทุกตัวที่เห็น ไม่จำกัดระยะ)")
+            UI.opt(sub,"⚡ เก็บทันที (Hold = 0)","instaPick",nil,"ตั้ง HoldDuration ของ prompt เป็น 0 (ทริคเดียวกับ pass Instant Mine) — ฝั่งเราเท่านั้น")
+        end})
+end
+UI.section(P,"ขาย · อัพเกรด · สวน")
+do
+    local m=UI.mBy.autosell
+    UI.card(P,{id="autosell",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="autosell",kw="sell ขาย",
+        subs=function(sub)
+            UI.opt(sub,"📡 ขายระยะไกล — ไม่วาป (ยืนยันในเกมแล้ว)","remoteSell",nil,"ยิง RequestSell ตรงๆ ไม่ต้องวาปไปร้าน และขายก่อนเต็มที่ ≥92% (ปิด = วาปไปขายตอนเต็มแล้วกลับจุดเดิม)")
+            UI.note(sub,"ปุ่มขายมือ/รายการกระเป๋าอยู่แท็บ ‘กระเป๋า’ · ชิ้นติด ⭐ จะไม่ถูกขาย")
+        end})
+    m=UI.mBy.autoup
+    local cu=UI.card(P,{id="autoup",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="autoup",kw="upgrade pickaxe potion อัพเกรด พลั่ว ยา",
+        subs=function(sub)
+            UI.opt(sub,"🎒 ซื้อกระเป๋าใหญ่ (Carry)","upCarry",nil,"ซื้อแพ็กใหญ่สุดที่เงินพอ (ราคาจริงจาก UpgradeState)")
+            UI.opt(sub,"🔥 ซื้อความอบอุ่น (ขึ้นสูงได้)","upWarm",nil,"อุ่นขึ้น = ขึ้นที่สูง/หนาวได้ไกลขึ้น (สูตรเดียวกับ FreezeClient)")
+            UI.opt(sub,"💸 ซื้อทันทีที่ราคาอัพเดต","upSoon",nil,"ซื้อทุกครั้งที่ server ส่ง UpgradeState ใหม่ (ถี่ 1.2s) แทนรอ poll")
+            UI.opt(sub,"⛏ ซื้อ+ใส่พลั่วที่ดีสุดที่เงินพอ","upPick",nil,"อ่านราคา/พลัง/รัศมีจริงจาก PickaxeData · เก็บเงินให้พลั่วถัดไปก่อน (งดซื้อกระเป๋าเมื่อเงิน ≥25% ของราคาพลั่ว)")
+            UI.opt(sub,"🧪 กินยา (Mining ตามเวลา · Luck/Coins ทุก 15 นาที)","autoPot",nil,"ใช้ยาที่มีในคลัง (ไม่ซื้อให้) — Mining ใช้เมื่อหมดฤทธิ์ · Luck/Coins เว้น 15 นาที")
+        end})
+    PK.upLbl=cu.descL
+    m=UI.mBy.garden
+    local cg=UI.card(P,{id="garden",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="garden",kw="garden luck สวน โชค",iconImg=UI.gdIcon("clover"),
+        subs=function(sub)
+            UI.opt(sub,"🔄 สวนเต็ม: ถอนชิ้นโชคต่ำ → วางชิ้นดีกว่า","gdSwap",nil,"ชิ้นในกระเป๋าที่โชคสูงกว่าตัวอ่อนสุดในสวน ≥20% จะสลับเข้าไป")
+            UI.opt(sub,"⭐ เก็บชิ้นโชคสูงกันขาย (ขุดเจอ = เก็บไว้ลงสวน)","gdKeep",nil,"ติด ⭐ ชิ้นที่คุ้มลงสวนอัตโนมัติ เพื่อไม่ให้ขายทิ้ง")
+            UI.opt(sub,"🌱 ชิ้น ⭐ ครบ → วาปไปลงสวนแล้วกลับเอง","gdTrip",nil,"สะสมชิ้น ⭐ ≥3 และอยู่ไกลสวน → TeleportPlot → วาง/สลับจนหมด → กลับจุดขุด")
+            local g=UI.group(sub,"💎 วางเฉพาะแรร์ ≥ ระดับ")
+            UI.chips(g,tierItems(),function() return cfg.sub.gdTier end,function(i) cfg.sub.gdTier=i end,4,26)
+        end})
+    cfg._gLbl=cg.descL
+end
+
+-- ═════════════ 🛰 เรดาร์ ═════════════
+P=addTab("radar","🛰","เรดาร์","ESP แรร์/ผู้เล่น/รูน · เรด้า · เจาะจงชื่อ")
+UI.pageHead(P,"🛰","เรดาร์ & ESP","เห็นแรร์/ผู้เล่น/รูน ทะลุกำแพง · เรด้าซื้อ/เดินฟรี · เจาะจงชื่อแรร์")
+UI.section(P,"เรดาร์แรร์")
+do
+    local m=UI.mBy.esp
+    UI.card(P,{id="esp",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="esp",kw="esp radar เรดาร์ แรร์ highlight",iconImg=UI.gemIcon("Zenith"),
+        subs=function(sub)
+            UI.opt(sub,"Highlight ทรงแรร์","espHl",nil,"ไฮไลต์ตัวโมเดลจริง (สูงสุด 24 ตัวที่ใกล้สุด — เพดาน Highlight ของ Roblox)")
+            UI.opt(sub,"ป้ายชื่อ + ระยะ","espName",nil,"ป้ายเหนือแรร์: ชื่อ/ระดับ/น้ำหนัก/ระยะ")
+            UI.opt(sub,"❤ HP ตัวที่โดนขุด","hpBar",nil,"โชว์เลือดแรร์ที่กำลังโดนตี")
+            UI.opt(sub,"🍀 โชว์ค่าโชคชิ้นนั้นบนป้าย","espLuck",nil,"ค่า effectiveLuck ของชิ้นนั้น (ใช้ตัดสินใจลงสวน)")
+            UI.opt(sub,"📡 มาร์กไกล (ตำแหน่งทุกจุด ไกลไม่จำกัด)","espFar",nil,"วาดป้ายจากพิกัดที่ server ประกาศ แม้โมเดลยังไม่ stream เข้ามา (สูงสุด 80 ป้าย)")
+            UI.opt(sub,"🪨 ESP หินก้อนใหญ่ (ค่าเดียวกันเรด้าหิน)","espBld",nil,"ชื่อ/พลั่วที่ต้องใช้/เลือด/ฝังอยู่ — เทียบกับพลั่วที่ถืออยู่")
+            UI.opt(sub,"🛰 ดึงแมพไกลเข้าเครื่อง (หนัก/อาจกระตุก)","streamFar",nil,"RequestStreamAroundAsync ทั่วแมพเพื่อเห็นแรร์ไกล — กินเครื่องมาก เปิดเมื่อจำเป็น")
+        end})
+    UI.card(P,{id="espfilter",icon="🏷",col=C.dim,title="ระดับ / ขนาดที่แสดง",desc="กรองแรร์ที่โชว์บนเรดาร์ (ใช้กับ ESP ทุกแบบ)",open=true,kw="filter tier size กรอง ระดับ ขนาด",
+        subs=function(sub)
+            local g=UI.group(sub,"แสดงแรร์ระดับ")
+            UI.chips(g,tierItems(),function() return cfg.minTier end,function(i) cfg.minTier=i applyFilter() end,4,26)
+            UI.opt(sub,"⬆ โชว์ ≥ ระดับที่เลือก (ไม่ใช่แค่เท่ากับ)","espAbove",applyFilter,"เปิด = ระดับที่เลือกขึ้นไป · ปิด = เฉพาะระดับนั้นระดับเดียว")
+            local g2=UI.group(sub,"📏 โชว์ขนาด ≥ (ชั้นขนาดตามเกม)")
+            UI.chips(g2,sizeItems(),function() return cfg.sub.espSize or 1 end,function(i) cfg.sub.espSize=i applyFilter() end,5,26)
+        end})
+    m=UI.mBy.players
+    UI.card(P,{id="players",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="players",kw="player ผู้เล่น",
+        subs=function(sub)
+            UI.opt(sub,"Highlight ตัวละคร","pHl"); UI.opt(sub,"ป้ายชื่อ + ระยะ","pName"); UI.opt(sub,"แท็ก ⛏ กำลังขุด","pDig",nil,"โชว์เมื่อผู้เล่นนั้นขุดอยู่ใกล้ (จับจาก DigEffect)")
+        end})
+    m=UI.mBy.runes
+    UI.card(P,{id="runes",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="runes",kw="rune รูน",
+        subs=function(sub) UI.opt(sub,"Highlight รูน","runeHl"); UI.opt(sub,"ป้ายชื่อรูน + ระยะ","runeLbl") end})
+end
+
+UI.section(P,"เจาะจงชื่อแรร์")
+do
+    local m=UI.mBy.pickMode
+    local cp
+    cp=UI.card(P,{id="pickMode",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="pickMode",kw="pick name เจาะจง ชื่อ ดัชนี",iconImg=UI.gdIcon("crystal"),
+        tip="เลือกชื่อแรร์จากดัชนีเกม (398 ชื่อ) — ESP/ขุด/เก็บ เฉพาะชื่อที่เลือก · ชื่อที่เลือกจะติด ⭐ กันขาย",
+        subs=function(sub)
+            local top=mk("Frame",{Size=UDim2.new(1,0,0,28),BackgroundTransparency=1,LayoutOrder=nxt(sub)},sub)
+            local qq=mk("TextBox",{Size=UDim2.new(1,-66,1,0),BackgroundColor3=C.opt,Text="",PlaceholderText="🔍 พิมพ์ชื่อแรร์ (ไทย/อังกฤษ)…",PlaceholderColor3=C.dim,TextSize=11,TextColor3=C.txt,
+                TextXAlignment=Enum.TextXAlignment.Left,ClearTextOnFocus=false,BorderSizePixel=0},top); tfont(qq); corner(qq,7)
+            mk("UIPadding",{PaddingLeft=UDim.new(0,8)},qq)
+            local clr=btn(top,{Size=UDim2.new(0,58,1,0),Position=UDim2.new(1,-58,0,0),BackgroundTransparency=0,BackgroundColor3=C.off,Text="ล้างที่เลือก",TextSize=10}); corner(clr,7)
+            hoverFx(clr,clr,C.off,C.optH)
+            local st2=UI.note(sub,"—")
+            local lst=mk("ScrollingFrame",{Size=UDim2.new(1,0,0,230),BackgroundColor3=C.deep,BorderSizePixel=0,ScrollBarThickness=4,ScrollBarImageColor3=C.accent,
+                AutomaticCanvasSize=Enum.AutomaticSize.Y,CanvasSize=UDim2.new(0,0,0,0),LayoutOrder=nxt(sub)},sub); corner(lst,8)
+            mk("UIListLayout",{Padding=UDim.new(0,2),SortOrder=Enum.SortOrder.LayoutOrder},lst)
+            mk("UIPadding",{PaddingLeft=UDim.new(0,4),PaddingRight=UDim.new(0,6),PaddingTop=UDim.new(0,4),PaddingBottom=UDim.new(0,4)},lst)
+            local rowBtns={}
+            local function nPicked() local n=0 for _ in pairs(picks) do n+=1 end return n end
+            function UI.paintPick()
+                cp.descL.Text=("%s · เลือกไว้ %d ชื่อ"):format(cfg.pickMode and "เปิด" or "ปิด",nPicked())
+            end
+            local function paintRow(nm,b,cnt)
+                local on=picks[nm]==true
+                b.BackgroundColor3=on and C.buy or C.opt
+                b.Text=(on and "✓ " or "")..PK.dispName(nm)..((cnt or 0)>0 and ("  ×"..cnt) or "")..(PK.ownedCard(nm) and "  ✅" or "  🔒")
+            end
+            local function rebuild(filter)
+                for _,b in ipairs(lst:GetChildren()) do if b:IsA("TextButton") then b:Destroy() end end
+                rowBtns={}
+                local arr={}
+                for nm in pairs(PK.nameRarity) do
+                    local pretty=nm:gsub("(%l)(%u)","%1 %2"):lower()
+                    local th=(PK.thNames[nm] or ""):lower()
+                    if not filter or filter=="" or nm:lower():find(filter,1,true) or pretty:find(filter,1,true) or th:find(filter,1,true) then arr[#arr+1]=nm end
+                end
+                table.sort(arr,function(a,b)
+                    local ra,rb=rIdx(PK.nameRarity[a]),rIdx(PK.nameRarity[b])
+                    if ra~=rb then return ra>rb end
+                    return a<b
+                end)
+                local cc=PK.liveCounts()
+                for i,nm in ipairs(arr) do
+                    local b=btn(lst,{Size=UDim2.new(1,0,0,24),BackgroundTransparency=0,BackgroundColor3=C.opt,Text="",TextSize=11,TextColor3=TCOL[PK.nameRarity[nm]] or C.txt,
+                        TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=i}); corner(b,6)
+                    mk("UIPadding",{PaddingLeft=UDim.new(0,8)},b)
+                    b.MouseEnter:Connect(function() if not picks[nm] then tw(b,0.1,{BackgroundColor3=C.optH}) end end)
+                    b.MouseLeave:Connect(function() tw(b,0.12,{BackgroundColor3=picks[nm] and C.buy or C.opt}) end)
+                    b.Activated:Connect(function()
+                        picks[nm]=(not picks[nm]) or nil
+                        sfx("tick"); paintRow(nm,b,PK.liveCounts()[nm]); UI.paintPick(); applyFilter(); UI.dirty()
+                    end)
+                    paintRow(nm,b,cc[nm]); rowBtns[nm]=b
+                end
+                local own=0 for nm in pairs(PK.nameRarity) do if PK.ownedCard(nm) then own+=1 end end
+                st2.Text=("รวม %d ชื่อ · ✅ มีแล้ว %d · ⭐ กันไว้ %d (ไม่ขาย · สวนวางให้)"):format(#arr,own,nPicked())
+            end
+            qq:GetPropertyChangedSignal("Text"):Connect(function() rebuild(trim(qq.Text):lower()) end)
+            clr.Activated:Connect(function() for k in pairs(picks) do picks[k]=nil end UI.paintPick() sfx("tick") applyFilter() rebuild(trim(qq.Text):lower()) UI.dirty() end)
+            sub:GetPropertyChangedSignal("Visible"):Connect(function() if sub.Visible then PK.loadNames() PK.localizeNames() rebuild(trim(qq.Text):lower()) end end)
+            task.spawn(function() while alive() do
+                if sub.Visible then
+                    PK.loadNames()
+                    if PK.localizeNames() then rebuild(trim(qq.Text):lower())
+                    else local cc=PK.liveCounts() for nm,b in pairs(rowBtns) do paintRow(nm,b,cc[nm]) end end
+                end
+                task.wait(4)
+            end end)
+        end})
+    UI.paintPick()
+end
+
+UI.section(P,"เรด้า")
+do
+    local m=UI.mBy.radarSnipe
+    UI.card(P,{id="radarSnipe",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="radarSnipe",kw="radar snipe buy เรด้า ซื้อ สต็อก",iconImg=UI.radarIcon("ZenithRadar"),
+        tip="ShopState ของเกม push ทุก ~1 วินาที — สต็อกมา + เงินพอ = ยิง BuyRadar ทันที (ติ๊กเลือกชนิดที่จะสอย)",
+        subs=function(sub)
+            cfg._rLab={}; PK.RBASE={}
+            cfg._rLab.ZenithRadar=UI.opt(sub,"ซีนิธ · 1T","snZenith",nil,"เรด้าซีนิธ (1T · สต็อกสูงสุด 1) — จับแรร์มิธิค/เอ็กโซติก/ซีนิธ",UI.radarIcon("ZenithRadar"))
+            cfg._rLab.MeteorRadar=UI.opt(sub,"อุกกาบาต · 150M","snMeteor",nil,"เรด้าอุกกาบาต (150M · สต็อกสูงสุด 2) — แจ้งจุดฝังพิเศษส่วนตัวของเรา",UI.radarIcon("MeteorRadar"))
+            cfg._rLab.BoulderRadar=UI.opt(sub,"หินใหญ่ · 12M","snBoulder",nil,"เรด้าหินขนาดใหญ่ (12M · สต็อกสูงสุด 4) — หินมุเทชันการันตี",UI.radarIcon("BoulderRadar"))
+            cfg._rLab.RuneRadar=UI.opt(sub,"รูน · 35M","snRune",nil,"เรด้ารูน (35M · สต็อกสูงสุด 3)",UI.radarIcon("RuneRadar"))
+            cfg._rLab.RarityRadar=UI.opt(sub,"ความหายาก · 3M","snRarity",nil,"เรด้าความหายาก (3M · สต็อกสูงสุด 6)",UI.radarIcon("RarityRadar"))
+            cfg._rLab.CrystalRadar=UI.opt(sub,"คริสตัล · 300K","snCrystal",nil,"เรด้าคริสตัล (300K · สต็อกสูงสุด 10)",UI.radarIcon("CrystalRadar"))
+            for id,l in pairs(cfg._rLab) do PK.RBASE[id]=l.Text end
+        end})
+    m=UI.mBy.radarFake
+    UI.card(P,{id="radarFake",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="radarFake",kw="radar fake เรด้า ฟรี hud",
+        tip="เปิด HUD เรด้าโดยไม่ถือจริง = TimeLeft ไม่ไหม้ + พลั่วยังถืออยู่ = ขุดได้ตลอด (ต้องมีเรด้าในกระเป๋า)",
+        subs=function(sub)
+            UI.opt(sub,"📡 ถือเรด้าตลอด (scan + power จริง)","snRadarHold",nil,"ถือเรด้าจริงเพื่อให้ scan/power ทำงาน (เวลาจะไหม้ตอนถือ)")
+            UI.opt(sub,"🔒 ล็อกเวลา 60 นาทีบน HUD","snRadarPin",nil,"สลับ TimeLeft 3600/3601 ให้ตัวเลขบน HUD ค้าง (เฉพาะฝั่งเรา — เวลาจริงที่ server ไม่เปลี่ยน)")
+        end})
+end
+
+-- ═════════════ 🧍 ตัวเรา ═════════════
+P=addTab("self","🧍","ตัวเรา","วิ่งไว · เจ็ทแพ็ค · สกิล · กันตายหนาว")
+UI.pageHead(P,"🧍","ตัวเรา","ปรับตัวละคร: วิ่งไว / เจ็ทแพ็ค / สกิลออโต้ และระบบกันตาย")
+UI.section(P,"ความสามารถตัวละคร")
+do
+    local m=UI.mBy.selfOn
+    UI.card(P,{id="selfOn",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="selfOn",kw="speed jet skill วิ่ง เจ็ท สกิล เคียว ค้างคาว",open=true,
+        subs=function(sub)
+            UI.opt(sub,"🏃 วิ่งไว 1.5x (ปลอดภัย)","spd15",nil,"WalkSpeed 24 — ฟิสิกส์ฝั่งเรา ปิด = คืนค่าเดิมที่จำไว้")
+            UI.opt(sub,"🏃💨 วิ่งไว 2x (= pass จริง)","spd2",nil,"WalkSpeed 32 เท่า Pass_Speed2x ของเกม (ถ้าเปิดคู่ 1.5x จะใช้ 2x)")
+            UI.opt(sub,"🚀 เจ็ทแพ็ค = ตัวโชว์ร้าน (ทดลอง)","jet",nil,"โคลนโมเดลเจ็ทแพ็คตัวโชว์เข้าตัวให้ JetpackClient ของเกมหยิบไปใช้ + น้ำมันไม่จำกัด (กดโดดค้างกลางอากาศ)")
+            UI.opt(sub,"⚔️ สกิลเคียว/ค้างคาวออโต้ (ถ้ามีของ)","skillAuto",nil,"ยิง Shatter/Swarm เมื่อถืออยู่และ cooldown พร้อม (อ่านจาก attr ที่ server ตั้ง ไม่ยิงมั่ว)")
+            UI.note(sub,"ต้องเปิดสวิตช์หลักของการ์ดนี้ก่อน ตัวเลือกข้างบนถึงจะทำงาน (รวมระบบกันตกเหวตอนวิ่งไว)")
+        end})
+end
+UI.section(P,"ความปลอดภัย")
+do
+    UI.card(P,{id="coldHome",icon="🥶",col=Color3.fromRGB(120,190,255),title="กันตายหนาว → วาปกลับฐาน",desc="หนาวจัด + เลือด <45% = TeleportHome อัตโนมัติ",
+        get=function() return cfg.sub.coldHome end,set=function(v) cfg.sub.coldHome=v end,kw="cold home freeze หนาว วาป ฐาน",
+        tip="ใช้สูตรหนาวเดียวกับ FreezeClient — ทำงานเมื่อเปิดขุด/เก็บ/ตัวเรา อย่างใดอย่างหนึ่ง · วาปแล้วต้องเดินกลับจุดขุดเอง"})
+    UI.card(P,{id="antiidle",icon="🛡",col=C.on,title="กันหลุด (Anti-idle)",desc="ทำงานอัตโนมัติ — กันเกมเด้งออกเมื่อ AFK 19 นาที",kw="afk idle kick หลุด",open=true,
+        subs=function(sub)
+            UI.note(sub,"เกมมี AntiIdleClient ที่ยิง rejoin เมื่อไม่มี input 1140 วินาที — สคริปต์ส่งสัญญาณ WindowFocused ให้เกมทุก 3 นาที (ไม่มี argument) และใช้ VirtualUser กัน kick 20 นาทีของ Roblox ด้วย")
+        end})
+end
+
+-- ═════════════ 🌍 โลก ═════════════
+P=addTab("world","🌍","โลก","เมเทียร์ · ดาวตก · ภูเขา")
+UI.pageHead(P,"🌍","โลก & อีเวนต์","เมเทียร์/ดาวตกบนแมพ · เลือกภูเขา · เวลาหมุนภูเขา")
+UI.section(P,"อีเวนต์")
+do
+    local m=UI.mBy.met
+    UI.card(P,{id="met",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="met",kw="meteor star อุกกาบาต ดาวตก",
+        subs=function(sub)
+            UI.opt(sub,"ป้ายจุดตกบนแมพ","metMark",nil,"ปักป้ายจุดเมเทียร์/ดาวตกบนโลก (เห็นทะลุกำแพง)")
+            UI.opt(sub,"แจ้งเตือนในบันทึก/มุมจอ","metFeed",nil,"แจ้งตอนเมเทียร์กำลังตก/ตกแล้ว (โซนโชค x5)")
+        end})
+end
+UI.section(P,"ภูเขา")
+do
+    UI.mtCard=UI.card(P,{id="mtn",icon="🏔",col=Color3.fromRGB(160,220,255),title="ภูเขา — ขึ้นดีสุดอัตโนมัติ",desc="ภูเขา: —",open=true,
+        get=function() return cfg.sub.mtnAuto end,set=function(v) cfg.sub.mtnAuto=v end,kw="mountain ภูเขา หมุน rotation",
+        tip="สวิตช์ = ขึ้นภูเขาที่ดีที่สุดให้อัตโนมัติเมื่อมีโควตาสวิตช์ (MountainSwitches) · คลิกชื่อภูเขาด้านล่างเพื่อเลือกเอง",
+        subs=function(sub)
+            UI.mtInfo=UI.note(sub,"สวิตช์: — · หมุนใน: —",C.accent)
+            local lst=mk("ScrollingFrame",{Size=UDim2.new(1,0,0,200),BackgroundColor3=C.deep,BorderSizePixel=0,ScrollBarThickness=4,ScrollBarImageColor3=C.accent,
+                AutomaticCanvasSize=Enum.AutomaticSize.Y,CanvasSize=UDim2.new(0,0,0,0),LayoutOrder=nxt(sub)},sub); corner(lst,8)
+            mk("UIListLayout",{Padding=UDim.new(0,3),SortOrder=Enum.SortOrder.LayoutOrder},lst)
+            mk("UIPadding",{PaddingLeft=UDim.new(0,4),PaddingRight=UDim.new(0,6),PaddingTop=UDim.new(0,4),PaddingBottom=UDim.new(0,4)},lst)
+            UI.mtList=lst
+        end})
+end
+
+-- ═════════════ 🎒 กระเป๋า ═════════════
+P=addTab("bag","🎒","กระเป๋า","ขายเอง · รายการของ · มูลค่า")
+UI.pageHead(P,"🎒","กระเป๋า & ขาย","ดูของในกระเป๋า ขายเป็นชิ้น/ทั้งหมด · ชิ้นติด ⭐ ถูกกันไว้ไม่ขาย")
+UI.section(P,"สรุป")
+do
+    local box=mk("Frame",{Size=UDim2.new(1,0,0,62),BackgroundColor3=C.row,BorderSizePixel=0,LayoutOrder=nxt(P)},P); corner(box,10); stroke(box,C.edge,0.85)
+    lbl(box,{Text="🎒 น้ำหนักในกระเป๋า",Position=UDim2.new(0,12,0,7),Size=UDim2.new(0.5,0,0,14),TextSize=10,TextColor3=C.dim})
+    UI.bagTxt=lbl(box,{Text="—",Position=UDim2.new(0,12,0,22),Size=UDim2.new(0.55,0,0,22),TextSize=16,Font=Enum.Font.GothamBold})
+    UI.bagVal=lbl(box,{Text="",Position=UDim2.new(0.5,0,0,22),Size=UDim2.new(0.5,-12,0,22),TextSize=13,TextColor3=C.on,TextXAlignment=Enum.TextXAlignment.Right})
+    local tr=mk("Frame",{Size=UDim2.new(1,-24,0,6),Position=UDim2.new(0,12,1,-14),BackgroundColor3=C.off,BorderSizePixel=0},box); corner(tr,3)
+    UI.bagBar=mk("Frame",{Size=UDim2.new(0,0,1,0),BackgroundColor3=C.on,BorderSizePixel=0},tr); corner(UI.bagBar,3)
+end
+UI.section(P,"ขายมือ")
+do
+    local r=UI.row2(P,32)
+    UI.btnSellAll=UI.half(r,"💰 ขายทั้งหมด (ตรงนี้)",C.buy,function() PK.sellAllNow() end,"ยิง RequestSell(\"All\") ทันที — ไม่วาป ข้ามชิ้น ⭐")
+    UI.btnSellEach=UI.half(r,"📦 ขายทีละชิ้น (ข้าม ⭐)",Color3.fromRGB(90,72,40),function() task.spawn(PK.sellEach) end,"ถือ → ขาย ทีละชิ้น (เห็นราคาแต่ละชิ้นในบันทึก) จบแล้วกลับถือพลั่ว")
+    UI.toggleRow(P,"📡 ขายระยะไกล — ไม่วาป (ยืนยันในเกมแล้ว)",function() return cfg.sub.remoteSell end,function(v) cfg.sub.remoteSell=v end,
+        "ใช้กับ ‘ขายออโต้’: ยิง RequestSell ตรงๆ ไม่วาปไปร้าน และขายก่อนเต็มที่ ≥92%")
+end
+UI.section(P,"ของในกระเป๋า — คลิกชิ้นเพื่อขายชิ้นนั้น")
+do
+    local box=mk("Frame",{Size=UDim2.new(1,0,0,280),BackgroundColor3=C.deep,BorderSizePixel=0,LayoutOrder=nxt(P)},P); corner(box,10); stroke(box,C.edge,0.85)
+    local lst=mk("ScrollingFrame",{Size=UDim2.new(1,-8,1,-8),Position=UDim2.new(0,4,0,4),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=4,ScrollBarImageColor3=C.accent,
+        AutomaticCanvasSize=Enum.AutomaticSize.Y,CanvasSize=UDim2.new(0,0,0,0)},box)
+    mk("UIListLayout",{Padding=UDim.new(0,3),SortOrder=Enum.SortOrder.LayoutOrder},lst)
+    mk("UIPadding",{PaddingRight=UDim.new(0,6)},lst)
+    UI.bagList=lst
+    UI.bagEmpty=lbl(lst,{Text="กระเป๋าว่าง",Size=UDim2.new(1,0,0,24),TextSize=11,TextColor3=C.dim,TextXAlignment=Enum.TextXAlignment.Center,LayoutOrder=0,Visible=false})
+end
+
+-- ═════════════ ⚙ ตั้งค่า ═════════════
+P=addTab("settings","⚙","ตั้งค่า","หน้าตา · ปุ่มลัด · บันทึก/รีเซ็ต · ความเข้ากันได้")
+UI.pageHead(P,"⚙","ตั้งค่า","ปรับหน้าตา · ตั้งปุ่มลัด · บันทึก/โหลด/รีเซ็ตค่า")
+UI.section(P,"หน้าตาและการใช้งาน")
+do
+    UI.slider(P,"🔎 ขนาดหน้าต่าง (ซูม) — ปล่อยเมาส์แล้วค่อยมีผล",70,150,function() return math.floor(cfg.ui.scale*100+0.5) end,
+        function(v) UI.applyScale(math.floor(v/5+0.5)*5/100) clampWin() syncShadow() end,function(v) return math.floor(v+0.5).."%" end,nil,true)
+    UI.slider(P,"💧 ความทึบพื้นหลัง",40,100,function() return math.floor((1-cfg.ui.opacity)*100+0.5) end,
+        function(v) cfg.ui.opacity=1-math.floor(v+0.5)/100 win.BackgroundTransparency=cfg.ui.opacity end,function(v) return math.floor(v+0.5).."%" end)
+    UI.toggleRow(P,"🔊 เสียงคลิก/สวิตช์",function() return cfg.ui.sound end,function(v) cfg.ui.sound=v PK.mute=not v end,"เสียงคลิกเบาๆ ตอนกดปุ่ม/สวิตช์ และเสียงแจ้งตอนชื่อที่เจาะจงเกิด")
+    UI.toggleRow(P,"📌 แถบสถานะลอยตอนซ่อนหน้าต่าง",function() return cfg.ui.pill end,function(v) cfg.ui.pill=v UI.show(UI.win.Visible) end,"ซ่อนหน้าต่างด้วยปุ่มลัดแล้วยังเห็นสถานะย่อๆ (ระบบที่ทำงาน · เงิน · กระเป๋า · หมัด/วิ) กลางบนจอ — คลิกเพื่อเปิดหน้าต่าง")
+    UI.toggleRow(P,"🔔 แจ้งเตือนมุมจอ (toast)",function() return cfg.ui.toast end,function(v) cfg.ui.toast=v end,"เด้งแจ้งเฉพาะเรื่องสำคัญ (ขาย/ซื้อ/เตือนหนาว/เหตุผิดพลาด) — ทุกข้อความยังอยู่ในบันทึกกิจกรรม")
+    UI.toggleRow(P,"💾 บันทึกค่าอัตโนมัติ",function() return cfg.ui.autosave end,function(v) cfg.ui.autosave=v end,"เก็บการตั้งค่าลง hz_mine_cfg.json ทุกครั้งที่เปลี่ยน (หน่วง 1.5 วินาที)")
+    UI.toggleRow(P,"▶ เปิดสวิตช์ระบบฟาร์มที่บันทึกไว้อัตโนมัติ",function() return cfg.ui.autostart end,function(v) cfg.ui.autostart=v end,
+        "ค่าเริ่มต้นปิด = โหลดสคริปต์แล้วระบบฟาร์ม (ขุด/เก็บ/ขาย/อัพเกรด/สวน/ตัวเรา/สอยเรด้า) เริ่มปิดเสมอ · เปิด = คืนสถานะเดิมตามที่บันทึก")
+end
+UI.section(P,"ปุ่มลัด — คลิกช่องแล้วกดคีย์ใหม่ (Backspace = ยกเลิกปุ่ม · Esc = ไม่เปลี่ยน)")
+UI.keycaps={}
+do
+    local box=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundColor3=C.row,BorderSizePixel=0,LayoutOrder=nxt(P)},P); corner(box,10); stroke(box,C.edge,0.85)
+    mk("UIListLayout",{Padding=UDim.new(0,3),SortOrder=Enum.SortOrder.LayoutOrder},box)
+    mk("UIPadding",{PaddingTop=UDim.new(0,6),PaddingBottom=UDim.new(0,6),PaddingLeft=UDim.new(0,6),PaddingRight=UDim.new(0,6)},box)
+    for i,a in ipairs(UI.act) do
+        local r=mk("Frame",{Size=UDim2.new(1,0,0,28),BackgroundColor3=C.opt,BorderSizePixel=0,LayoutOrder=i},box); corner(r,7)
+        lbl(r,{Text=a.name,Position=UDim2.new(0,10,0,0),Size=UDim2.new(1,-110,1,0),TextSize=11,TextTruncate=Enum.TextTruncate.AtEnd})
+        local kb=btn(r,{Size=UDim2.new(0,86,0,22),AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-6,0.5,0),BackgroundTransparency=0,BackgroundColor3=C.opt2,Text="—",TextSize=11}); corner(kb,6); stroke(kb,C.edge,0.6)
+        hoverFx(kb,kb,C.opt2,C.optH)
+        UI.keycaps[a.id]=kb
+        kb.Activated:Connect(function()
+            sfx("tick")
+            if UI.capturing then UI.capturing.restore() end
+            kb.Text="กดคีย์…"; kb.TextColor3=C.accent
+            UI.capturing={id=a.id,t=os.clock(),restore=function() kb.Text=UI.keyOf(a.id) or "—" kb.TextColor3=C.txt end}
+        end)
+    end
+end
+UI.section(P,"จัดการค่า")
+do
+    local r=UI.row2(P,32)
+    UI.half(r,"💾 บันทึกตอนนี้",C.buy,function() local ok=UI.save() feedAdd(ok and "💾 บันทึกค่าแล้ว (hz_mine_cfg.json)" or "❌ บันทึกไม่ได้ (executor ไม่มี writefile?)",ok and C.good or C.bad) end,"เขียนค่าทั้งหมดลง hz_mine_cfg.json ในโฟลเดอร์ workspace ของ executor")
+    UI.half(r,"📂 โหลดจากไฟล์",nil,function()
+        local ok=UI.load() UI.refreshKeys() applyFilter() UI.syncAll()
+        if UI.applyWindow then UI.applyWindow() end
+        feedAdd(ok and "📂 โหลดค่าจากไฟล์แล้ว" or "❌ ไม่พบไฟล์ค่า/อ่านไม่ได้",ok and C.good or C.bad)
+    end,"โหลดค่าที่บันทึกไว้ (สวิตช์ฟาร์มจะไม่เปิดเอง ยกเว้นเปิด ‘เปิดสวิตช์…อัตโนมัติ’)")
+    UI.confirmButton(P,"♻ รีเซ็ตทุกอย่างเป็นค่าเริ่มต้น",Color3.fromRGB(110,60,60),function() UI.reset() end,"ปิดระบบฟาร์มทั้งหมด คืนตัวเลือก/ปุ่มลัด/ขนาด/ซูมเป็นค่าเริ่มต้น และล้างรายชื่อที่เจาะจง")
+    UI.confirmButton(P,"⏻ ปิดสคริปต์ (หยุดทุกลูป)",Color3.fromRGB(150,45,60),function() UI.kill() end,"เหมือนปุ่ม × ที่หัวหน้าต่าง: หยุดทุก loop/hook และลบ UI+ESP (รันใหม่ได้ปกติ)")
+end
+UI.section(P,"ความเข้ากันได้ของ executor")
+do
+    local items={
+        {"กด E ให้เอง (fireproximityprompt)",fireproximityprompt~=nil,"จำเป็นสำหรับตีแรร์/เก็บ — ถ้าไม่มี ต้องกด E เอง"},
+        {"ดึงสัญญาณของเกม (getconnections)",getconnections~=nil,"ใช้กับ เรด้าเดินฟรี / เจ็ทแพ็คน้ำมันไม่จำกัด / กันหลุด"},
+        {"บันทึกไฟล์ (writefile/readfile)",(writefile~=nil and readfile~=nil),"ใช้เก็บบันทึกกิจกรรม + การตั้งค่า"},
+        {"hook ฟังก์ชัน (hookfunction)",hookfunction~=nil,"ใช้กับโหมดตัดสายเรด้า (สำรอง)"},
+        {"คลิปบอร์ด (setclipboard)",setclipboard~=nil,"ใช้ปุ่ม ‘คัดลอกทั้งหมด’ ของบันทึกกิจกรรม"},
+        {"พื้นที่ซ่อน UI (gethui)",gethui~=nil,"ถ้าไม่มี UI อยู่ใน CoreGui (บางเกมตรวจ)"},
+    }
+    local box=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundColor3=C.row,BorderSizePixel=0,LayoutOrder=nxt(P)},P); corner(box,10); stroke(box,C.edge,0.85)
+    mk("UIListLayout",{Padding=UDim.new(0,2),SortOrder=Enum.SortOrder.LayoutOrder},box)
+    mk("UIPadding",{PaddingTop=UDim.new(0,6),PaddingBottom=UDim.new(0,6),PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)},box)
+    for i,it in ipairs(items) do
+        local l=lbl(box,{Text=(it[2] and "✅  " or "❌  ")..it[1],Size=UDim2.new(1,0,0,20),TextSize=11,TextColor3=it[2] and C.txt or C.bad,LayoutOrder=i})
+        local h=btn(l,{Size=UDim2.new(1,0,1,0)}); UI.tip(h,it[3])
+    end
+end
+UI.section(P,"เกี่ยวกับ")
+do
+    UI.note(P,"HZ HUB · Mine Antarctica · UI v6 สำหรับคอมพิวเตอร์\nลากหัวหน้าต่าง = ย้าย · ลากมุมขวาล่าง = ปรับขนาด · Ctrl+F = ค้นหาฟีเจอร์ · วางเมาส์ค้างบนปุ่ม = คำอธิบาย\n⚠ เกมเตือนว่าการใช้สคริปต์อาจโดนแบนถาวร — ใช้ระยะ/จังหวะที่ server ยอมรับ และอย่ายิง remote ถี่เกินจำเป็น")
+end
+
+-- ═════════════ ส่วนท้าย: รีเซ็ต · ปุ่มลัด · สถานะท้ายหน้าต่าง · เริ่มทำงาน ═════════════
+function UI.applyWindow()
+    UI.applyScale(cfg.ui.scale); win.BackgroundTransparency=cfg.ui.opacity
+    win.Size=UDim2.new(0,cfg.ui.w,0,UI.folded and BAR or cfg.ui.h); win.Position=UDim2.new(0,cfg.ui.x,0,cfg.ui.y); clampWin(); syncShadow()
+    PK.mute=(cfg.ui.sound==false)
+end
+function UI.reset()
+    for _,m in ipairs(UI.M) do if (ACT[m.id] or m.id=="radarFake") and m.get() then m.set(false) end end
+    for k,v in pairs(UI.DEF.flags) do if not ACT[k] then cfg[k]=v end end
+    for k,v in pairs(UI.DEF.sub) do cfg.sub[k]=v end
+    for k in pairs(picks) do picks[k]=nil end
+    for k,v in pairs(UI.DEF.ui) do if k~="x" and k~="y" and k~="w" and k~="h" and k~="tab" then cfg.ui[k]=v end end
+    cfg.ui.open={}
+    for k in pairs(cfg.ui.keys) do cfg.ui.keys[k]="" end
+    for k,v in pairs(UI.DEF.keys) do cfg.ui.keys[k]=v end
+    for _,c in ipairs(UI.cards) do c.setOpen(false,true) end
+    UI.applyWindow(); applyFilter(); if UI.paintPick then UI.paintPick() end
+    UI.refreshKeys(); UI.syncAll(); UI.dirty()
+    feedAdd("♻ รีเซ็ตเป็นค่าเริ่มต้นแล้ว",C.good)
+end
+function UI.refreshKeys()
+    UI.rebuildKeys()
+    for _,c in ipairs(UI.cards) do if c.keyUpd then c.keyUpd() end end
+    for id,b in pairs(UI.keycaps) do b.Text=UI.keyOf(id) or "—" b.TextColor3=C.txt end
+    footL.Text="🖱 ลากหัว = ย้าย · ลากมุมขวาล่าง = ปรับขนาด · "..(UI.keyOf("ui") or "ไม่มีปุ่ม").." ซ่อน/แสดง · Ctrl+F ค้นหา · วางเมาส์ค้าง = คำอธิบาย"
+    UI.syncAll()
+end
+guard(UIS.InputBegan,function(i,gpe)
+    if UI.capturing and (os.clock()-UI.capturing.t>8 or i.UserInputType==Enum.UserInputType.MouseButton1) then   -- รอคีย์เกิน 8 วิ/คลิกที่อื่น = ยกเลิก (ไม่งั้นปุ่มถัดไปที่กดจะถูกผูกโดยไม่ตั้งใจ)
+        UI.capturing.restore(); UI.capturing=nil
+    end
+    if UI.capturing then
+        if i.UserInputType==Enum.UserInputType.Keyboard then
+            local cap=UI.capturing; UI.capturing=nil
+            local name=i.KeyCode.Name
+            if name=="Escape" then cap.restore() return end
+            if name=="Backspace" or name=="Delete" then cfg.ui.keys[cap.id]=""
+            else
+                for id,k in pairs(cfg.ui.keys) do if k==name and id~=cap.id then cfg.ui.keys[id]="" end end
+                cfg.ui.keys[cap.id]=name
+            end
+            UI.refreshKeys(); UI.dirty()
+        end
+        return
+    end
+    if gpe or i.UserInputType~=Enum.UserInputType.Keyboard then return end
+    if i.KeyCode==Enum.KeyCode.F and win.Visible and not UI.folded and (UIS:IsKeyDown(Enum.KeyCode.LeftControl) or UIS:IsKeyDown(Enum.KeyCode.RightControl)) then
+        local old=q.Text; q:CaptureFocus(); task.delay(0.05,function() if q.Text~=old then q.Text=old end end) return
+    end
+    local id=UI.keyMap[i.KeyCode.Name]
+    if id and UI.actBy[id] then
+        local ok,err=pcall(UI.actBy[id].fn)
+        if not ok then slog("hotkey "..tostring(i.KeyCode.Name).." error: "..tostring(err)) end
+    end
+end)
+-- FPS/Ping มุมขวาล่าง
+do
+    local acc,n=0,0
+    guard(RunS.RenderStepped,function(dt)
+        acc+=dt; n+=1
+        if acc>=0.5 then
+            local fps=n/acc; acc=0; n=0
+            if win.Visible and not UI.folded then
+                local ok,pg=pcall(function() return LP:GetNetworkPing() end)
+                footR.Text=string.format("FPS %d  ·  Ping %s",fps,ok and tonumber(pg) and (math.floor(pg*1000+0.5).."ms") or "—")
+            end
+        end
+    end)
+end
+-- กราฟิกตอนเริ่ม: ใส่ค่าที่โหลดมา · autostart คืนสวิตช์ฟาร์ม
+do local vx,vy=vp() cfg.ui.w=math.min(cfg.ui.w,math.max(560,vx-20)) cfg.ui.h=math.min(cfg.ui.h,math.max(400,vy-20)) end
+UI.applyWindow()
+UI.refreshKeys()
+if cfg.ui.tab=="search" or not UI.tabBy[cfg.ui.tab] then cfg.ui.tab="dash" end
+UI.go(cfg.ui.tab)
+applyFilter()
+if cfg.ui.autostart and UI.pendM then for id,v in pairs(UI.pendM) do local m=UI.mBy[id] if m and v==true and not m.get() then m.set(true) end end end
+UI.pendM=nil
+UI.syncAll()
+UI.show(true)
+if UI.loaded then slog("ui: โหลดค่าจาก "..UI.FILE) end
+task.delay(2,function()   -- ตรวจเลย์เอาต์จริงของ engine หลังขึ้นจอ 2 วิ (log ไว้ให้ดูเมื่อหน้าตาเพี้ยน)
+    if not alive() then return end
+    pcall(function()
+        local a=win.AbsoluteSize; local c=content.AbsoluteSize; local pg=UI.tabBy[UI.curTab].page
+        local first for _,x in ipairs(pg:GetChildren()) do if x:IsA("Frame") and tostring(x.Name):find("^Card_") then first=x break end end
+        local fs=first and first.AbsoluteSize
+        slog(("ui check: win=%dx%d content=%dx%d canvasY=%d firstCard=%s scale=%.2f"):format(a.X,a.Y,c.X,c.Y,pg.AbsoluteCanvasSize.Y,fs and (math.floor(fs.X).."x"..math.floor(fs.Y)) or "-",uiScale.Scale))
+        if (fs and fs.Y<20) or (first==nil and pg.AbsoluteCanvasSize.Y<60 and UI.curTab~="dash") then
+            feedAdd("⚠ เลย์เอาต์ UI อาจผิดปกติ (การ์ดสูงเป็นศูนย์) — ส่งไฟล์ hz_mine_log.txt ให้ผู้พัฒนา",C.warn)
+        end
+    end)
+end)
+if not UI.loaded then feedAdd("💡 ยินดีต้อนรับ — "..(UI.keyOf("ui") or "RightShift").." ซ่อน/แสดง · Ctrl+F ค้นหา · คลิก > ที่การ์ดเพื่อกางตัวเลือก · ปุ่ม ⛔ = หยุดทุกระบบ",C.accent) end
+end   -- do (UI v6)
+
+-- ============ 📊 อัปเดตสถานะสด (เรียกจาก render loop ทุก 0.25 วิ) ============
+function UI.bagVisible() return UI.win.Visible and UI.curTab=="bag" and not UI.searching and not UI.folded end
+function UI.hud(h)
+    UI.last=h
+    UI.updMini()
+    if not UI.win.Visible or UI.folded or UI.searching then return end
+    local w=UI.w
+    if UI.curTab=="dash" then
+        local ratio=h.cap>0 and math.clamp(h.bag/h.cap,0,1) or 0
+        w.money.v.Text="$"..comma(h.coins); w.money.s.Text=h.quote and ("กระเป๋า ≈ $"..comma(h.quote)) or "Coins"
+        w.bag.v.Text=string.format("%.1f / %d kg",h.bag,h.cap); w.bag.s.Text=h.full and "⚠ เต็ม!" or string.format("%d%%",ratio*100)
+        w.bag.bar.Size=UDim2.new(ratio,0,1,0); w.bag.bar.BackgroundColor3=(h.full or ratio>=0.92) and C.bad or (ratio>=0.7 and C.warn or C.on)
+        w.pick.v.Text=h.pick; w.pick.s.Text=h.pickSub
+        w.warm.v.Text=tostring(h.warm); w.warm.v.TextColor3=h.cold and Color3.fromRGB(120,190,255) or C.txt; w.warm.s.Text=h.cold and "🥶 หนาวอยู่!" or "ปลอดภัย"
+        w.hit.v.Text=(h.hrate and h.hrate>0) and string.format("%.1f /วิ",h.hrate) or "—"; w.hit.s.Text=h.hitSub
+        w.reach.v.Text=h.reachV; w.reach.s.Text=h.reachS
+        local ss=h.ss
+        w.got.v.Text=ss.n.." ชิ้น"; w.got.s.Text=string.format("⏱ %d:%02d ที่ผ่านมา",math.floor(h.el/60),math.floor(h.el%60))
+        w.sold.v.Text="$"..comma(ss.sold); w.sold.s.Text=(h.el>90 and ss.sold>0) and ("≈ $"..comma(ss.sold/(h.el/3600)).." /ชม.") or "ยังไม่พอคำนวณ"
+        local mc,mr; if PK.mtNow then mc,mr=PK.mtNow() end
+        w.mtn.v.Text=mc and tostring(mc) or "—"; w.mtn.s.Text="หมุน/รีแรร์ใน "..(mr or "—")
+        w.misc.v.Text=h.weather~="" and h.weather or "ปกติ"; w.misc.s.Text="สภาพอากาศตอนนี้"
+        w.dry.v.Text=h.dry and ("x"..h.dry) or "0"; w.dry.s.Text="ขุดไม่เจอแรร์ติดกัน (ตัวนับของเกม)"
+        local el=h.el; w.time.v.Text=string.format("%d:%02d:%02d",math.floor(el/3600),math.floor(el%3600/60),math.floor(el%60)); w.time.s.Text="นับตั้งแต่โหลดสคริปต์"
+    elseif UI.curTab=="bag" then
+        local ratio=h.cap>0 and math.clamp(h.bag/h.cap,0,1) or 0
+        UI.bagTxt.Text=string.format("%.1f / %d kg",h.bag,h.cap); UI.bagVal.Text=h.quote and ("≈ $"..comma(h.quote)) or ""
+        UI.bagBar.Size=UDim2.new(ratio,0,1,0); UI.bagBar.BackgroundColor3=(h.full or ratio>=0.92) and C.bad or (ratio>=0.7 and C.warn or C.on)
+    end
+end
+
+-- 📡 เรด้าเดิน ฟรี: fire Equipped connection ตรงๆ → RadarClient เปิด HUD+scan จริง แต่ tool ค้างกระเป๋า
+-- = TimeLeft ไม่ไหม้ (server เห็นว่าไม่ถือ) + พลั่วยังถือ = ขุดได้ · SetAttribute TimeLeft=3600 ให้ HUD โชว์ 60 นาที
+PK.hudVis=function()
+    local gui=LP:FindFirstChild("PlayerGui"); gui=gui and gui:FindFirstChild("RadarHudGui")
+    local fr=gui and (gui:FindFirstChild("Panel") or gui:FindFirstChildWhichIsA("GuiObject"))
+    return fr and fr.Visible or false
+end
+-- ตัด conn Unequipped ของ RadarClient → เกมไม่มีทาง stop() HUD ได้อีก
+-- 3 ชั้น: Disable → Disconnect → hookfunction ตัว listener เป็น no-op (ชั้นสุดท้ายรับประกันแน่)
+PK.sever=function(t)
+    local n=0; cfg._radSevered=cfg._radSevered or {}
+    for _,c in pairs(getconnections(t.Unequipped)) do
+        n+=1; table.insert(cfg._radSevered,c)
+        pcall(function() c:Disable() end) pcall(function() c:Disconnect() end)
+        pcall(function()
+            local f=c.Function
+            if f and hookfunction then hookfunction(f,function() end) end
+        end)
+        if not cfg._sevQuiet then slog("sever conn "..n.." fn="..tostring(c.Function~=nil).." en="..tostring(c.Enabled)) end
+    end
+    return n
+end
+-- 🎯 โหมดถาวรจริง: หา RadarClient.stop() ใน GC แล้ว hookfunction เป็น no-op
+-- stop เป็นฟังก์ชัน Lua ที่เกมเรียกตอน Unequipped/AncestryChanged/CharacterRemoving → Frame.Visible=false + t3=nil
+-- upvalues ของมัน: {t3(ref), v8(Color3), Frame=RadarHudGui.Panel, UIStroke} — 4 ตัว ไม่มีฟังก์ชัน (start มี stop เป็น upvalue → เกิน 8 ตัว+มีฟังก์ชัน ตัดทิ้ง)
+-- ฆ่า stop → ถือแล้วปล่อยทูลจริงครั้งเดียว: start() ทำงาน → HUD+scan(t3) ค้างถาวรไม่มีทางถูกซ่อน (server เผาเวลาแค่ช่วงถือ ~0.4s)
+PK.hookRadarStop=function()
+    if cfg._stopFn then return cfg._stopFn end
+    if not (getgc and hookfunction) then return nil end
+    local gui=LP:FindFirstChild("PlayerGui"); gui=gui and gui:FindFirstChild("RadarHudGui")
+    local fr=gui and gui:FindFirstChild("Panel")
+    if not fr then return nil end
+    local isl=isluaufunction or islclosure
+    local getup=(debug and debug.getupvalue) or getupvalue
+    if not (isl and getup) then return nil end
+    for _,f in ipairs(getgc(true)) do
+        if type(f)=="function" and isl(f) then
+            local hasF,hasS,hasFn,n=false,false,false,0
+            for i=1,10 do
+                local r={pcall(getup,f,i)}
+                if not r[1] then break end
+                local v=r[#r]; if v==nil then break end   -- debug.getupvalue คืน (name,value) → เอาตัวสุดท้าย
+                n+=1
+                if v==fr then hasF=true
+                elseif typeof(v)=="Instance" and v:IsA("UIStroke") then hasS=true
+                elseif type(v)=="function" then hasFn=true end
+            end
+            if n>=3 and n<=8 and hasF and hasS and not hasFn then
+                local ok,orig=pcall(hookfunction,f,function() end)
+                if ok and orig then
+                    cfg._stopFn=f; cfg._stopOrig=orig; slog("radar gc: hook stop() สำเร็จ")
+                    return f
+                end
+            end
+        end
+    end
+    return nil
+end
+PK.unhookRadarStop=function()
+    if cfg._stopFn and cfg._stopOrig then pcall(hookfunction,cfg._stopFn,cfg._stopOrig) end
+    cfg._stopFn=nil; cfg._stopOrig=nil
+end
+-- ยิง Equipped ทุกช่องทาง (Fire + Function ตรง) เผื่อ executor รองรับแบบใดแบบหนึ่ง
+PK.fireEq=function(t)
+    local n=0
+    for _,c in pairs(getconnections(t.Equipped)) do
+        n+=1
+        pcall(function() c:Fire() end)
+        pcall(function() local f=c.Function if f then f() end end)
+    end
+    return n
+end
+-- ชั้น 2: ถือจริงชั่วคราว (game start() เอง = HUD ขึ้นแน่) → ตัด Unequipped conn → ปล่อย → คืนพลั่ว
+PK.severCycle=function()
+    local t=PK.radBest()
+    if not t then cfg._sevNil=(cfg._sevNil or 0)+1 if cfg._sevNil%15==1 then slog("sever: no radar x"..cfg._sevNil) end return end
+    local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid")
+    if not hum then cfg._sevNil=(cfg._sevNil or 0)+1 if cfg._sevNil%15==1 then slog("sever: no hum x"..cfg._sevNil) end return end
+    cfg._sevNil=0
+    cfg._sevN=(cfg._sevN or 0)+1
+    pcall(function() hum:EquipTool(t) end)
+    task.wait(0.15)
+    local h1=PK.hudVis()
+    -- dedupe log: conn detail+สรุปเฉพาะรอบที่ผลเปลี่ยน/ทุก 15 รอบ (~18s) — เดิม 5 บรรทัด/วิ ทำ ring 3000 บรรทัดอยู่ได้แค่ ~10 นาที
+    local pre=tostring(t:GetAttribute("RadarType") or t.Name).."|"..tostring(h1)   -- ใช้ RadarType ไม่ใช่ t.Name — ชื่อมี countdown เปลี่ยนทุกวิ (Meteor Radar 2x 119s→118s) ทำ dedupe ไม่ทำงาน
+    cfg._sevQuiet=(pre==cfg._sevPre) and (cfg._sevN%15~=0)
+    local s=PK.sever(t)
+    pcall(function() hum:UnequipTools() end)
+    task.wait(0.1)
+    local h2=PK.hudVis(); cfg._lastSev=t   -- _lastSev: ChildAdded handler ข้ามทูลที่เราปล่อยกลับเอง (ไม่ใช่ของใหม่)
+    cfg._sevPre=pre
+    for _,tt in ipairs((LP:FindFirstChild("Backpack") or LP):GetChildren()) do
+        if PK.isPick(tt) then
+            pcall(function() hum:EquipTool(tt) end) break
+        end
+    end
+    cfg._radMode="severed"
+    local sig=pre.."|"..tostring(h2).."|"..s
+    if not cfg._sevQuiet or sig~=cfg._sevSig then
+        slog(("sever#%d eq=%s → uneq=%s s=%d %s"):format(cfg._sevN,tostring(h1),tostring(h2),s,t.Name))
+    end
+    cfg._sevSig=sig
+    if feedAdd and not cfg._sevFed then cfg._sevFed=true feedAdd("📡 โหมดตัดสาย — HUD ค้าง ขุดได้ตลอด",Color3.fromRGB(90,235,255)) end
+end
+function PK.fakeRadar(on)
+    if not getconnections then if feedAdd then feedAdd("❌ executor ไม่มี getconnections — ใช้โหมดถือจริงแทน",Color3.fromRGB(255,120,120)) end return end
+    if on then
+        local t=PK.radBest()
+        if not t then
+            cfg.radarFake=false
+            if feedAdd then feedAdd("❌ ไม่มีเรด้าในกระเป๋า — ซื้อก่อน",Color3.fromRGB(255,120,120)) end
+            return
+        end
+        -- ถ้ามีเรด้าถือจริงอยู่ (เผาเวลาอยู่) → ปล่อยก่อน จะได้เผา 0 ตลอด
+        local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid")
+        if hum then for _,tt in ipairs(ch:GetChildren()) do
+            if tt:IsA("Tool") and tt:GetAttribute("RadarType") then pcall(function() hum:UnequipTools() end) break end
+        end end
+        cfg._radT=t; cfg._radTL=t:GetAttribute("TimeLeft"); cfg._radTD=t:GetAttribute("Duration")
+        cfg._sevN=0; cfg._sevPre=nil; cfg._sevSig=nil; cfg._sevFed=nil; cfg._lastSev=nil; cfg._sevNil=0   -- รีเซ็ต dedupe ของ severCycle ทุกครั้งที่เปิด
+        pcall(function() t:SetAttribute("Duration",3600) t:SetAttribute("TimeLeft",3600) end)   -- HUD เต็มแถบ 60 นาที
+        -- 🎯 ลองโหมดถาวรจริงก่อน: ฆ่า stop() → ถือ/ปล่อยจริงครั้งเดียว = HUD+scan ค้างตลอด ไม่เผาเวลา
+        task.spawn(function()
+            local hum2=LP.Character and LP.Character:FindFirstChildOfClass("Humanoid")
+            if not hum2 or not PK.hookRadarStop() then return end
+            pcall(function() hum2:EquipTool(t) end)
+            task.wait(0.25)
+            local h1=PK.hudVis()
+            pcall(function() hum2:UnequipTools() end)
+            task.wait(0.15)
+            local h2=PK.hudVis()
+            if h1 and h2 then
+                cfg._radMode="gc"
+                if feedAdd then feedAdd("📡 เรด้าเดิน ON — HUD ค้างถาวรจริง ปล่อยทูลแล้ว ไม่เผาเวลา",Color3.fromRGB(90,235,255)) end
+                slog("radar gc: ทำงานจริง (eq=true uneq=true → HUD ค้าง)")
+            else
+                PK.unhookRadarStop()
+                slog(("radar gc: hook ไม่ติด (eq=%s uneq=%s) → fallback ตัดสาย"):format(tostring(h1),tostring(h2)))
+            end
+        end)
+        local n=PK.fireEq(t)
+        -- ถ้า 0.6s แล้ว HUD ยังไม่ขึ้น (Fire ไม่ทำงานบน Xeno + gc ไม่สำเร็จ) → ชั้น 2: ถือจริงแล้วตัดสาย
+        task.delay(0.65,function()
+            if alive() and cfg.radarFake and cfg._radMode~="gc" and not PK.hudVis() then PK.severCycle() end
+        end)
+        -- watchdog+pin ตลอดเปิด: HUD หาย → ลอง fire; ยังไม่ขึ้น → sever ใหม่. TimeLeft สลับ 3600/3601 = ChangedSignal ยิงตลอด → ตัวเลขค้าง 60 นาที
+        if not cfg._radLoop then cfg._radLoop=true
+            task.spawn(function()
+                local alt=0; local miss=0
+                while alive() do
+                    if cfg.radarFake and getconnections then pcall(function()
+                        alt=1-alt; local tl=3600+alt
+                        if cfg.sub.snRadarPin~=false then
+                        local bp=LP:FindFirstChild("Backpack"); local ch=LP.Character
+                        for _,pa in ipairs({bp,ch}) do if pa then for _,tt in ipairs(pa:GetChildren()) do
+                            if tt:IsA("Tool") and tt:GetAttribute("RadarType") then
+                                tt:SetAttribute("Duration",3600) tt:SetAttribute("TimeLeft",tl)
+                            end
+                        end end end
+                        end
+                        if not PK.hudVis() then
+                            if cfg._radMode=="gc" and cfg._stopFn then
+                                -- โหมดถาวร: HUD หล่น (respawn/ทูลโดนลบ) → ถือ+ปล่อยใหม่ = start() รอบใหม่ (stop เป็น no-op อยู่แล้ว)
+                                local t2=PK.radBest(); local h2=LP.Character and LP.Character:FindFirstChildOfClass("Humanoid")
+                                if t2 and h2 then
+                                    pcall(function() h2:EquipTool(t2) end) task.wait(0.25)
+                                    pcall(function() h2:UnequipTools() end)
+                                end
+                            else
+                                miss+=1
+                                local t2=PK.radBest()
+                                if t2 then PK.fireEq(t2) end
+                                if miss>=3 then miss=0 PK.severCycle() end   -- fire ไม่ได้จริง → ตัดสาย
+                            end
+                        else miss=0 end
+                    end) end
+                    task.wait(0.4)
+                end
+            end)
+        end
+        cfg.radarFake=true
+        if feedAdd then feedAdd(string.format("📡 เรด้าเดิน ON — %s (เวลาแช่แข็ง ขุดได้)",(PK.RTH and PK.RTH[t:GetAttribute("RadarType")]) or t.Name),Color3.fromRGB(90,235,255)) end
+        sfx("pop"); slog("fakeRadar on "..t.Name.." hooks="..n)
+    else
+        local t=cfg._radT
+        -- โหมดถาวร: คืน stop() ตัวจริงแล้วเรียกให้เกมซ่อน HUD เอง (hookfunction คืนฟังก์ชันเดิม)
+        local origStop=cfg._stopOrig
+        PK.unhookRadarStop()
+        if origStop then pcall(origStop) end
+        -- เปิด conn ที่ตัดคืน + ยิง Unequipped ให้เกม stop HUD เอง
+        for _,c in ipairs(cfg._radSevered or {}) do pcall(function() c:Enable() end) end
+        cfg._radSevered=nil; cfg._radMode=nil; cfg._lastSev=nil
+        if t then
+            for _,c in pairs(getconnections(t.Unequipped)) do pcall(function() c:Fire() end) pcall(function() local f=c.Function if f then f() end end) end
+            pcall(function()
+                if cfg._radTL then t:SetAttribute("TimeLeft",cfg._radTL) end
+                if cfg._radTD then t:SetAttribute("Duration",cfg._radTD) end
+            end)
+            cfg._radT=nil
+        end
+        cfg.radarFake=false; slog("fakeRadar off")
+    end
+end
+
+
+function PK.pickOn() return cfg.pickMode and next(picks)~=nil end
+-- อ่านชื่อ+rarity จากดัชนีเกมจริง (IndexGui.Window.Grid.<Name> {Rarity}) + ชื่อไทยจาก Translator
+function PK.loadNames()
+    local n=0
+    local grid=LP:FindFirstChild("PlayerGui")
+    local ig=grid and grid:FindFirstChild("IndexGui")
+    local g=ig and ig:FindFirstChild("Window") and ig.Window:FindFirstChild("Grid")
+    if g then for _,c in ipairs(g:GetChildren()) do
+        if c:IsA("Frame") then PK.nameRarity[c.Name]=c:GetAttribute("Rarity") or "?" PK.nameCard[c.Name]=c n+=1 end
+    end end
+    -- fallback: ชื่อที่เคยเจอในแมพ (tracked/known)
+    for m,r in pairs(known) do local nm=m:GetAttribute("GemName") or m.Name if not PK.nameRarity[nm] then PK.nameRarity[nm]=r n+=1 end end
+    return n
+end
+-- ดัชนีจริง: การ์ดที่ "มีแล้ว" เกมโชว์ชื่อ การ์ดที่ยังไม่เคยได้โชว์ "???"
+function PK.ownedCard(nm)
+    local c=PK.nameCard[nm] local l=c and c:FindFirstChild("GemName")
+    return l and l.Text~="???" or false
+end
+function PK.localizeNames()
+    if not PK.TR then
+        if PK.TRt and os.clock()-PK.TRt<15 then return false end   -- translator ยังไม่พร้อม → รอ 15 วิค่อยลองใหม่
+        PK.TRt=os.clock()
+        local ok,t=pcall(function() return game:GetService("LocalizationService"):GetTranslatorForPlayerAsync(LP) end)
+        PK.TR=(ok and t) or false
+    end
+    local changed=false
+    for nm,card in pairs(PK.nameCard) do
+        if not PK.thNames[nm] then
+            local pretty=nm:gsub("(%l)(%u)","%1 %2")
+            local lbl=card and card:FindFirstChild("GemName")
+            local res=nil
+            if PK.TR then local ok2,r=pcall(function() return PK.TR:Translate(lbl or card, pretty) end) if ok2 and type(r)=="string" then res=r end end
+            if (not res or res==pretty or res=="") and lbl then
+                local ok3,lt=pcall(function() return lbl.LocalizedText end)   -- property localize ของ label (ถ้า Roblox เติม)
+                if ok3 and type(lt)=="string" and lt~="" then res=lt end
+            end
+            if res and res~="" and res~=pretty then PK.thNames[nm]=res changed=true end
+        end
+    end
+    -- ชื่อไทยมาแล้ว → repaint ป้าย ESP ที่วาดไปแล้วด้วย
+    if changed then for m,e in pairs(tracked) do
+        e.t1.Text=PK.t1(m,e.id,e.mut,m:GetAttribute("Freed"))
+    end end
+    return changed
+end
+function PK.liveCounts()  -- นับสดทั้งแมพครั้งเดียว → map (O(n) แทน 398×n)
+    local t={}
+    for m in pairs(known) do local nm=m:GetAttribute("GemName") or m.Name t[nm]=(t[nm] or 0)+1 end
+    return t
+end
+
 
 -- ============ ภูเขา (MountainPool → รายการ + auto + เวลาหมุน) ============
 local mtData={}   -- [{id,name,rarity,rank,released}] — rank = index ใน MP.Data (ยิ่งท้ายยิ่งดี)
@@ -836,29 +2197,37 @@ local function mtRotTxt()
     end
     return "—"
 end
+PK.mtNow=function()   -- (ชื่อภูเขาตอนนี้, เวลาหมุนถัดไป) — ใช้โชว์ในภาพรวม
+    local cur=mtCur(); local nm=cur
+    for _,e in ipairs(mtData) do if e.id==cur then nm=e.name break end end
+    return nm,mtRotTxt()
+end
 local function refreshMtn()
     local cur=mtCur()
-    rowMtnL.Text="ภูเขา: "..tostring(cur or "—")
-    for id,x in pairs(mtBtns) do x.tag.Visible=(id==cur) end
-    mtnSw.Text=string.format("สวิตช์: %d · หมุนใน: %s",tonumber(LP:GetAttribute("MountainSwitches")) or 0,mtRotTxt())
+    local rot=mtRotTxt()
+    UI.mtCard.descL.Text="ตอนนี้: "..tostring(cur or "—").." · หมุนใน "..rot
+    for id,x in pairs(mtBtns) do x.tag.Visible=(id==cur) x.b.BackgroundColor3=(id==cur) and C.buy or C.opt end
+    UI.mtInfo.Text=string.format("โควตาสวิตช์ภูเขาที่เหลือ: %d · หมุนรอบถัดไปใน: %s",tonumber(LP:GetAttribute("MountainSwitches")) or 0,rot)
 end
 local function buildMtn()
-    for _,c in ipairs(mtList:GetChildren()) do if c:IsA("TextButton") then c:Destroy() end end
+    for _,c in ipairs(UI.mtList:GetChildren()) do if c:IsA("TextButton") then c:Destroy() end end
     mtBtns={}
     table.sort(mtData,function(a,b) return a.rank>b.rank end) -- ดีสุดขึ้นก่อน
     for i,e in ipairs(mtData) do
         if e.released then
-            local b=Instance.new("TextButton"); b.Size=UDim2.new(1,-6,0,26); b.BackgroundColor3=C.opt
-            b.Text=""; b.Parent=mtList; b.LayoutOrder=i; corner(b,6)
-            local l=Instance.new("TextLabel"); l.Size=UDim2.new(1,-34,1,0); l.Position=UDim2.new(0,8,0,0); l.BackgroundTransparency=1
-            l.Text=e.name.." · "..e.rarity; l.TextSize=11; l.TextColor3=mtColor(e.rarity); l.TextXAlignment=Enum.TextXAlignment.Left; l.Parent=b; tfont(l)
-            local tag=Instance.new("TextLabel"); tag.Size=UDim2.new(0,26,1,0); tag.Position=UDim2.new(1,-30,0,0); tag.BackgroundTransparency=1
-            tag.Text="✓"; tag.TextSize=13; tag.TextColor3=C.on; tag.Visible=false; tag.Parent=b; tfont(tag)
+            local b=UI.btn(UI.mtList,{Size=UDim2.new(1,0,0,30),BackgroundTransparency=0,BackgroundColor3=C.opt,LayoutOrder=i}); corner(b,7)
+            local im=e.img or UI.mtnImage(e.id)
+            if im then UI.mk("ImageLabel",{BackgroundTransparency=1,Image=im,Size=UDim2.new(0,20,0,20),Position=UDim2.new(0,6,0.5,-10),ZIndex=2},b) end
+            UI.lbl(b,{Text=e.name,Position=UDim2.new(0,im and 32 or 10,0,0),Size=UDim2.new(1,-(im and 172 or 150),1,0),TextSize=12,TextColor3=mtColor(e.rarity),TextTruncate=Enum.TextTruncate.AtEnd})
+            UI.lbl(b,{Text=PK.thR(e.rarity),Position=UDim2.new(1,-140,0,0),Size=UDim2.new(0,90,1,0),TextSize=10,TextColor3=C.dim,TextXAlignment=Enum.TextXAlignment.Right})
+            local tag=UI.lbl(b,{Text="✓ อยู่ที่นี่",Position=UDim2.new(1,-62,0,0),Size=UDim2.new(0,56,1,0),TextSize=10,TextColor3=C.on,Visible=false,TextXAlignment=Enum.TextXAlignment.Right})
+            b.MouseEnter:Connect(function() if e.id~=mtCur() then UI.tw(b,0.1,{BackgroundColor3=C.optH}) end end)
+            b.MouseLeave:Connect(function() UI.tw(b,0.12,{BackgroundColor3=(e.id==mtCur()) and C.buy or C.opt}) end)
             b.Activated:Connect(function()
-                if not MtChoose then feedAdd("❌ ไม่มี Choose remote",Color3.fromRGB(255,120,120)) return end
+                if not MtChoose then feedAdd("❌ ไม่พบช่องทางเลือกภูเขา",Color3.fromRGB(255,120,120)) return end
                 if e.id==mtCur() then feedAdd("🏔️ อยู่ "..e.name.." อยู่แล้ว",C.dim) return end
                 MtChoose:FireServer(e.id); sfx("pop")
-                feedAdd("🏔️ เลือก "..e.name.." ("..e.rarity..")",mtColor(e.rarity))
+                feedAdd("🏔️ เลือก "..e.name.." ("..PK.thR(e.rarity)..")",mtColor(e.rarity))
                 slog("mtn choose "..e.id)
                 task.delay(1,refreshMtn)
             end)
@@ -873,7 +2242,7 @@ local function mtnAutoBest()
     for _,e in ipairs(mtData) do if e.released and (not best or e.rank>best.rank) then best=e end end
     if best and best.id~=cur and MtChoose then
         MtChoose:FireServer(best.id)
-        feedAdd("🏔️ auto → "..best.name,mtColor(best.rarity)); slog("mtn auto "..best.id)
+        feedAdd("🏔️ ขึ้นอัตโนมัติ → "..best.name,mtColor(best.rarity)); slog("mtn auto "..best.id)
     end
 end
 task.spawn(function()
@@ -884,7 +2253,7 @@ task.spawn(function()
         for i,v in ipairs(MP.Data) do
             local rel=true
             if MP.isReleased then local okR,r=pcall(MP.isReleased,v) rel=okR and r~=false or true end
-            mtData[#mtData+1]={id=v.id,name=v.name or v.id,rarity=v.rarity or "?",rank=i,released=rel}
+            mtData[#mtData+1]={id=v.id,name=v.name or v.id,rarity=v.rarity or "?",rank=i,released=rel,img=v.image}
         end
     end
     if #mtData==0 then
@@ -905,14 +2274,19 @@ end)
 task.spawn(function()
     while not MtState do task.wait(0.5) if not alive() then return end end
     MtState.Changed:Connect(function()
+        if not alive() then return end   -- generation เก่าไม่ทำงานซ้ำ (ล็อกจริงเคย WIPE ซ้ำ 22 ครั้งในวินาทีเดียว)
         -- ภูเขาเปลี่ยน = แรร์ทั้งเซิร์ฟเวอร์รีใหม่ → ล้าง registry ทั้งหมด ไม่เก็บของเก่า
         wiping=true; wipeEnd=os.clock()+10
         doWipe("ภูเขาเปลี่ยน → "..tostring(MtState.Value))
         refreshMtn(); task.delay(2,mtnAutoBest)
     end)
-    if MtRot then MtRot.Changed:Connect(function() task.delay(3,function() refreshMtn() mtnAutoBest() end) end) end
+    if MtRot then MtRot.Changed:Connect(function() if not alive() then return end task.delay(3,function() if alive() then refreshMtn() mtnAutoBest() end end) end) end
     task.delay(4,function() if alive() then refreshMtn() end end)
 end)
+task.spawn(function() while alive() do   -- เวลาหมุนนับถอยหลังสด (วินาทีละครั้ง เฉพาะตอนเปิดดูแท็บโลก)
+    if UI.win.Visible and UI.curTab=="world" and not UI.folded and #mtData>0 then pcall(refreshMtn) end
+    task.wait(1)
+end end)
 
 -- ============ ขายเลือกชิ้น (CrystalBag → Equip(BagId) → RequestSell("Held") → กลับพลั่ว) ============
 do
@@ -929,7 +2303,7 @@ function SL.reequip()
     local bp=LP:FindFirstChildOfClass("Backpack")
     if hum and bp then
         for _,t in ipairs(bp:GetChildren()) do
-            if t:IsA("Tool") and t:GetAttribute("Cooldown") and not t:GetAttribute("BagId") then hum:EquipTool(t) break end
+            if PK.isPick(t) then hum:EquipTool(t) break end
         end
     end
 end
@@ -943,7 +2317,7 @@ function SL.heldId()  -- tool ในมือมี BagId ไหน (equip จ�
 end
 -- ขาย 1 ชิ้น: ถือ → รอถือจริง → ขาย Held → (reEquip=true) กลับพลั่วตอนจบ
 function SL.sellOne(item,reEquip,done)
-    if not (CBEquip and SellReq) then feedAdd("❌ ไม่มี sell remote",Color3.fromRGB(255,120,120)) if done then done() end return end
+    if not (CBEquip and SellReq) then feedAdd("❌ ไม่พบช่องทางขาย",Color3.fromRGB(255,120,120)) if done then done() end return end
     local id=item:GetAttribute("BagId")
     if not id then if done then done() end return end
     SL.busy=true
@@ -981,31 +2355,30 @@ function SL.each()
     step()
 end
 function SL.refresh()
-    for _,c in ipairs(bagList:GetChildren()) do if c:IsA("TextButton") then c:Destroy() end end
-    for i,d in ipairs(SL.bag()) do
-        local b=Instance.new("TextButton"); b.Size=UDim2.new(1,-4,0,22); b.LayoutOrder=i
-        b.BackgroundColor3=C.opt; b.Text=""; b.Parent=bagList; corner(b,5)
+    local lst=UI.bagList
+    for _,c in ipairs(lst:GetChildren()) do if c:IsA("TextButton") then c:Destroy() end end
+    local items=SL.bag()
+    UI.bagEmpty.Visible=(#items==0)
+    for i,d in ipairs(items) do
         local r=d:GetAttribute("Rarity") or "Common"
-        local nm=(d:GetAttribute("GemName") or "?"):gsub("(%l)(%u)","%1 %2")
+        local col=TCOL[r] or C.txt
+        local b=UI.btn(lst,{Size=UDim2.new(1,0,0,30),BackgroundTransparency=0,BackgroundColor3=C.opt,LayoutOrder=i}); corner(b,7)
+        UI.mk("Frame",{Size=UDim2.new(0,3,0,18),Position=UDim2.new(0,4,0.5,-9),BackgroundColor3=col,BorderSizePixel=0},b)
         local fav=d:GetAttribute("Favorited") and " ⭐" or ""
-        local l=Instance.new("TextLabel"); l.Size=UDim2.new(1,-46,1,0); l.Position=UDim2.new(0,6,0,0); l.BackgroundTransparency=1
-        l.Text=string.format("%s%s · %.1fkg · $%s",nm..fav,r=="Common" and "" or "·"..r,d:GetAttribute("Kg") or 0,comma(d:GetAttribute("Value") or 0))
-        l.TextSize=10; l.TextColor3=TCOL[r] or C.txt; l.TextXAlignment=Enum.TextXAlignment.Left; l.Parent=b; tfont(l)
-        local s=Instance.new("TextLabel"); s.Size=UDim2.new(0,40,1,0); s.Position=UDim2.new(1,-42,0,0); s.BackgroundTransparency=1
-        s.Text="ขาย"; s.TextSize=10; s.TextColor3=Color3.fromRGB(120,255,160); s.Parent=b; tfont(s)
-        b.Activated:Connect(function() SL.sellOne(d,true) end)
+        UI.lbl(b,{Text=PK.dispName(d:GetAttribute("GemName") or "?")..fav,Position=UDim2.new(0,14,0,0),Size=UDim2.new(1,-200,1,0),TextSize=11,TextColor3=col,TextTruncate=Enum.TextTruncate.AtEnd})
+        UI.lbl(b,{Text=string.format("%s · %.1fkg",PK.thR(r),d:GetAttribute("Kg") or 0),Position=UDim2.new(1,-186,0,0),Size=UDim2.new(0,100,1,0),TextSize=10,TextColor3=C.dim,TextXAlignment=Enum.TextXAlignment.Right})
+        UI.lbl(b,{Text="$"..comma(d:GetAttribute("Value") or 0),Position=UDim2.new(1,-84,0,0),Size=UDim2.new(0,78,1,0),TextSize=11,TextColor3=C.on,TextXAlignment=Enum.TextXAlignment.Right})
+        b.MouseEnter:Connect(function() UI.tw(b,0.1,{BackgroundColor3=C.optH}) end)
+        b.MouseLeave:Connect(function() UI.tw(b,0.12,{BackgroundColor3=C.opt}) end)
+        b.Activated:Connect(function() sfx("tick") SL.sellOne(d,true) end)
     end
 end
-sellAllB.Activated:Connect(function()
+PK.sellAllNow=function()
     if SellReq then SellReq:FireServer("All"); sfx("pop"); feedAdd("💰 ยิงขายทั้งหมด (ตรงนี้)",Color3.fromRGB(255,220,120)) end
-end)
-local sellEachB=Instance.new("TextButton"); sellEachB.Size=UDim2.new(0.5,-20,0,24); sellEachB.Position=UDim2.new(0.5,12,0,33)
-sellEachB.BackgroundColor3=Color3.fromRGB(90,72,40); sellEachB.Text="📦 ขายทีละชิ้น (ข้าม⭐)"; sellEachB.TextColor3=C.txt
-sellEachB.TextSize=10; sellEachB.Parent=subS; corner(sellEachB,6); tfont(sellEachB)
-sellEachB.Activated:Connect(function() task.spawn(SL.each) end)
-sellAllB.Size=UDim2.new(0.5,-20,0,24); sellAllB.Text="💰 ขายหมด (ตรงนี้)"
+end
+PK.sellEach=function() SL.each() end
 task.spawn(function() while alive() do
-    if subS.Visible then pcall(SL.refresh) end
+    if UI.bagVisible() then pcall(SL.refresh) end
     task.wait(2)
 end end)
 -- SellResult → feed (count, money, itemName, err) — 16_SellerMenuClient:811
@@ -1013,13 +2386,15 @@ task.spawn(function()
     while not SellRes do task.wait(0.5) if not alive() then return end end
     SellRes.OnClientEvent:Connect(function(cnt,money,item,err)
         if not alive() then return end
-        if err then feedAdd("💰 ขายไม่ได้: "..tostring(err),Color3.fromRGB(255,120,120))
+        if err then PK.sellHold=os.clock()+30; slog("sell fail: "..tostring(err)); feedAdd("💰 ขายไม่ได้: "..tostring(err),Color3.fromRGB(255,120,120))   -- ขายไม่ได้ (เช่นมีแต่ ⭐ ในกระเป๋า) → เว้น 30s ไม่ยิงซ้ำถล่ม
         elseif item then feedAdd(string.format("💰 ขาย %s = $%s",item,comma(money or 0)),Color3.fromRGB(120,255,160))
         elseif (cnt or 0)>0 then feedAdd(string.format("💰 ขาย %d ชิ้น = $%s",cnt,comma(money or 0)),Color3.fromRGB(120,255,160)) end
+        if not err and (tonumber(cnt) or 0)>0 then PK.ss.sold+=tonumber(money) or 0 end
     end)
     slog("sellres-hook")
 end)
 end
+-- ===== UI-V6-END =====
 
 -- ============ render loop (อัปเดตข้อความทุก 0.25 วิ — ไม่ format ทุกเฟรม) ============
 local lblAcc=0
@@ -1039,31 +2414,32 @@ RunS.RenderStepped:Connect(function(dt)
             -- mass-despawn detector: model หลุด >40 ตัวใน 1.5 วิ = server รีแรร์ (ภูเขาหมุน/รีเซ็ต)
             if now-wipeT0>1.5 then wipeN=0 end
             wipeT0=now; wipeN+=1
-            if wipeN>40 and not wiping then
+            if wipeN>40 and not wiping and now-(PK.moveT or -99)>15 then   -- วาป/ขายทิ้งโมเดลหลุด stream พร้อมกัน ≠ server รีแรร์
                 wiping=true; wipeEnd=now+5
                 doWipe("server รีแรร์ (despawn "..wipeN.."+)")
             end
             -- หายหลัง GemCollected ของชื่อนี้ <3 วิ = ถูกเก็บจริง → ลบทิ้ง ไม่ทำ ghost
             if wiping or (lastCollect[e.id] and now-lastCollect[e.id]<3) then
                 known[m]=nil knownPos[m]=nil
-            -- พื้นที่ unstream → แปลงเป็น ghost ค้างพิกัดเดิม เห็นต่อทั้งแมพ
+            -- พื้นที่ unstream → ค้างพิกัดเดิมใน registry (บอทยังนำทางไปได้) — ไม่มี ghost visual แล้ว
             elseif e.lastPos and wantShow(e.rarity,e.id) then
                 local dup=false
                 for _,pe in ipairs(pings) do if (pe.pos-e.lastPos).Magnitude<10 then dup=true pe.t=os.clock() break end end
                 if not dup then
-                    local cl,hl,bb2,tx=mkGhost(e.lastPos,e.rarity,e.kg)
-                    if cl then pings[#pings+1]={pos=e.lastPos,rarity=e.rarity,kg=e.kg,t=os.clock(),ghost=cl,hl=hl,bb=bb2,txt=tx,sticky=true,name=e.name} end
+                    pings[#pings+1]={pos=e.lastPos,rarity=e.rarity,kg=e.kg,t=os.clock(),sticky=true,id=e.id,owner=e.owner}
                 end
             end
         else
-            local on=wantShow(e.rarity,e.id)
+            local on=wantShow(e.rarity,e.id,e.kg)
             local hOn=on and cfg.sub.espHl; local bOn=on and cfg.sub.espName
-            if e.hl.Enabled~=hOn then e.hl.Enabled=hOn end
+            e.on=on
+            local hlWant=hOn and e.near==true    -- Roblox วาด Highlight ได้สูงสุด 31 อัน → เปิดเฉพาะ 24 ตัวที่ใกล้สุด (ป้ายชื่อยังโชว์ทุกตัว) · ตัวใหม่รอจัดอันดับ ≤0.25s ก่อนเปิด
+            if e.hl.Enabled~=hlWant then e.hl.Enabled=hlWant end
             if e.bb.Enabled~=bOn then e.bb.Enabled=bOn end
             if on and updL and hrp then
                 local ok,p=pcall(function() return m:GetPivot().Position end)
                 if ok and p then
-                    e.lastPos=p
+                    e.lastPos=p; e.dist=(p-hrp.Position).Magnitude
                     local hpt=""
                     if cfg.sub.hpBar then
                         local hp=m:GetAttribute("Hp"); local mh=m:GetAttribute("MaxHp")
@@ -1074,29 +2450,63 @@ RunS.RenderStepped:Connect(function(dt)
                     local fr=m:GetAttribute("Freed") and true or false
                     if mut~=e.mut or fr~=e.fr then
                         e.mut=mut e.fr=fr
-                        e.t1.Text="◆ "..e.name..(mut and (" ✦"..mut) or "")..(fr and "" or " ⛏ฝังอยู่")
+                        e.t1.Text=PK.t1(m,e.id,mut,fr)
                     end
-                    e.t2.Text=string.format("%s%s · %.1fkg · %dm%s",e.rarity,e.sz and (" ["..e.sz.."]") or "",e.kg,(p-hrp.Position).Magnitude,hpt)
+                    local lk=""
+                    if cfg.sub.espLuck and GD and GD.effectiveLuck then
+                        local ok2,l=pcall(GD.effectiveLuck,e.rarity,e.kg,e.mut,nil,e.core,e.id)
+                        if ok2 and type(l)=="number" then lk=(" · 🍀%.0f"):format(l) end
+                    end
+                    e.t2.Text=string.format("%s%s · %.1fkg · %dm%s%s",PK.thR(e.rarity),e.sz and (" ["..e.sz.."]") or "",e.kg,(p-hrp.Position).Magnitude,hpt,lk)
                 end
             end
         end
     end
-    -- pings: ghost model ในโลก — อัปเดตเฉพาะตอนสถานะเปลี่ยน (sticky = ไม่มีวันหมดอายุ)
+    if updL and hrp then   -- จัดอันดับระยะ → 24 ตัวใกล้สุดได้ Highlight · ตรวจวาป (>120 studs ใน 0.25s) กัน mass-despawn detector เข้าใจผิดว่า server รีแรร์
+        local arr={}
+        for _,e in pairs(tracked) do if e.on and e.dist then arr[#arr+1]=e end end
+        table.sort(arr,function(a,b) return a.dist<b.dist end)
+        for i,e in ipairs(arr) do e.near=(i<=24) end
+        local lp2=PK.lp2; if lp2 and (hrp.Position-lp2).Magnitude>120 then PK.moveT=now; wipeN=0 end
+        PK.lp2=hrp.Position
+    end
+    -- pings: registry พิกัดล้วน (ไม่มี ghost visual) — เคลียร์ตัวหมดอายุ, sticky ค้างถาวร
     for i=#pings,1,-1 do
         local e=pings[i]
-        if (not e.sticky and now-e.t>cfg.ttl) or not e.ghost or not e.ghost.Parent then
-            pcall(function() e.ghost:Destroy() e.hl:Destroy() e.bb:Destroy() end); table.remove(pings,i)
-        else
-            local ti=tIdx(e.rarity)
-            local on=(not cfg.pickMode) and cfg.esp and (ti==cfg.minTier or ti==0)
-            local vis=on and cfg.sub.ghost
-            if e.shown~=vis then
-                e.shown=vis; e.hl.Enabled=vis
-                for _,d in ipairs(e.ghost:GetDescendants()) do if d:IsA("BasePart") then d.LocalTransparencyModifier = vis and 0.45 or 1 end end
+        if not e.sticky and now-e.t>cfg.ttl then PK.rmFar(e) table.remove(pings,i) end
+    end
+    while #pings>600 do PK.rmFar(pings[1]) table.remove(pings,1) end   -- เพดาน 600 จุด (sticky สะสมไม่จำกัดเมื่อ AFK เป็นชั่วโมง) — ทิ้งตัวเก่าสุดก่อน
+    -- 📡 far markers: วาดป้ายทุก ping ที่ผ่าน filter — model ไม่ต้อง stream (ไกล 5000m ก็เห็น ทะลุกำแพง)
+    local nFar=0
+    for _,e in ipairs(pings) do
+        if cfg.sub.espFar and nFar<80 and wantShow(e.rarity,e.id or "",e.kg) then
+            if not e._a then pcall(PK.mkFar,e) end
+            if e._a and hrp then
+                e._t1.Text="◆ "..(e.owner==LP.UserId and "★ " or "")..PK.dispName(e.id or e.rarity); e._t1.TextColor3=TCOL[e.rarity] or C.txt
+                e._t2.Text=string.format("%s · %.1fkg · %dm",PK.thR(e.rarity),e.kg or 0,(e.pos-hrp.Position).Magnitude)
             end
-            e.bb.Enabled = on and cfg.sub.ghostLbl
+            nFar=nFar+1
+        elseif e._a then PK.rmFar(e) end
+    end
+    -- 🪨 boulders: ป้ายเรด้าหิน — NeedPickaxe ✅/❌เทียบพลั่วเรา (EquippedPickaxe attr จริง) + HP% + ฝังอยู่ + ระยะ
+    for m,e in pairs(PK.btracked) do
+        if not m.Parent or m:GetAttribute("Broken") then
+            pcall(function() e.hl:Destroy() e.bb:Destroy() end) PK.btracked[m]=nil
+        else
+            local on=cfg.sub.espBld
+            if e.hl.Enabled~=on then e.hl.Enabled=on end
+            if e.bb.Enabled~=on then e.bb.Enabled=on end
             if on and updL and hrp then
-                e.txt.Text=string.format("◆ %s%s · %.1fkg · %dm",e.name and (e.name.." ") or "",e.rarity,e.kg,(e.pos-hrp.Position).Magnitude)
+                local mesh=m:FindFirstChild("Mesh_0"); local p=mesh and mesh.Position
+                if p then
+                    local need=m:GetAttribute("NeedPickaxe") or "?"
+                    local can=(m:GetAttribute("NeedTier") or 1)<=(LP:GetAttribute("EquippedPickaxe") or 1)
+                    local hp,mh=m:GetAttribute("Hp"),m:GetAttribute("MaxHp")
+                    local hpt=(hp and mh and mh>0 and hp<mh) and string.format(" · ❤%.0f%%",hp/mh*100) or ""
+                    local bur=(m:GetAttribute("Revealed")~=true) and " · ฝังอยู่" or ""
+                    e.t2.Text=string.format("%s⛏%s · %dm%s%s",can and "✅ " or "❌ ",tostring(need),(p-hrp.Position).Magnitude,hpt,bur)
+                    e.t2.TextColor3=can and Color3.fromRGB(150,255,150) or Color3.fromRGB(255,150,150)
+                end
             end
         end
     end
@@ -1139,7 +2549,7 @@ RunS.RenderStepped:Connect(function(dt)
             end
         end
     end
-    -- HUD สถานะตัวเรา + เตือนหนาว (สูตรจริงจาก FreezeClient)
+    -- HUD สถานะตัวเรา + เตือนหนาว (สูตรจริงจาก FreezeClient) → ส่งตัวเลขให้ UI วาด
     if updL then
         local ls=LP:FindFirstChild("leaderstats")
         local coinV=ls and ls:FindFirstChild("Coins")
@@ -1148,30 +2558,56 @@ RunS.RenderStepped:Connect(function(dt)
         local cap=LP:GetAttribute("CarryWeight") or 0
         local warm=LP:GetAttribute("Warmth") or 120
         local pt2=LP:GetAttribute("EquippedPickaxe")
-        local pick=pickByTier[tonumber(pt2) or -1] or ("T"..tostring(pt2 or "?"))
-        local cold=""
-        if AltY and AltS and hrp then
-            local w=(warm+(LP:GetAttribute("AbuseWarmthBonus") or 0))*(LP:GetAttribute("RuneWarmthMult") or 1)*2.5
-            if w<=(hrp.Position.Y-AltY.Value)*AltS.Value then cold="  🥶หนาว!" end
-        end
-        local qt=bagQuote and (" ≈$"..comma(bagQuote)) or ""
-        local wth=WState and WState.Value; local wtxt=(wth and wth~="" and wth~="NormalWeather") and ("  🌦"..wth) or ""
-        local ds=LP:GetAttribute("DryStreak"); local dst=(ds and ds>0) and ("  🎲x"..tostring(ds)) or ""
-        hud.Text=string.format("💰 $%s   🎒 %.1f/%dkg%s\n⛏ %s  🌡 %s%s%s%s",comma(coins),bag,cap,qt,pick,tostring(warm),cold,wtxt,dst)
-        hud.TextColor3=cold~="" and Color3.fromRGB(120,190,255) or C.txt
+        local pd=PK.PD and PK.PD[tonumber(pt2) or 0]
+        local pick=(pd and pd.name) or pickByTier[tonumber(pt2) or -1] or ("T"..tostring(pt2 or "?"))
+        if pd and pd.radius then pick=pick.." r"..pd.radius end
+        local wth=WState and WState.Value
+        local ds=LP:GetAttribute("DryStreak")
+        local rc0=PK.rc
+        local eR=math.floor(math.max(PK.eBase or 12,(PK.eOk or 0)*1.3))
+        local ss=PK.ss; local el=os.clock()-ss.t0   -- 📈 สถิติรอบนี้ (เก็บจาก Push pickup · ขายจาก SellResult)
+        local hn=os.clock()   -- ⚔ หมัดแรร์ที่ server รับจริง/วิ (MineHit ที่เราเพิ่งกด E ใส่) เฉลี่ยทุก 5s
+        if hn-(PK.hrT or 0)>=5 then if PK.hrT then PK.hrate=((PK.eHitTot or 0)-(PK.hrN or 0))/(hn-PK.hrT) end PK.hrT=hn PK.hrN=PK.eHitTot or 0 end
+        UI.hud({coins=coins,bag=bag,cap=cap,full=LP:GetAttribute("BagFull")==true,warm=warm,pick=pick,
+            pickSub=pd and ("พลัง "..comma(pd.power or 0).." · จังหวะ "..string.format("%.2f",PK.eInt or 0.4).."s") or "—",
+            cold=PK.isCold(hrp) and true or false,quote=bagQuote,
+            weather=(wth and wth~="" and wth~="NormalWeather") and tostring(wth) or "",dry=(ds and ds>0) and ds or nil,
+            hrate=cfg.autodig and (PK.hrate or 0) or 0,
+            hitSub=cfg.autodig and ("E ติด "..(PK.eHit or 0).." / กด "..(PK.eFire or 0).." (30 วิล่าสุด)") or "เปิดขุดออโต้เพื่อเริ่ม",
+            reachV=cfg.autodig and string.format("ขุด %s%dm",(rc0.ceil or rc0.lo>=rc0.R) and "" or "~",rc0.R) or "—",
+            reachS="กด E ได้ ≤ "..eR.."m",ss=ss,el=el})
     end
     -- นับรวม known (ทุกตัวที่รู้จัก) + ping แยกระดับ
-    if updL then
+    if updL and now-(PK.cntT or 0)>=1 then   -- นับตัวเลขแรร์แค่วินาทีละครั้ง (ไม่ต้อง 4 ครั้ง/วิ)
+        PK.cntT=now
         local count={}
+        local pl=pings
+        -- hash พิกัด ping เป็นช่อง 15 studs → เช็คซ้ำ O(1)/ตัว (เดิม/ร่างแรกวน known×pings = หลักล้านเมื่อ AFK นานๆ)
+        local ph={}
+        for _,e in ipairs(pl) do
+            local p=e.pos
+            ph[math.floor(p.X/15)*73856093+math.floor(p.Y/15)*19349663+math.floor(p.Z/15)*83492791]=true
+        end
         for m,r in pairs(known) do
             -- จำไว้ถาวร — unstream ≠ ถูกขุดไป, ยังนับเป็นของแมพ
-            if m then count[r]=(count[r] or 0)+1 end
+            -- แต่ตัวที่ unstream แล้วมี ping (sticky) ที่จุดเดียวกัน = ตัวเดียวกัน → นับครั้งเดียว (เดิมนับซ้ำ model+ping)
+            local dupe=false
+            if m.Parent==nil then
+                local kp=knownPos[m]
+                if kp then
+                    local cx,cy,cz=math.floor(kp.X/15),math.floor(kp.Y/15),math.floor(kp.Z/15)
+                    for dx=-1,1 do for dy=-1,1 do for dz=-1,1 do
+                        if ph[(cx+dx)*73856093+(cy+dy)*19349663+(cz+dz)*83492791] then dupe=true end
+                    end end end
+                end
+            end
+            if not dupe then count[r]=(count[r] or 0)+1 end
         end
-        for _,e in ipairs(pings) do count[e.rarity]=(count[e.rarity] or 0)+1 end
+        for _,e in ipairs(pl) do count[e.rarity]=(count[e.rarity] or 0)+1 end
         local oc=0
-        for r in pairs(count) do if not tierLbl[r] then oc+=count[r] end end
-        otherLbl.Text="?: "..oc
-        for _,t in ipairs(TIERS) do tierLbl[t].Text=t..": "..(count[t] or 0) end
+        local isT={} for _,t in ipairs(TIERS) do isT[t]=true end
+        for r,n in pairs(count) do if not isT[r] then oc+=n end end
+        UI.counts(count,oc)
     end
 end)
 
@@ -1188,6 +2624,15 @@ task.spawn(function()
         local pos
         for _,v in ipairs(a) do if typeof(v)=="Vector3" then pos=v break end end
         if not pos then pos=Vector3.new(tonumber(a[1]) or 0,tonumber(a[2]) or 0,tonumber(a[3]) or 0) end
+        do  -- DigEffect ตรงช็อตที่เรายิงใน 2s = server รับช็อตนั้นแล้ว → ระยะของช็อตนั้นใช้ได้ (สัญญาณบวกแน่นอน ผูกช็อตได้)
+            local rc=PK.rc; local now=os.clock(); local s=rc.shots; local bs,bd2=nil,3
+            for i=#s,1,-1 do
+                local e=s[i]
+                if now-e.t>2 then break end
+                if not e.m then local dd=(e.p-pos).Magnitude if dd<bd2 then bd2=dd bs=e end end
+            end
+            if bs then bs.m=true rc.acc+=1 PK.rcAcc(rc,bs.d) if rc.pr and rc.pr.p==bs.p then rc.pr=nil end end
+        end
         -- หา player ที่ใกล้จุดขุดสุด → tag กำลังขุด
         local best,bd=nil,12
         for p in pairs(ptracked) do
@@ -1223,98 +2668,311 @@ local RayParams=RaycastParams.new(); RayParams.FilterType=Enum.RaycastFilterType
 local function heldPickaxe(ch)
     -- พลั่วจริง = Tool ที่มี attr Cooldown (เช่น "Rusted Scrapper" Tier=1 Cooldown=0.4) — ตัดคริสตัล(BagId)/รูน(RuneId)
     for _,t in ipairs(ch:GetChildren()) do
-        if t:IsA("Tool") and t:GetAttribute("Cooldown") and not t:GetAttribute("BagId") and not t:GetAttribute("RuneId") then
-            return t
-        end
+        if PK.isPick(t) then return t end
     end
     return nil
 end
+-- เรด้าตัวดีสุดในกระเป๋าที่ยังเหลือเวลา (จัดลำดับ Zenith→Crystal) — ถือเฉพาะตอนเดิน = TimeLeft ไหม้แค่ตอนเดิน
+function PK.radBest()
+    local bp=LP:FindFirstChild("Backpack"); if not bp then return nil end
+    for _,id in ipairs({"ZenithRadar","MeteorRadar","BoulderRadar","RuneRadar","RarityRadar","CrystalRadar"}) do
+        for _,t in ipairs(bp:GetChildren()) do
+            if t:IsA("Tool") and t:GetAttribute("RadarType")==id and (t:GetAttribute("TimeLeft") or 0)>1 then return t end
+        end
+    end
+end
+-- ===== RC-BEGIN: ระยะขุดที่ server รับจริง (reach) — เรียนรู้จากสัญญาณที่ผูกกับช็อตได้แน่นอนเท่านั้น (ไม่เดา) =====
+-- DigEffect ตรงจุดที่เรายิง = รับแล้ว (บวกแน่) · "Too far away" ระหว่าง probe (ช่วงเงียบ ไม่มีช็อตอื่น) = เกินระยะ
+-- "Too far away" ที่ไม่มี probe = ช็อตปกติเกิน → หดแบบมี debounce  (เดิม: error มาช้า+ผูกผิดช็อต → รัศมีรูดเหลือ ~12m ทั้งที่ server รับไกลกว่า)
+PK.rc={R=24,lo=0,ceil=nil,cap=500,pr=nil,lastProbe=-99,lastShrink=-99,lastShot=0,win=1.6,gap=2.5,bad=0,hold=0,ang=0,
+    fired=0,acc=0,farN=0,shots={},err={}}
+function PK.rcReset(rc) rc.R=24 rc.lo=0 rc.ceil=nil rc.pr=nil rc.lastProbe=-99 rc.bad=0 rc.hold=0 end
+function PK.rcAcc(rc,d)        -- ช็อตระยะ d ถูกรับ (DigEffect ยืนยัน) → พิสูจน์ว่าระยะ ≥ d
+    rc.bad=0
+    if d>rc.lo then rc.lo=d end
+    if rc.ceil and d>=rc.ceil then rc.ceil=d+2 end                 -- เพดานเดิมผิด (เปลี่ยนพลั่ว/ตำแหน่ง) → ขยับ
+    if rc.lo>rc.R then rc.R=rc.ceil and math.min(rc.lo,rc.ceil-1) or rc.lo end
+end
+function PK.rcFar(rc,now)      -- ได้ "Too far away"
+    rc.farN+=1
+    local p=rc.pr
+    if p and now-p.t<=rc.win then                                   -- ระหว่างช่วงเงียบของ probe = error ของ probe แน่
+        rc.ceil=math.min(rc.ceil or 1e9,p.d); if rc.R>=rc.ceil then rc.R=math.max(8,math.floor(rc.ceil-1)) end
+        rc.pr=nil; rc.bad=0; return "probe"
+    end
+    if now-rc.lastShrink>1 then                                     -- ไม่มี probe = ช็อตปกติเกินระยะ → หด 15% (debounce 1s กัน error ที่ตามมาช้ารูดซ้ำ)
+        rc.lastShrink=now
+        rc.ceil=math.min(rc.ceil or 1e9,rc.R)
+        rc.R=math.max(8,math.floor(rc.R*0.85)); if rc.lo>rc.R then rc.lo=rc.R end
+        return "stray"
+    end
+end
+function PK.rcNext(rc,now)     -- ถึงเวลา probe ไหม → ระยะที่จะลอง | nil
+    if rc.pr or now<rc.hold or now-rc.lastProbe<rc.gap then return nil end
+    -- ยังไม่เจอเพดาน = ไล่ขึ้นจาก max(พิสูจน์แล้ว, R) · เจอเพดานแล้ว = binary search ระหว่าง "พิสูจน์แล้ว"(lo) กับเพดาน (R ที่เดาเองไม่นับเป็นหลักฐาน)
+    local L=rc.ceil and rc.lo or math.max(rc.lo,rc.R); local H=math.min(rc.ceil or rc.cap,rc.cap)
+    if H-L<3 then                                                   -- ลู่เข้าแล้ว: ใช้ระยะที่พิสูจน์แล้ว ไม่ใช้ค่าเดา
+        if rc.lo>0 and rc.R>rc.lo then rc.R=math.max(8,rc.lo) end
+        return nil
+    end
+    return rc.ceil and (L+H)/2 or math.min(H,L*1.5+4)
+end
+function PK.rcStart(rc,now,d,p) rc.pr={d=d,t=now,p=p}; rc.lastProbe=now end
+function PK.rcLose(rc,now)     -- probe ไม่ได้ข้อสรุป (จุดขุดไม่ได้/เงียบ) — ครบ 3 ครั้งพัก 20s ใช้ R เดิม ไม่เดาผล
+    rc.pr=nil; rc.bad+=1
+    if rc.bad>=3 then rc.bad=0 rc.hold=now+20 end
+end
+function PK.rcTick(rc,now)     -- หมดหน้าต่าง probe โดยไม่มีสัญญาณ
+    local p=rc.pr
+    if p and now-p.t>rc.win then PK.rcLose(rc,now) return true end
+end
+function PK.rcOther(rc,now)    -- error อื่น (safe zone / ไม่ใช่ glacier) ระหว่าง probe = จุดลองใช้ไม่ได้ → ลองมุมอื่น
+    local p=rc.pr
+    if p and now-p.t<=rc.win then PK.rcLose(rc,now) return true end
+end
+-- RC-END
+function PK.shot(p,from,now,probe)   -- ยิง DigRequest + จดไว้จับคู่กับ DigEffect (accepted telemetry + เรียนรู้ระยะ)
+    DigReq:FireServer(p)
+    local rc=PK.rc; rc.fired+=1; rc.lastShot=now
+    local e={p=p,d=(p-from).Magnitude,t=now,probe=probe}
+    local s=rc.shots; s[#s+1]=e; if #s>60 then table.remove(s,1) end
+    return e
+end
+function PK.probePt(from,d)    -- จุดบนภูมิประเทศที่ห่างจากตัว ≈ d (3D) — raycast ลงจากเหนือจุด วนมุมกระจายรอบตัว
+    local rc=PK.rc; rc.ang+=2.399
+    for i=0,3 do
+        local a=rc.ang+i*1.571
+        local dir=Vector3.new(math.cos(a),0,math.sin(a)); local h=d
+        for _=1,2 do
+            local hit=workspace:Raycast(from+dir*h+Vector3.new(0,120,0),Vector3.new(0,-300,0),RayParams)
+            if not hit then break end
+            local D=(hit.Position-from).Magnitude
+            if math.abs(D-d)<=d*0.08 then return hit.Position,D end
+            h=math.max(2,h*d/math.max(D,1))
+        end
+    end
+end
+PK.eBase=12; PK.eOk=0   -- ระยะ E ตามป้าย prompt (MaxActivationDistance จริงอัพเดตตอนสแกน) / ระยะไกลสุดที่ MineHit ยืนยันแล้ว (ใช้ในลูปขุด+ลูป E)
+PK.bl=setmetatable({},{__mode="k"}); PK.fk=setmetatable({},{__mode="k"})   -- blacklist เป้าที่ยิงเท่าไหร่ก็ไม่ปลด / นับช็อตต่อเป้า
 local lastDig=0
 task.spawn(function() while alive() do
-    if (cfg.autodig or cfg.farmBot) and DigReq then
+    if cfg.autodig and DigReq then
         pcall(function()
-            if LP:GetAttribute("IsMiningGem") then return end
             local ch=LP.Character; if not ch then return end
             local hrp=ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
-            local tool=heldPickaxe(ch); if not tool then return end
-            local cd=(tool:GetAttribute("Cooldown") or 0.4)
+            local tool=heldPickaxe(ch)
+            local bp=LP:FindFirstChild("Backpack")                    -- ⛏ จับพลั่ว Tier สูงสุดเองทุก 1.5s (แรงสุด = ขุดไวสุด)
+            if bp and os.clock()-(cfg._pickT or 0)>1.5 and not (tool and tool:GetAttribute("DrillPower")) then   -- ถือ Drill (Plasma Drill ฯ) อยู่ = ผู้เล่นเลือกเอง ไม่สลับเป็นพลั่ว
+                cfg._pickT=os.clock(); local best,bt=nil,tool and (tool:GetAttribute("Tier") or 0) or -1
+                for _,t in ipairs(bp:GetChildren()) do
+                    if PK.isPick(t) then
+                        local ti=t:GetAttribute("Tier") or 0 if ti>bt then bt=ti best=t end
+                    end
+                end
+                if best then local h=ch:FindFirstChildOfClass("Humanoid") if h then pcall(function() h:EquipTool(best) end) tool=best end end
+            end
+            if not tool then return end
+            local rc=PK.rc
+            if PK.rcTool~=tool.Name then   -- เปลี่ยนพลั่ว → เรียนรู้ระยะใหม่ · เริ่มที่รัศมีของพลั่ว (attr DigRadius ของ Drill หรือ PickaxeData[Tier].radius 7→30 · log จริง: server รับ ~11-12m) แล้ว probe ขยายต่อ
+                PK.rcTool=tool.Name; PK.rcReset(rc)
+                local pd0=PK.PD and PK.PD[tonumber(tool:GetAttribute("Tier")) or 0]
+                local dr=tonumber(tool:GetAttribute("DigRadius")) or (pd0 and tonumber(pd0.radius)); if dr and dr>=6 then rc.R=dr end
+            end
+            local cd=(tool:GetAttribute("Cooldown") or tool:GetAttribute("DigCooldown") or 0.4)
             if LP:GetAttribute("Pass_FastDig2x")==true or os.time()<(LP:GetAttribute("MiningPotionUntil") or 0) then cd=cd*0.5 end
             cd=cd/math.max(LP:GetAttribute("RuneHaste") or 1,1)
             local now=os.clock()
-            -- turbo = ข้าม client cooldown ~3x (0.12s+jitter) — server อาจมี rate-limit; ถ้า feed มี error/โดนเตะ ให้ปิด
-            if now-lastDig<(cfg.sub.turboDig and (0.12+math.random()*0.04) or cd) then return end
+            -- turbo = ถี่กว่า cooldown ~3x + jitter (0 ms ล้วน = ยิง >100 req/s ผิดปกติ เสี่ยงโดน server จับ — NOTES: "ใช้ 0.12s+jitter")
+            local step=cfg.sub.turboDig and math.max(0.06,cd*0.35)*(0.85+math.random()*0.3) or cd
+            PK.step=step; PK.cd=cd
+            if now-lastDig<step then return end
+            PK.rcTick(rc,now)
+            if rc.pr then return end                                 -- probe รอผลอยู่: เงียบ ไม่ยิงอย่างอื่น (แยก error ว่าเป็นของ probe ได้แน่)
+            if LP:GetAttribute("IsMiningGem") then return end        -- อยู่ในเซสชันตีแรร์: สวิงพลั่วโดนบล็อก (บอทเก่าก็หยุดเหมือนกัน)
+            if now<(rc.hold2 or 0) then return end                   -- ที่นี่ขุดไม่ได้ (safe zone/ไม่ใช่ glacier ซ้ำๆ ไม่มีช็อตไหนรับ) → พักสั้นๆ ไม่ยิงถล่ม server
+            local from=hrp.Position
+            local eR=math.max(PK.eBase,PK.eOk*1.3)   -- ระยะที่ "กด E ถึง" (ป้าย prompt / ที่ MineHit ยืนยัน ×1.3)
+            -- 🔭 probe ระยะ: ถึงเวลา → รอเงียบ 0.45s (server cooldown ไม่กลืนช็อต) → ยิงจุดเดียว → รอสัญญาณ
+            -- probe เฉพาะเมื่อมีประโยชน์: เปิด 🔭 ปลดไกล หรือระยะขุดที่รู้ยังสั้นกว่าระยะ E (ปกติขุดแค่ในระยะ E อยู่แล้ว ไม่ต้องยิงสำรวจไกลๆ ทิ้งหลุมไกลตัว)
+            local pd=(cfg.sub.digFar or rc.R<eR) and PK.rcNext(rc,now) or nil
+            if pd then
+                if now-rc.lastShot<math.max(0.45,cd*1.3) then return end   -- เงียบอย่างน้อย 1.3× cooldown พลั่ว (server ทิ้งช็อตที่มาติดกัน → จะกลายเป็น inconclusive)
+                local pp,D=PK.probePt(from,pd)
+                if pp then PK.rcStart(rc,now,D,pp) PK.shot(pp,from,now,true) lastDig=now else rc.lastProbe=now end
+                return
+            end
             lastDig=now
-            local head=ch:FindFirstChild("Head"); local pos=head and head.Position or hrp.Position+Vector3.new(0,1.5,0)
-            local lv=hrp.CFrame.LookVector; local flat=Vector3.new(lv.X,0,lv.Z)
-            local unit=flat.Magnitude>0.001 and flat.Unit or Vector3.new(0,0,-1)
-            local cam=workspace.CurrentCamera; local pitch=0
-            if cam then local cl=cam.CFrame.LookVector; local h=math.sqrt(cl.X*cl.X+cl.Z*cl.Z); pitch=h>0.001 and math.clamp(cl.Y/h,-1.4,1) or 0 end
-            local dir=(unit+Vector3.new(0,pitch,0)).Unit
-            -- SMART: เล็งแรร์ฝังจาก cache (refresh ทุก 2 วิ — deep scan ทั้ง SpawnedGems)
-            local target=nil
-            local sgm=cfg.sub.smartDig and workspace:FindFirstChild("SpawnedGems")
-            if sgm then
-                if now-buriedT>2 then
-                    buriedT=now; for i=#buriedCache,1,-1 do buriedCache[i]=nil end
-                    for _,m in ipairs(sgm:GetDescendants()) do
-                        if m:IsA("Model") and m:GetAttribute("BuriedAt") and not m:GetAttribute("Freed")
-                            and rIdx(m:GetAttribute("Rarity"))>=cfg.botTier then   -- โฟกัส: ขุดเฉพาะ ≥tier ที่เลือก
-                            local ow=m:GetAttribute("Owner")
-                            if not ow or ow==LP.UserId then
-                            local mp=m:GetAttribute("BuriedAt")
-                            if typeof(mp)~="Vector3" then local ok2,p2=pcall(function() return m:GetPivot().Position end) mp=ok2 and p2 or nil end
-                            if mp then buriedCache[#buriedCache+1]=mp end
-                            end
+            -- 🎯 เป้าแรร์ฝัง = ของเราเท่านั้น (Owner==เรา) ที่ยังไม่ Freed — ยิงที่ pivot ตรงๆ เหมือนบอทเก่าที่พิสูจน์แล้วว่าตีติด
+            -- (เดิม: ยิงจุดผิว raycast + รวมแรร์คนอื่น + พิกัด ping ของ Freed ที่ไม่ใช่เป้าฝัง → ไม่เคยโดน แถมระยะรูด)
+            local sgm=workspace:FindFirstChild("SpawnedGems")
+            if sgm and now-buriedT>0.8 then
+                buriedT=now; table.clear(buriedCache)
+                local uid=LP.UserId
+                PK.ownCnt={}
+                for _,m in ipairs(sgm:GetChildren()) do
+                    if m:IsA("Model") and m:GetAttribute("BuriedAt")~=nil and not m:GetAttribute("Freed") and not m:GetAttribute("Dropped") then
+                        local ow=m:GetAttribute("Owner"); local ri=rIdx(m:GetAttribute("Rarity"))
+                        PK.ownCnt[tostring(ow)]=(PK.ownCnt[tostring(ow)] or 0)+1
+                        if (ow==nil or ow==uid) and ri>=cfg.botTier and (PK.bl[m] or 0)<now then
+                            local ok2,cf=pcall(m.GetPivot,m)
+                            if ok2 then buriedCache[#buriedCache+1]={p=cf.Position,m=m,r=ri} end
                         end
                     end
                 end
-                local bd=42
-                for _,mp in ipairs(buriedCache) do
-                    local d=(mp-pos).Magnitude
-                    if d<bd then bd=d target=mp end
+            end
+            local R=rc.R
+            -- ปลดแรร์ฝังเฉพาะที่ "กด E ถึง" (ระยะ E = MaxActivationDistance×1.5 หรือที่ MineHit ยืนยัน) — ปลดไกลเกินระยะ E = แรร์โผล่ค้างตีไม่ได้ (เสี่ยงหายตาม FreedAt/โดนแย่ง)
+            -- เปิด "🔭 ปลดไกลถึงระยะขุด" (digFar) ถ้าอยากปลดไว้ก่อนแล้วค่อยเดินไปเก็บ
+            local Dmax=cfg.sub.digFar and R or math.min(R,eR)
+            local nG=0
+            if sgm and now-(PK.digDbg or 0)>10 then PK.digDbg=now
+                local tot,inE,inR=#buriedCache,0,0
+                for _,e in ipairs(buriedCache) do local d=(e.p-from).Magnitude if d<=eR then inE+=1 end if d<=R then inR+=1 end end
+                local ow={} for k,v in pairs(PK.ownCnt or {}) do ow[#ow+1]=k..(k==tostring(LP.UserId) and "(me)" or "").."×"..v end
+                table.sort(ow,function(a,b) return a<b end)
+                if inE==0 and inR>0 and feedAdd and now-(PK.hintT or 0)>60 then PK.hintT=now
+                    feedAdd(("💡 แรร์ฝังของเรา %d ตัวอยู่ในระยะขุดแต่ไกลเกินระยะ E (%dm) — เดินเข้าใกล้ หรือเปิด 🔭 ปลดไกล"):format(inR,eR),Color3.fromRGB(255,215,120))
                 end
+                slog(("dig dbg: แรร์ฝังของเรา %d ตัว | ≤ระยะE(%dm) %d | ≤ระยะขุด(%dm) %d | ยิงถึง ≤%dm | Owner ที่เห็น (me=%d): %s"):format(tot,eR,inE,R,inR,Dmax,LP.UserId,#ow>0 and table.concat(ow," ") or "-"))
             end
-            if target then
-                DigReq:FireServer(target)
-            elseif cfg.farmBot then
-                -- 🤖 บอท: ขุดเป็นวงกลมรอบตัว — หมุนมุม 45°/hit วน 3 รัศมี (4→8→12) = ขุดรอบทิศไม่ใช่แค่ข้างหน้า
-                cfg._digA=(cfg._digA or 0)+0.7854
-                if cfg._digA>=6.283 then cfg._digA=0 cfg._digR=((cfg._digR or 0)+1)%3 end
-                local r=4+((cfg._digR or 0)*4)
-                local px=hrp.Position+Vector3.new(math.cos(cfg._digA)*r,0,math.sin(cfg._digA)*r)
-                local hitT=workspace:Raycast(px+Vector3.new(0,4,0),Vector3.new(0,-10,0),RayParams)
-                if hitT then DigReq:FireServer(hitT.Position) else DigReq:FireServer(px,true) end
-            else
-                local hitT=workspace:Raycast(pos,dir*48,RayParams)
-                if not hitT then hitT=workspace:Raycast(pos,(unit+Vector3.new(0,-0.35,0)).Unit*48,RayParams) end
-                if hitT then DigReq:FireServer(hitT.Position) else DigReq:FireServer(pos+dir*48,true) end
-            end
-        end)
-    end
-    task.wait(0.05)
-end end)
-
--- ============ เก็บออโต้ (Pickup prompt) ============
-task.spawn(function() while alive() do
-    if (cfg.autocollect or cfg.farmBot) and fireproximityprompt then
-        pcall(function()
-            local hrp=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
-            for m in pairs(promptSet) do
-                if not m.Parent then promptSet[m]=nil
-                elseif m.Enabled then
-                    local mm=m:FindFirstAncestorOfClass("Model")
-                    local pp=m.Parent
-                    local pp2=pp and (pp:IsA("BasePart") and pp.Position or pp:IsA("Attachment") and pp.WorldPosition or pp:IsA("Model") and pp:GetPivot().Position)
-                    local inRange=(not cfg.sub.colRange) or (hrp and pp2 and (hrp.Position-pp2).Magnitude<=(m.MaxActivationDistance*1.5))
-                    if mm and (mm:GetAttribute("Freed") or mm:GetAttribute("Dropped")) and inRange
-                        and rIdx(mm:GetAttribute("Rarity"))>=cfg.botTier then   -- โฟกัส: เก็บเฉพาะ ≥tier ที่เลือก
-                        fireproximityprompt(m)
+            if sgm and (cfg.sub.aoeDig or cfg.sub.smartDig) and #buriedCache>0 then
+                local cand={}
+                for _,e in ipairs(buriedCache) do
+                    local d=(e.p-from).Magnitude
+                    if d<=Dmax and e.m.Parent and not e.m:GetAttribute("Freed") then cand[#cand+1]={e=e,d=d} end
+                end
+                table.sort(cand,function(a,b) if a.e.r~=b.e.r then return a.e.r>b.e.r end return a.d<b.d end)   -- แรร์สูงก่อน แล้วใกล้ก่อน
+                for i=1,math.min(#cand,cfg.sub.aoeDig and 10 or 1) do
+                    local m=cand[i].e.m
+                    PK.shot(cand[i].e.p,from,now); nG+=1
+                    local k=PK.fk[m] or {n=0}; PK.fk[m]=k; k.n+=1
+                    if k.n>=14 then PK.bl[m]=now+25; PK.fk[m]=nil; slog(("blacklist เป้าที่ยิงไม่ปลด %s %s @%dm"):format(tostring(m:GetAttribute("GemName") or m.Name),tostring(m:GetAttribute("Rarity")),cand[i].d)) end
+                end
+                if nG>0 then
+                    cfg._aoeN=nG
+                    if feedAdd and now-(cfg._aoeLT or 0)>=3 then cfg._aoeLT=now
+                        feedAdd(string.format("⚔ ขุดแรร์ฝัง %d เป้า (≤%dm)",nG,Dmax),Color3.fromRGB(255,200,120))
                     end
                 end
             end
+            -- 🌐 วงขุดผิว 360° ควบคู่ (ลุ้นคริสตัลหลุมระเบิด/สุ่มโชค) — จุดอยู่ภายในระยะที่ server รับ (R) เสมอ ไม่ยิงเกินจนเกิด "Too far away"
+            -- วงขุดตามนโยบายเดียวกับเป้าแรร์: ปกติขุดเฉพาะในระยะที่ "กด E ถึง" (ไม่งั้นแรร์ที่โผล่จากหลุมไกลตีไม่ได้) — เปิด 🔭 ปลดไกล = ขุดเต็มระยะที่ server รับ
+            local ringR=cfg.sub.digFar and R or Dmax
+            local nr=math.max(1,math.floor(math.min(36,ringR*0.75)/6))
+            local nY=math.max(1,math.min(3,math.floor(ringR*0.8/8)))   -- ชั้นแนวตั้ง ±nY×8m เฉพาะที่อยู่ในรัศมี (เดิมคงที่ ±24m → ระยะ E สั้นแล้วชั้นส่วนใหญ่ตกรัศมี = ลูปเปล่า)
+            for _=1,(nG>0 and 2 or 5) do
+                cfg._digA=(cfg._digA or 0)+1.0472
+                if cfg._digA>=6.283 then cfg._digA=0 cfg._digR=((cfg._digR or 0)+1)%nr
+                    if (cfg._digR or 0)==0 then cfg._digY=((cfg._digY or 0)+1)%(2*nY+1) end
+                end
+                local r=6+((cfg._digR or 0)*6)
+                local vy=(math.min(cfg._digY or 0,2*nY)-nY)*8
+                local px=from+Vector3.new(math.cos(cfg._digA)*r,vy,math.sin(cfg._digA)*r)
+                local hitT=workspace:Raycast(px+Vector3.new(0,8,0),Vector3.new(0,-20,0),RayParams)
+                if hitT and (hitT.Position-from).Magnitude<=ringR*0.97 then PK.shot(hitT.Position,from,now) end   -- ยิงเฉพาะชนพื้นในระยะ
+            end
         end)
     end
-    task.wait(0.35)
+    task.wait(0.02)
+end end)
+
+-- ============ 🅴 ตีแรร์ / เก็บ (Pickup prompt = ปุ่ม E ของเกม) ============
+-- ข้อเท็จจริงจาก dump (03_tree_workspace): แรร์ฝัง = ไม่มี Hp ไม่มี prompt · ขุดโผล่ → Freed=true + มี Hp/MaxHp + ProximityPrompt "Pickup"
+-- กด E บน prompt นั้น = หมัดตีแรร์ (MineHit) จน Hp หมด → ของ Dropped → E อีกที = เก็บ  ⇒ ถ้าไม่กด E "ขุดอย่างเดียว" ไม่มีแรร์ลงกระเป๋า
+-- เดิมลูปนี้ผูกกับสวิตช์ "เก็บแรร์ออโต้" ที่ปิดอยู่ (บอทฟาร์มเดิมเปิดให้เองตอนออโต้) → ตอนนี้ ขุดออโต้ + 🅴 = ตีแรร์ให้เลย
+PK.eT=setmetatable({},{__mode="k"}); PK.eOk=0; PK.eFire=0; PK.eHit=0; PK.eExp=0; PK.eDbg=0; PK.eLT=0
+-- จังหวะกด E = cooldown พลั่ว + margin เล็กน้อย (นับเวลาประมวลผลรอบนั้นรวมด้วย) · log จริง: พลั่วทุกอัน cooldown 0.4 (PickaxeData) ↔ hitrate คงที่ 2.4/s ≈ 1/0.41
+-- กดเร็วกว่า cooldown = server ทิ้งหมัดที่มาถึงก่อนเวลา แล้วจังหวะเลื่อนไปอีกรอบ (ช้าลงเท่าตัว) · ช้ากว่าไปนิดเดียวเสียแค่ ~2% — จึงเอา margin แค่ 8ms (+ granularity ของ task.wait)
+PK.eMargin=0.008; PK.eRec=setmetatable({},{__mode="k"}); PK.eMulti=0
+-- EI-BEGIN
+PK.eHitTot=0; PK.fm={mode="base",t0=0,h0=0,untilT=0,sig=""}; PK.eInt=0.4
+function PK.eInterval()   -- ช่วงหมัดต่อครั้ง: HitInterval (พลั่วพิเศษ: Plasma Drill 0.28 / Hexfang 0.25) ไม่งั้น Cooldown พลั่ว (0.4)
+    -- FastDig2x/ยา Mining/RuneHaste ลดช่วงขุดฝั่ง client (PickaxeClient) แต่ไม่รู้ว่า server ใช้กับหมัดแรร์ด้วยไหม → ลองกดถี่ครึ่งช่วง 20s วัด hits/s จริง: ได้เกิน 1.25× ของช่วงปกติ = server รับ ใช้ต่อ · ไม่งั้นกลับช่วงปกติ (ทบทวนทุก 10 นาที)
+    local ch=LP.Character; local tool=ch and heldPickaxe(ch)
+    local b=tool and (tonumber(tool:GetAttribute("HitInterval")) or tonumber(tool:GetAttribute("Cooldown") or tool:GetAttribute("DigCooldown"))) or 0.4
+    local ff=(LP:GetAttribute("Pass_FastDig2x")==true or os.time()<(LP:GetAttribute("MiningPotionUntil") or 0)) and 0.5 or 1
+    ff=ff/math.max(tonumber(LP:GetAttribute("RuneHaste")) or 1,1)
+    local fm,now=PK.fm,os.clock()
+    local sig=(tool and tool.Name or "?")..":"..ff
+    if fm.sig~=sig then fm.sig=sig fm.mode=(ff<1) and "probe" or "base" fm.t0=now fm.h0=PK.eHitTot fm.untilT=now+600 end
+    if ff>=1 then PK.eInt=b return b end
+    if fm.mode=="probe" and now-fm.t0>=20 then
+        local rate=(PK.eHitTot-fm.h0)/(now-fm.t0)
+        fm.mode=(rate>=1.25/b) and "fast" or "base"; fm.untilT=now+600
+        slog(("E จังหวะ: ลองกดถี่ ×%.2f (ทุก %.2fs) ได้ %.2f หมัด/วิ (ช่วงปกติคาด %.2f) → %s"):format(ff,b*ff,rate,1/b,fm.mode=="fast" and "server รับ ใช้ต่อ" or "server ไม่รับ กลับช่วงปกติ"))
+    elseif fm.mode~="probe" and now>fm.untilT then fm.mode="probe" fm.t0=now fm.h0=PK.eHitTot end
+    local v=(fm.mode=="base") and b or b*ff
+    PK.eInt=v; return v
+end
+-- EI-END
+task.spawn(function() while alive() do
+    local passT0=os.clock()
+    local hitE=cfg.autodig and cfg.sub.hitE
+    if (cfg.autocollect or hitE) and not fireproximityprompt and not PK.fppW then
+        PK.fppW=true; slog("⚠️ executor ไม่มี fireproximityprompt — กด E ให้ไม่ได้")
+        if feedAdd then feedAdd("⚠️ executor ไม่มี fireproximityprompt — ต้องกด E เอง",Color3.fromRGB(255,160,80)) end
+    end
+    if LP:GetAttribute("IsMiningGem") then   -- 🩺 เซสชันตีแรร์ค้าง: IsMiningGem นานเกิน 60s แต่ไม่มี MineHit 25s → log เตือน (ลูปขุดหยุดตลอดที่ค้าง)
+        local t0=os.clock(); PK.sessT=PK.sessT or t0
+        if t0-PK.sessT>60 and t0-(PK.hitT or 0)>25 and t0-(PK.sessW or 0)>60 then PK.sessW=t0 slog("⚠️ IsMiningGem ค้าง >60s และไม่มี MineHit 25s — ลูปขุดหยุดรอ (ลองยืนใกล้แรร์ที่กำลังตีให้ติด E)") end
+    else PK.sessT=nil end
+    if (cfg.autocollect or hitE) and fireproximityprompt then
+        pcall(function()
+            local ch=LP.Character; local hrp=ch and ch:FindFirstChild("HumanoidRootPart"); if not hrp then return end
+            local now=os.clock(); local uid=LP.UserId
+            local list={}
+            for m in pairs(promptSet) do
+                if not m.Parent then promptSet[m]=nil
+                elseif m.Enabled then
+                    local mad=m.MaxActivationDistance if mad>PK.eBase then PK.eBase=mad end   -- เรียนรู้ระยะ E จากป้าย prompt จริง
+                    local mm=m:FindFirstAncestorOfClass("Model")
+                    if mm and mm:GetAttribute("Placed")~=true and (mm:GetAttribute("Freed") or mm:GetAttribute("Dropped") or mm:GetAttribute("Hp")~=nil)   -- Placed = ชิ้นในสวน (ห้ามกด E ไม่งั้นถอนออกจากสวน)
+                        and rIdx(mm:GetAttribute("Rarity"))>=cfg.botTier then
+                        local ow=mm:GetAttribute("Owner")
+                        if mm:GetAttribute("Dropped") or ow==nil or ow==uid then   -- Freed = ของเราเท่านั้น (ไม่แย่งแรร์คนอื่น) · Dropped = หยิบได้ทุกอัน เหมือนเดิม
+                            local pp=m.Parent
+                            local p2=pp and (pp:IsA("BasePart") and pp.Position or pp:IsA("Attachment") and pp.WorldPosition or pp:IsA("Model") and pp:GetPivot().Position)
+                            if p2 then list[#list+1]={m=m,mm=mm,d=(hrp.Position-p2).Magnitude,r=rIdx(mm:GetAttribute("Rarity")),hp=mm:GetAttribute("Hp") or 0} end
+                        end
+                    end
+                end
+            end
+            if #list==0 then return end
+            table.sort(list,function(a,b) if a.r~=b.r then return a.r>b.r end if a.hp~=b.hp then return a.hp<b.hp end return a.d<b.d end)   -- แรร์สูงก่อน · เลือดน้อยก่อน (แตกไว) · ใกล้ก่อน
+            local n,exp=0,nil
+            for _,e in ipairs(list) do
+                -- ระยะ E: เริ่มที่ MaxActivationDistance×1.5 แล้วขยายตามที่ MineHit ยืนยันว่า server ยอมจริง (PK.eOk) — colRange ปิด = ไม่จำกัด
+                local reach=math.max(e.m.MaxActivationDistance*1.5,PK.eOk*1.1)
+                if (not cfg.sub.colRange) or e.d<=reach then
+                    if n<4 then
+                        fireproximityprompt(e.m); n+=1
+                        PK.eT[e.mm]={d=e.d,t=now}
+                    end
+                elseif not exp and e.d<=math.min(150,reach*3) then exp=e end
+            end
+            -- 🔭 ลองกด E ใส่ตัวที่ไกลกว่าระยะที่รู้ 1 ตัว/3s: ถ้า MineHit ตอบกลับ = server ยอม → ระยะ E ขยายเอง (ไม่เดินก็ตีไกลขึ้นได้ถ้าเกมไม่เช็ค)
+            if exp and now-PK.eExp>3 then
+                PK.eExp=now; fireproximityprompt(exp.m); n+=1
+                PK.eT[exp.mm]={d=exp.d,t=now}
+            end
+            if n>0 then
+                PK.eFire+=n
+                if hitE and feedAdd and now-PK.eLT>=4 then PK.eLT=now
+                    feedAdd(string.format("🅴 กด E ตีแรร์ %d ตัว (เป้าหลัก %dm)",n,list[1].d),Color3.fromRGB(255,215,120))
+                end
+            end
+            -- 🩺 รายงานสภาพแรร์ที่รอ E ทุก 20s — ดูใน log ว่า prompt/Hp/ระยะ จริงเป็นยังไง (หลักฐานแทนการเดา)
+            if now-PK.eDbg>20 then PK.eDbg=now
+                for i=1,math.min(3,#list) do
+                    local e=list[i]; local m=e.m
+                    slog(("E dbg %s %s hp=%s/%s freed=%s drop=%s owner=%s(me=%d %s) mining=%s d=%dm prompt=%s hold=%s maxd=%s"):format(
+                        tostring(e.mm:GetAttribute("GemName") or e.mm.Name),tostring(e.mm:GetAttribute("Rarity")),tostring(e.mm:GetAttribute("Hp")),tostring(e.mm:GetAttribute("MaxHp")),
+                        tostring(e.mm:GetAttribute("Freed")),tostring(e.mm:GetAttribute("Dropped")),tostring(e.mm:GetAttribute("Owner")),uid,e.mm:GetAttribute("Owner")==uid and "✓" or "✗",tostring(e.mm:GetAttribute("Mining")),e.d,m.Name,tostring(m.HoldDuration),tostring(m.MaxActivationDistance)))
+                end
+            end
+        end)
+    end
+    task.wait(hitE and math.max(0.05,PK.eInterval()+PK.eMargin-(os.clock()-passT0)) or 0.35)   -- E ตาม cooldown พลั่ว + margin (หมัดละ 1 ครั้ง · turbo ไม่เร่ง E เพราะ server คุมต่อหมัด) — เดิมตายตัว 0.35s
 end end)
 
 -- ============ loot/discovery feed (NotifyRemotes.Push) ============
@@ -1323,9 +2981,10 @@ task.spawn(function()
     Push.OnClientEvent:Connect(function(p)
         if not alive() or not feedAdd or type(p)~="table" then return end
         if p.kind=="pickup" then
-            feedAdd(string.format("📥 +%s (%s) %.1fkg $%s",p.name or "?",p.rarity or "?",p.kg or 0,tostring(p.value or 0)),TCOL[p.rarity])
+            PK.ss.n+=1; PK.ss.val+=tonumber(p.value) or 0
+            feedAdd(string.format("📥 +%s (%s) %.1fkg $%s",p.name or "?",PK.thR(p.rarity),p.kg or 0,tostring(p.value or 0)),TCOL[p.rarity])
         elseif p.kind=="discovery" then
-            feedAdd(string.format("🆕 ค้นพบ %s (%s)",p.name or "?",p.rarity or "?"),TCOL[p.rarity])
+            feedAdd(string.format("🆕 ค้นพบ %s (%s)",p.name or "?",PK.thR(p.rarity)),TCOL[p.rarity])
         elseif p.kind=="afford" then
             feedAdd("💵 ซื้อได้แล้ว: "..tostring(p.name or "?"),Color3.fromRGB(74,226,54))
         end
@@ -1343,29 +3002,208 @@ task.spawn(function()
     slog("gfeed-hook")
 end)
 
+-- ============ 📡 เรด้าสอยสต็อก: ShopState push ~1s → stock มา + เงินพอ → BuyRadar ทันที (รอบเดียว/รอบ restock) ============
+local RPRICE={CrystalRadar=3e5,RarityRadar=3e6,BoulderRadar=12e6,RuneRadar=35e6,MeteorRadar=15e7,ZenithRadar=1e12}
+local RKEY={CrystalRadar="snCrystal",RarityRadar="snRarity",BoulderRadar="snBoulder",RuneRadar="snRune",MeteorRadar="snMeteor",ZenithRadar="snZenith"}
+PK.RTH={CrystalRadar="เรด้าคริสตัล",RarityRadar="เรด้าความหายาก",BoulderRadar="เรด้าหินขนาดใหญ่",RuneRadar="เรด้ารูน",MeteorRadar="เรด้าอุกกาบาต",ZenithRadar="เรด้าซีนิธ"}
+task.spawn(function()
+    while not PK.ShopSt do task.wait(0.5) if not alive() then return end end
+    PK.ShopSt.OnClientEvent:Connect(function(p)
+        if not alive() or type(p)~="table" then return end
+        if p.message then   -- ผลซื้อ/แจ้งร้าน (เกมแปลไทยให้เอง)
+            if cfg.radarSnipe and feedAdd then feedAdd("📡 "..tostring(p.message),Color3.fromRGB(150,220,255)) end
+            return
+        end
+        local st=p.stock; if type(st)~="table" then return end
+        local ls=LP:FindFirstChild("leaderstats"); local cn=ls and ls:FindFirstChild("Coins")
+        local coins=cn and cn.Value or 0
+        -- repaint สต็อกสดบนเมนูทุก push
+        if cfg._rLab then for id,l in pairs(cfg._rLab) do
+            local n=st[id] or 0
+            l.Text=(PK.RBASE[id] or id).." · เหลือ "..n
+            l.TextColor3=n>0 and Color3.fromRGB(120,255,170) or C.txt
+        end end
+        -- ซื้อทั้งสต็อก: push ทุก ~1s → ยังเหลือ+เงินพอ = ยิงซ้ำทุก push จนหมด (cooldown 1.05s/ครั้ง)
+        local now=os.clock()
+        cfg._radarT=cfg._radarT or {}
+        for id,key in pairs(RKEY) do
+            local n=st[id] or 0
+            if n>0 and cfg.radarSnipe and cfg.sub[key] and coins>=(RPRICE[id] or math.huge) and now-(cfg._radarT[id] or 0)>=1.05 then
+                cfg._radarT[id]=now
+                if PK.BuyRad then PK.BuyRad:FireServer(id) end
+                cfg._eqR=id            -- รอ tool เด้งเข้ากระเป๋า → ถือใช้เอง (ลูปด้านล่าง)
+                if feedAdd then feedAdd(string.format("📡 สอย %s! (เหลือ %d · $%s)",PK.RTH[id] or id,n,tostring(RPRICE[id])),Color3.fromRGB(120,255,200)) end
+                sfx("pop"); slog("snipe "..id.." stock="..n.." coins="..tostring(coins))
+            end
+        end
+    end)
+    slog("radar-hook buyrad="..tostring(PK.BuyRad~=nil))
+end)
+
+-- 🖐 ซื้อเรด้าได้ → แค่ log ยืนยัน Tool มาถึง (ไม่ถือให้ — user ติ๊กเรด้าเดินฟรีเอง หรือถือเอง)
+task.spawn(function()
+    local bp=LP:WaitForChild("Backpack",30); if not bp then return end
+    bp.ChildAdded:Connect(function(t)
+        if not alive() or not cfg._eqR then return end
+        if not (t:IsA("Tool") and t:GetAttribute("RadarType")==cfg._eqR) then return end
+        local id=cfg._eqR; cfg._eqR=nil
+        if feedAdd then feedAdd("🖐 "..(PK.RTH[id] or id).." เข้ากระเป๋าแล้ว — ติ๊กเรด้าเดินฟรีเพื่อใช้",Color3.fromRGB(120,255,200)) end
+        slog("bought radar arrived "..id)
+    end)
+    -- หมดเวลารอ 15s ไม่มี tool มา = ซื้อไม่สำเร็จ → เคลียร์
+    while alive() do task.wait(15) if cfg._eqR then cfg._eqR=nil end end
+end)
+
+-- 📡 ถือเรด้าตลอด (ใช้ได้จริง: server ดีดชาร์จเอง Count→TimeLeft — ขุดไม่ได้ขณะถือ ใช้ตอนไม่บอท/ไม่เรด้าเดินฟรี)
+-- ถือเรด้าตลอดแบบประหยัด: sever HUD ไม่ตาย + สลับ ถือ2วิ/ปล่อย8วิ → server ไหม้เวลาแค่ ~18%
+-- power finds ยัง roll ตอนถือ · scan ทำงานต่อทั้งสองช่วง (t3 ไม่ถูก stop)
+task.spawn(function()
+    cfg._severed={}
+    while alive() do
+    if cfg.sub.snRadarHold and not cfg.radarFake then
+        pcall(function()
+            local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid")
+            if not hum then return end
+            local held=nil
+            for _,t in ipairs(ch:GetChildren()) do
+                if t:IsA("Tool") and t:GetAttribute("RadarType") then held=t break end
+            end
+            local t=held or PK.radBest()
+            if t and getconnections and not cfg._severed[t] then
+                cfg._severed[t]=true
+                local s=PK.sever(t); slog("radar-hold sever "..s)
+            end
+            if t and not held then pcall(function() hum:EquipTool(t) end) slog("radar-hold equip") end
+        end)
+        task.wait(2)   -- ช่วงถือ (server ไหม้ + power finds roll)
+        pcall(function()
+            local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid")
+            if hum then for _,t in ipairs(ch:GetChildren()) do
+                if t:IsA("Tool") and t:GetAttribute("RadarType") then hum:UnequipTools() break end
+            end end
+        end)
+        task.wait(8)   -- ช่วงปล่อย (server แช่แข็งเวลา · scan ยังทำงานผ่าน t3)
+    else task.wait(0.6) end
+end end)
+
+-- 📡 radar ของใหม่เข้ากระเป๋าตอนเรด้าเดินฟรีเปิด → fake-equip ให้เอง (เผา 0 ตลอดเหมือนกัน)
+task.spawn(function()
+    local bp=LP:WaitForChild("Backpack",30); if not bp then return end
+    bp.ChildAdded:Connect(function(t)
+        if not alive() or not cfg.radarFake or not getconnections then return end
+        if not (t:IsA("Tool") and t:GetAttribute("RadarType")) then return end
+        if cfg._radMode=="severed" and cfg._lastSev==t then return end   -- ทูลที่ severCycle เพิ่งปล่อยกลับเอง = churn ไม่ใช่ของใหม่ (กัน log/fire ซ้ำทุกวิ)
+        task.wait(0.4)
+        pcall(function() t:SetAttribute("Duration",3600) t:SetAttribute("TimeLeft",3600) end)
+        for _,c in pairs(getconnections(t.Equipped)) do pcall(function() c:Fire() end) end
+        if feedAdd then feedAdd("📡 เรด้าใหม่เข้า — fake-equip เผา 0 ตลอด",Color3.fromRGB(90,235,255)) end
+        slog("fakeRadar new "..t.Name)
+    end)
+end)
+
+-- ============ 📡 PowerFired: buried impact waypoint เฉพาะเจ้าของเรด้า (intel เดียวที่ ESP แทนไม่ได้) ============
+task.spawn(function()
+    while not PK.PowFd do task.wait(0.5) if not alive() then return end end
+    PK.PowFd.OnClientEvent:Connect(function(p)
+        if not alive() or type(p)~="table" then return end
+        if p.kind=="impact" and typeof(p.pos)=="Vector3" then
+            local ttl=math.max(30,(tonumber(p.untilT) or os.time()+360)-os.time())
+            pcall(function() mkMark(p.pos,"💎 จุดฝังพิเศษ (5x luck)",Color3.fromRGB(90,235,255),ttl) end)
+            if feedAdd then feedAdd("💎 เรด้าเจอจุดฝังพิเศษ! "..tostring(p.text or ""),Color3.fromRGB(90,235,255)) end
+            sfx("pop"); slog("impact @ "..tostring(p.pos))
+        elseif p.kind=="zenith" then
+            if feedAdd then feedAdd("📡 "..tostring(p.text or "เรด้าเจอ Zenith!"),TCOL.Zenith) end
+            sfx("pop"); slog("zenith ping "..tostring(p.text))
+        elseif p.text and feedAdd then feedAdd("📡 "..tostring(p.text),C.dim) end
+    end)
+    slog("powerfired-hook")
+end)
+
 -- ============ dig feedback (server บอกเหตุที่ขุดพลาด) ============
 task.spawn(function()
     while not DigRes do task.wait(0.3) if not alive() then return end end
     local lastW=0
     DigRes.OnClientEvent:Connect(function(ok,err)
-        if not alive() or ok or not feedAdd then return end
-        local now=os.clock(); if now-lastW<1.5 then return end; lastW=now
-        feedAdd("⛏ "..tostring(err or "ขุดไม่ได้"),Color3.fromRGB(255,120,120))
+        if not alive() or ok then return end
+        local rc=PK.rc; local now=os.clock()
+        local es=tostring(err or "ขุดไม่ได้")
+        if rc.err[es] then rc.err[es]+=1 elseif (rc.errK or 0)<20 then rc.errK=(rc.errK or 0)+1 rc.err[es]=1 end   -- นับชนิด error ไว้รายงานใน log ทุก 30s (รู้ว่า server ปฏิเสธเพราะอะไรบ้าง)
+        local low=es:lower()
+        if low:find("far") or low:find("range") or low:find("distance") or es:find("ไกล") then   -- "Too far away" (NotifyClient:376)
+            local kind=PK.rcFar(rc,now)
+            if kind=="stray" then
+                slog(("ไกลเกิน (ไม่มี probe) → R หด %dm ceil=%s lo=%d"):format(rc.R,tostring(rc.ceil and math.floor(rc.ceil)),rc.lo))
+                if feedAdd then feedAdd(string.format("📏 ไกลเกิน → ระยะขุดเหลือ %dm",rc.R),Color3.fromRGB(255,160,80)) end
+            elseif kind=="probe" then
+                slog(("probe ไกลเกิน → เพดาน≈%dm R=%d lo=%d"):format(rc.ceil,rc.R,rc.lo))
+            end
+            return
+        end
+        if low:find("safe zone") or low:find("glacier") or low:find("nothing to break") then   -- ขุดตรงนี้ไม่ได้: ถ้าซ้ำ ≥8 ครั้ง/3s และไม่มีช็อตไหนรับ → พัก 10s (ไม่ยิงถล่ม server ตอนยืนในเซฟโซน/บนฐาน)
+            if now-(rc.szT or 0)>3 then rc.szT=now rc.sz=0 rc.szA=rc.acc end
+            rc.sz=(rc.sz or 0)+1
+            if rc.sz>=8 and rc.acc==rc.szA and now>(rc.hold2 or 0) then rc.hold2=now+10 rc.sz=0 slog("ขุดไม่ได้ซ้ำๆ (safe zone / ไม่ใช่ glacier) และไม่มีช็อตไหนรับ → พักยิง 10s") if feedAdd then feedAdd("⛔ ตรงนี้ขุดไม่ได้ (เซฟโซน/ไม่ใช่ธารน้ำแข็ง) — พักยิง 10s",Color3.fromRGB(255,160,80)) end end
+        end
+        PK.rcOther(rc,now)                                            -- error อื่นระหว่าง probe = จุดลองใช้ไม่ได้ (ไม่ใช่เรื่องระยะ)
+        if not feedAdd or now-lastW<1.5 then return end; lastW=now
+        feedAdd("⛏ "..es,Color3.fromRGB(255,120,120))
     end)
 end)
 
--- ============ ขายออโต้ (BagFull → TeleportSell → RequestSell("All") → กลับจุดเดิม) ============
+-- ============ hitrate telemetry: MineHit = hit ที่ server รับจริง → log อัตราทุก 30s ============
+task.spawn(function()
+    while not MineHitEv do task.wait(0.3) if not alive() then return end end
+    cfg._hits=0
+    MineHitEv.OnClientEvent:Connect(function(g)   -- payload = โมเดลแรร์ที่โดนหมัด (MiningClient:705 → triggerCrystalShake)
+        cfg._hits=(cfg._hits or 0)+1; PK.hitT=os.clock()
+        if typeof(g)=="Instance" then   -- หลักฐาน: หมัดลง "คนละตัวภายใน 0.3s" ได้ไหม → ถ้าได้ = cooldown ต่อแรร์ (กดหลายตัวพร้อมกันคุ้ม) · ไม่ได้ = ต่อผู้เล่น (กดตัวเดียวพอ)
+            PK.eRec[g]=PK.hitT; local k=0
+            for gg,tt in pairs(PK.eRec) do if PK.hitT-tt<0.3 then k+=1 else PK.eRec[gg]=nil end end
+            if k>PK.eMulti then PK.eMulti=k end
+        end
+        local t=typeof(g)=="Instance" and PK.eT[g]   -- เราเพิ่งกด E ใส่ตัวนี้ → ระยะตอนกดคือระยะที่ server ยอมรับ E จริง
+        if t and os.clock()-t.t<3 then
+            PK.eHit+=1; PK.eHitTot+=1
+            -- สกิลเคียว/ค้างคาวตีแรร์จากไกลได้เอง (MineHit เหมือนกัน) → ตอนถือสองอันนี้ไม่เอาระยะมาเรียนรู้ระยะ E
+            if t.d>PK.eOk and not (LP:GetAttribute("HoldingScythe") or LP:GetAttribute("HoldingBatwing")) then PK.eOk=t.d; slog(("E ตีติดที่ระยะ %dm (ใหม่สุด)"):format(t.d)) end
+        end
+    end)
+    while alive() do
+        task.wait(30)
+        local rc=PK.rc
+        if cfg.autodig or cfg.autocollect or (cfg._hits or 0)>0 then
+            local es={} for k,v in pairs(rc.err) do es[#es+1]=k.."×"..v end
+            slog(string.format("30s | ขุด ยิง=%d รับ=%d (DigEffect) R=%dm lo=%dm ceil=%s ไกลเกิน=%d | E กด=%d ติด=%d (MineHit รวม %d) ระยะE≤%dm จังหวะ=%dms หมัดพร้อมกันสูงสุด=%d | err: %s",
+                rc.fired,rc.acc,rc.R,rc.lo,tostring(rc.ceil and math.floor(rc.ceil)),rc.farN,PK.eFire,PK.eHit,cfg._hits or 0,PK.eOk,(PK.eInt+PK.eMargin)*1000,PK.eMulti,#es>0 and table.concat(es," ; ") or "-"))
+        end
+        cfg._hits=0; rc.fired=0; rc.acc=0; rc.farN=0; PK.eFire=0; PK.eHit=0; PK.eMulti=0
+        for k in pairs(rc.err) do rc.err[k]=nil end; rc.errK=0
+    end
+end)
+
+-- ============ ขายออโต้ (BagFull → เก็บ⭐ชิ้นโชคสูง → TeleportSell/ยิงตรง → RequestSell("All") → กลับจุดเดิม) ============
 local selling=false
+PK.protectBag=nil   -- fwd: นิยามจริงอยู่ในส่วนสวนด้านล่าง (ติด⭐ชิ้นควรเก็บ กันโดนขายทิ้ง)
 task.spawn(function() while alive() do
-    if (cfg.autosell or cfg.farmBot) and not selling and LP:GetAttribute("BagFull")==true then
+    -- ขายตอนกระเป๋าเต็ม (BagFull) · โหมดขายระยะไกล (ไม่วาป) ขายก่อนเต็มที่ ≥92% ด้วย (ไม่ให้ E เก็บแรร์ใหม่ไม่ได้เพราะเต็ม) — เว้น 45s กันยิงซ้ำเมื่อ ⭐ หนักค้างกระเป๋า
+    local full=LP:GetAttribute("BagFull")==true
+    local near=false
+    if cfg.autosell and cfg.sub.remoteSell and not full and os.clock()>(PK.sellHold or 0) then
+        local k,c=LP:GetAttribute("BagKg"),LP:GetAttribute("CarryWeight")
+        near=type(k)=="number" and type(c)=="number" and c>0 and k/c>=0.92
+    end
+    if cfg.autosell and not selling and not PK.gTrip and (full or near) and os.clock()>(PK.sellHold or 0) then
         local ok=pcall(function()
+            -- กันโดนขายทิ้งก่อนเสมอ: ชิ้นโชคสูงที่จะลงสวน → ติด⭐ (server เว้น favorite ตอนขาย All)
+            if PK.protectBag then local n=PK.protectBag() if n>0 then feedAdd(("⭐ เก็บ %d ชิ้นโชคไว้ลงสวน"):format(n),Color3.fromRGB(140,255,140)) end task.wait(0.6) end
             -- ขายระยะไกล: ยิง RequestSell ตรงๆ ไม่วาป (ถ้า server ไม่เช็คระยะ = ขายได้ทุกที่; fail → SellResult feed บอก)
             if cfg.sub.remoteSell and SellReq then
-                selling=true
+                selling=true; PK.sellHold=os.clock()+(full and 6 or 45)
                 SellReq:FireServer("All")
-                task.delay(4,function() selling=false end)
+                task.delay(full and 4 or 2,function() selling=false end)
                 return
             end
+            if not full then return end   -- โหมดวาป: ขายเฉพาะตอนเต็มจริง (ไม่วาปเล่นๆ)
             local ch=LP.Character; local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
             if not hrp or not TSell or not SellReq then return end
             selling=true
@@ -1399,10 +3237,14 @@ task.spawn(function()
             if cfg.sub.metMark and typeof(p.target)=="Vector3" then mkMark(p.target,"☄️ เมเทียร์",ORANGE,240) end
         elseif p.phase=="impact" then
             clearMarks("เมเทียร์")
+            cfg._metHot=true                                          -- ☄️ โซน luck x5 เปิด → บอทวิ่งไป (botMet)
             local pp=typeof(p.pos)=="Vector3" and p.pos or (MetPos and MetPos.Value)
             if cfg.sub.metMark and typeof(pp)=="Vector3" then mkMark(pp,"☄️ เมเทียร์(ตกแล้ว)",ORANGE,120) end
-            if cfg.sub.metFeed then feedAdd("💥 เมเทียร์ตกแล้ว!",ORANGE) end
+            if cfg.sub.metFeed then feedAdd("💥 เมเทียร์ตกแล้ว! โซนluck x5",ORANGE) end
+        elseif p.phase=="zone" then
+            cfg._metHot=true
         elseif p.phase=="end" then
+            cfg._metHot=false
             clearMarks("เมเทียร์")
         end
     end)
@@ -1448,10 +3290,189 @@ task.spawn(function() while alive() do
                 if type(v)=="table" then local ks={} for k,x in pairs(v) do ks[#ks+1]=tostring(k).."="..tostring(x) end slog("quote table: "..table.concat(ks," | "))
                 else slog("quote="..tostring(v)) end
             end
-            bagQuote=tonumber(v) or (type(v)=="table" and (v.total or v.value or v.payout or v.worth or v.Total or v.TotalValue or v.coins or v.Coins)) or bagQuote
+            bagQuote=tonumber(v) or (type(v)=="table" and (v.payout or v.total or v.value or v.worth or v.Total or v.TotalValue or v.coins or v.Coins)) or bagQuote
         end
     end
     task.wait(8)
+end end)
+
+-- ============ 🌱 สวนโชคออโต้ — ConfigGet → วาง/สลับของ luck สูงสุด ============
+local function gLuck(rarity,kg,muts,coreLuck,name)
+    if GD and GD.effectiveLuck then
+        local ok,l=pcall(GD.effectiveLuck,rarity,kg,muts,nil,coreLuck,name)
+        if ok and type(l)=="number" then return l end
+    end
+    local rm=(GD and GD.LuckRarityMult and GD.LuckRarityMult[rarity]) or 1
+    return 0.095*(kg^0.35)*rm
+end
+local function gBag()   -- ของในกระเป๋าที่วางได้ (Tool + BagId) sort luck มาก→น้อย
+    local bp=LP:FindFirstChild("Backpack"); local t={}
+    if bp then for _,d in ipairs(bp:GetChildren()) do
+        if d:IsA("Tool") and d:GetAttribute("BagId") then
+            t[#t+1]={id=d:GetAttribute("BagId"),kg=d:GetAttribute("Kg") or 1,rarity=d:GetAttribute("Rarity") or "Common",
+                name=d:GetAttribute("GemName") or d.Name,
+                luck=gLuck(d:GetAttribute("Rarity") or "Common",d:GetAttribute("Kg") or 1,d:GetAttribute("Mutations"),d:GetAttribute("CoreLuck"),d:GetAttribute("GemName"))}
+        end
+    end end
+    table.sort(t,function(a,b) return a.luck>b.luck end)
+    return t
+end
+local gdPosN=0  -- หมุนตำแหน่งวาง (กันทับชิ้นเดิม)
+PK.gWorst,PK.gCount,PK.gCap=0,0,0   -- state สวนล่าสุด (luck ต่ำสุด/ชิ้น/ช่อง) — ใช้คัดชิ้นเก็บ⭐ + ตัดสินใจเดินทาง
+local function gPos()
+    local idx=LP:GetAttribute("PlotIndex") or 0
+    local p=idx~=0 and workspace:FindFirstChild("PlotPlacePart"..idx)
+    if not p then return nil end
+    local cf=p.CFrame; local s=p.Size
+    local ux,uz=math.max(8,s.X-10),math.max(8,s.Z-10)
+    local cols=math.max(1,math.floor(ux/8))
+    local i=gdPosN; gdPosN=gdPosN+1
+    local r=math.floor(i/cols)%math.max(1,math.floor(uz/8)); local c=i%cols
+    local lx=-ux/2+4+c*8; local lz=-uz/2+4+r*8
+    return (cf*CFrame.new(lx,0,lz)).Position
+end
+function PK.tierOk(r) local ti=tIdx(r) return ti<=0 or ti>=cfg.sub.gdTier end   -- ผ่าน tier ขั้นต่ำ (unknown→ผ่าน)
+function PK.placeOne()   -- วาง/สลับ 1 ชิ้น → คืน true ถ้าทำอะไรสักอย่าง (ใช้ร่วมกัน ลูปปกติ + รอบเดินทาง)
+    local st=CfgGetR:InvokeServer()
+    if type(st)~="table" then return false end
+    local placed=st.crystals or {}
+    PK.gCount=#placed; PK.gCap=st.capacity or 0
+    PK.gWorst=math.huge
+    for _,c in ipairs(placed) do
+        local l=(PK.pickOn() and not picks[c.name]) and -1 or gLuck(c.rarity,c.kg,c.mutations,c.coreLuck,c.name)
+        if l<PK.gWorst then PK.gWorst=l end
+    end
+    if PK.gWorst==math.huge then PK.gWorst=0 end
+    local items=gBag()
+    for i=#items,1,-1 do if not PK.tierOk(items[i].rarity) then table.remove(items,i) end end
+    if PK.pickOn() then for i=#items,1,-1 do if not picks[items[i].name] then table.remove(items,i) end end end
+    if #items==0 then return false end
+    if PK.gCount<PK.gCap then
+        local pos=gPos()
+        if pos then PlaceC:FireServer(items[1].id,pos,0)
+            slog(("garden+ %s %.1fkg luck %.2f"):format(items[1].name,items[1].kg,items[1].luck)) return true end
+    elseif cfg.sub.gdSwap and TakeC then
+        local wId=nil
+        for _,c in ipairs(placed) do
+            local l=(PK.pickOn() and not picks[c.name]) and -1 or gLuck(c.rarity,c.kg,c.mutations,c.coreLuck,c.name)
+            if l==PK.gWorst then wId=c.id break end
+        end
+        if wId and items[1].luck>PK.gWorst*1.2 then
+            TakeC:FireServer(wId); task.wait(0.7)
+            local pos=gPos()
+            if pos then PlaceC:FireServer(items[1].id,pos,0)
+                slog(("garden~ out %.2f → in %s %.2f"):format(PK.gWorst,items[1].name,items[1].luck)) return true end
+        end
+    end
+    return false
+end
+task.spawn(function() while alive() do
+    if cfg.garden and PlaceC and CfgGetR then pcall(PK.placeOne) end
+    task.wait(4)
+end end)
+
+-- ============ ⭐ auto-favorite: ชื่อที่เลือกใน 🎯 + ชิ้นโชคสูงสำหรับสวน → ติดดาวกันขาย ============
+-- บอทขุด/เก็บทุกอย่าง → ขายหมด → ชิ้นที่เลือก+ชิ้นโชคดีรอดเพราะติด ⭐ → สวนหยิบไปวางเอง
+local favByBot={}  -- [BagId]=GemName — เฉพาะตัวที่เราติด ⭐ เอง (ของ user ติดเองไม่แตะ)
+PK.favLuck={}         -- [BagId]=true — ตัวที่เราติดเพราะ "โชคสวน" (ถอดได้เมื่อไม่คุ้มแล้ว)
+function PK.luckWorthy(l)  -- ชิ้นนี้คุ้มเก็บไว้ลงสวนไหม: ว่าง→เก็บ / เต็ม→ต้องชนะตัวอ่อนสุด 20%
+    if PK.gCap>0 and PK.gCount>=PK.gCap then return l>PK.gWorst*1.2 end
+    return true
+end
+function PK.wantOf(d)      -- คืน nil / "pick" / "luck" — เหตุผลที่ควรเก็บชิ้นนี้
+    local nm=d:GetAttribute("GemName") or d.Name
+    if PK.pickOn() and picks[nm]==true then return "pick" end
+    if cfg.garden and cfg.sub.gdKeep and d:GetAttribute("BagId") and PK.tierOk(d:GetAttribute("Rarity") or "Common") then
+        local l=gLuck(d:GetAttribute("Rarity") or "Common",d:GetAttribute("Kg") or 1,d:GetAttribute("Mutations"),d:GetAttribute("CoreLuck"),nm)
+        if PK.luckWorthy(l) then return "luck" end
+    end
+end
+PK.favT={}   -- เวลาที่สลับ ⭐ ล่าสุดต่อ BagId
+PK.protectBag=function()   -- ติด⭐ชิ้นควรเก็บทันที (ใช้ก่อนขาย — กันโดนขายทิ้ง) → คืนจำนวนที่ป้อง
+    local n=0
+    if not TogFav then return n end
+    local bp=LP:FindFirstChild("Backpack")
+    if bp then for _,d in ipairs(bp:GetChildren()) do
+        if d:IsA("Tool") then
+            local bid=d:GetAttribute("BagId")
+            local w=bid and PK.wantOf(d)
+            if w and d:GetAttribute("Favorited")~=true and os.clock()-(PK.favT[bid] or -99)>4 then
+                PK.favT[bid]=os.clock()
+                TogFav:FireServer(bid); favByBot[bid]=d:GetAttribute("GemName") or d.Name
+                if w=="luck" then PK.favLuck[bid]=true end; n=n+1
+            end
+        end
+    end end
+    return n
+end
+task.spawn(function() while alive() do
+    if TogFav then pcall(function()
+        local bp=LP:FindFirstChild("Backpack")
+        local seen={}
+        if bp then for _,d in ipairs(bp:GetChildren()) do
+            if d:IsA("Tool") then
+                local bid,nm=d:GetAttribute("BagId"),d:GetAttribute("GemName") or d.Name
+                local w=bid and PK.wantOf(d)
+                if bid then
+                    seen[bid]=true   -- (เดิมตั้งเฉพาะกิ่ง elseif → favByBot ถูกเคลียร์ทุกรอบ = ฟีเจอร์ถอด ⭐ ตัวที่ไม่คุ้มแล้วไม่เคยทำงาน)
+                    local recent=os.clock()-(PK.favT[bid] or -99)<4   -- เพิ่งสลับไป: attr ยังไม่ replicate กลับ → ห้ามสลับซ้ำ (ToggleFavorite = สลับ จะถอดดาวทิ้ง)
+                    if w and d:GetAttribute("Favorited")~=true then
+                        if not recent then
+                            PK.favT[bid]=os.clock(); TogFav:FireServer(bid); favByBot[bid]=nm
+                            if w=="luck" then PK.favLuck[bid]=true end
+                        end
+                    elseif favByBot[bid] and not recent then
+                        if d:GetAttribute("Favorited")~=true then favByBot[bid]=nil PK.favLuck[bid]=nil   -- user ถอดเอง → เคารพ
+                        elseif not w then PK.favT[bid]=os.clock(); TogFav:FireServer(bid); favByBot[bid]=nil PK.favLuck[bid]=nil end   -- ไม่คุ้มแล้ว → ถอด ⭐ ที่เราติด
+                    end
+                end
+            end
+        end end
+        for bid in pairs(favByBot) do if not seen[bid] then favByBot[bid]=nil PK.favLuck[bid]=nil end end   -- ออกจากกระเป๋าแล้ว → เคลียร์ record
+    end) end
+    task.wait(3)
+end end)
+
+-- ============ 🌱 รอบสวน: ชิ้น⭐สะสม ≥3 + อยู่ไกลสวน → TeleportPlot → วาง/สลับจนหมด → กลับจุดขุด ============
+PK.gTrip=false
+task.spawn(function() while alive() do
+    if cfg.garden and cfg.sub.gdTrip and TPlot and not PK.gTrip and not selling then if not pcall(function()
+        local nP=0; local bp=LP:FindFirstChild("Backpack")
+        if bp then for _,d in ipairs(bp:GetChildren()) do
+            if d:IsA("Tool") and PK.favLuck[d:GetAttribute("BagId")] then nP=nP+1 end
+        end end
+        if nP<3 then return end
+        local idx=LP:GetAttribute("PlotIndex") or 0
+        local pp=idx~=0 and workspace:FindFirstChild("PlotPlacePart"..idx)
+        local ch=LP.Character; local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+        if not (pp and hrp) then return end
+        if (hrp.Position-pp.Position).Magnitude<40 then return end   -- อยู่ใกล้สวนแล้ว ลูปปกติจัดการ
+        PK.gTrip=true
+        local back=hrp.CFrame
+        feedAdd(("🌱 พา %d ชิ้น⭐ไปลงสวน"):format(nP),Color3.fromRGB(140,255,140))
+        TPlot:FireServer(); task.wait(2.2)
+        for i=1,15 do local ok,did=pcall(PK.placeOne) if not (ok and did) then break end task.wait(0.6) end
+        local ch2=LP.Character
+        if ch2 then pcall(function() ch2:PivotTo(back) end) end
+        feedAdd("🌱 ลงสวนเสร็จ กลับจุดขุด",Color3.fromRGB(140,255,140))
+        PK.gTrip=false
+    end) then PK.gTrip=false end end
+    task.wait(8)
+end end)
+
+-- HUD สวน: โชว์ luck รวม/ช่อง บนแถว (ConfigStats invoke ทุก 15 วิ)
+task.spawn(function() while alive() do
+    if cfg._gLbl then
+        local txt="วางแรร์โชคสูงลงสวนให้เอง"
+        if CfgStat then
+            local ok,st=pcall(function() return CfgStat:InvokeServer() end)
+            if ok and type(st)=="table" and st.totalLuck then
+                txt=("🌱 สวน 🍀+%.1f%%  %d/%d"):format(st.totalLuck,st.count or 0,st.capacity or 0)
+            end
+        end
+        pcall(function() cfg._gLbl.Text=txt end)
+    end
+    task.wait(15)
 end end)
 
 -- ============ รูน: scan เริ่มต้น + เฝ้า PlotRunes ============
@@ -1467,119 +3488,204 @@ task.spawn(function()
     end
 end)
 
--- ============ auto-อัพเกรด (UpgradeState → ซื้อ "max" เมื่อเงินพอ) ============
+-- ============ auto-อัพเกรด (UpgradeState → ซื้อแพ็กใหญ่สุดที่เงินพอ) ============
+-- ราคาจริงจาก UpgradeClient: prices[i] = ราคาปุ่ม steps[i] (carry {1,50,10} / warmth {10,50,100}) · ปุ่มสุดท้าย = "max" ราคา maxCarryCost/maxWarmthCost
+-- นโยบาย: max ก่อน ไม่พอค่อยไล่ step ลงมา (แพ็กใหญ่ก่อน = ใช้เงินได้เต็ม/คำสั่ง · ราคาสะสมเท่ากัน ไม่เสียเปรียบ)
+-- 💸 upSoon: ซื้อทันทีทุกครั้งที่ UpgradeState ใหม่มา (ราคาสด ไม่ซื้อซ้ำบนราคาเก่า) แทนรอ poll — เดิมแก้เป็น "แพ็กเล็กสุดก่อน" ซึ่งช้ากว่าและวนไปแตะปุ่ม max ผิดดัชนี
+PK.upT=0; PK.lastBuy={carry=0,warmth=0}
+PK.upInfo={carry={"⬆️ อัพกระเป๋า",Color3.fromRGB(120,255,160)},warmth={"⬆️ อัพความอบอุ่น",Color3.fromRGB(255,180,120)}}
+function PK.upTry()
+    if not (cfg.autoup and BuyUp and upState) then return end
+    local ls=LP:FindFirstChild("leaderstats"); local cv=ls and ls:FindFirstChild("Coins")
+    local coins=cv and cv.Value or 0
+    local nw=os.clock()
+    local function tryBuy(kind)
+        local steps=kind=="carry" and {1,50,10} or {10,50,100}
+        local prices=kind=="carry" and upState.carryPrices or upState.warmthPrices
+        local maxCost=kind=="carry" and upState.maxCarryCost or upState.maxWarmthCost
+        if type(maxCost)=="number" and maxCost>0 and coins>=maxCost then BuyUp:FireServer(kind,"max") return "max" end
+        for i=#steps-1,1,-1 do
+            local p=prices and prices[i]
+            if type(p)=="number" and coins>=p then BuyUp:FireServer(kind,steps[i]) return "+"..steps[i] end
+        end
+    end
+    local gap=cfg.sub.upSoon and 1.2 or 5
+    -- 💾 เก็บเงินซื้อพลั่ว: "max" ของ carry/warmth ใช้เงินทั้งกระเป๋าทุกรอบ → ไม่เคยพอซื้อพลั่ว (ราคาเพิ่ม ~4x/ขั้น) · เงิน ≥25% ของราคาพลั่วถัดไปแล้ว = งดซื้อ carry (warmth ยังซื้อได้ถ้าหนาว)
+    local saving,svName=false,nil
+    if cfg.sub.upPick and PK.PD then
+        local best=PK.pkState(); local np,ni=PK.pkNext(best)
+        if np and coins>=np*0.25 then saving=true svName=PK.PD[ni] and PK.PD[ni].name end
+    end
+    local rowUpL=PK.upLbl
+    if rowUpL then   -- บรรทัดอธิบายของการ์ดอัพเกรดบอกสถานะ "กำลังเก็บเงินซื้อพลั่ว" (ไม่งั้นดูเหมือนบอทหยุดซื้อ carry/warmth เฉยๆ)
+        local base=string.format("🔥 ความอบอุ่น Lv%s · 🎒 กระเป๋า Lv%s",tostring(upState.warmth or "–"),tostring(upState.carry or "–"))
+        rowUpL.Text=saving and (base.." · 💾 เก็บเงินซื้อ "..tostring(svName or "พลั่วถัดไป")) or base
+    end
+    for _,k in ipairs({"carry","warmth"}) do
+        local on=(k=="carry" and cfg.sub.upCarry) or (k=="warmth" and cfg.sub.upWarm)
+        if saving and not (k=="warmth" and PK.isCold(LP.Character and LP.Character:FindFirstChild("HumanoidRootPart"))) then on=false end
+        local lb=PK.lastBuy[k]
+        -- ซื้อซ้ำได้เมื่อมี UpgradeState ใหม่หลังซื้อครั้งก่อน หรือรอครบ 5s ถ้า server ไม่ push
+        if on and type(upState[k])=="number" and nw-lb>gap and (PK.upT>lb or nw-lb>5) then
+            local bought=tryBuy(k)
+            if bought then
+                PK.lastBuy[k]=nw
+                feedAdd(PK.upInfo[k][1].." "..bought,PK.upInfo[k][2]); slog("buy "..k.." "..bought.." @"..coins)
+            end
+        end
+    end
+end
 task.spawn(function()
     while not UpState do task.wait(0.5) if not alive() then return end end
     UpState.OnClientEvent:Connect(function(p)
         if not alive() or type(p)~="table" then return end
-        upState=p
-        rowUpL.Text=string.format("อัพเกรดอัตโนมัติ (🔥%s 🎒%s)",tostring(p.warmth or "–"),tostring(p.carry or "–"))
+        upState=p; PK.upT=os.clock()
+        if PK.upLbl then PK.upLbl.Text=string.format("🔥 ความอบอุ่น Lv%s · 🎒 กระเป๋า Lv%s",tostring(p.warmth or "–"),tostring(p.carry or "–")) end
+        if cfg.sub.upSoon then task.defer(function() pcall(PK.upTry) end) end
     end)
     slog("upgrade-hook")
 end)
-local lastBuyT={carry=0,warmth=0}
 task.spawn(function() while alive() do
-    if cfg.autoup and BuyUp and upState then
-        pcall(function()
-            local ls=LP:FindFirstChild("leaderstats"); local cv=ls and ls:FindFirstChild("Coins")
-            local coins=cv and cv.Value or 0
-            local nw=os.clock()
-            -- ราคาจริงจาก UpgradeClient: prices[i] = ราคาปุ่ม steps[i] (carry {1,50,10} / warmth {10,50,100})
-            -- ปุ่มสุดท้าย = "max" ราคา maxCarryCost/maxWarmthCost (แพ็กใหญ่ ไม่ใช่ prices ตัวท้าย)
-            -- นโยบาย: ซื้อแพ็กใหญ่สุดที่เงินพอ — max ก่อน ไม่พอค่อยไล่ step ลงมา
-            local function tryBuy(kind)
-                local steps=kind=="carry" and {1,50,10} or {10,50,100}
-                local prices=kind=="carry" and upState.carryPrices or upState.warmthPrices
-                local maxCost=kind=="carry" and upState.maxCarryCost or upState.maxWarmthCost
-                if type(maxCost)=="number" and maxCost>0 and coins>=maxCost then
-                    BuyUp:FireServer(kind,"max") return "max"
-                end
-                for i=#steps-1,1,-1 do
-                    local p=prices and prices[i]
-                    if type(p)=="number" and coins>=p then BuyUp:FireServer(kind,steps[i]) return "+"..steps[i] end
-                end
-                return nil
-            end
-            if cfg.sub.upCarry and nw-lastBuyT.carry>12 and type(upState.carry)=="number" then
-                local bought=tryBuy("carry")
-                if bought then lastBuyT.carry=nw
-                    feedAdd("⬆️ อัพ Carry "..bought,Color3.fromRGB(120,255,160)); slog("buy carry "..bought.." @"..coins) end
-            end
-            if cfg.sub.upWarm and nw-lastBuyT.warmth>12 and type(upState.warmth)=="number" then
-                local bought=tryBuy("warmth")
-                if bought then lastBuyT.warmth=nw
-                    feedAdd("⬆️ อัพ Warmth "..bought,Color3.fromRGB(255,180,120)); slog("buy warmth "..bought.." @"..coins) end
-            end
-        end)
-    end
-    task.wait(6)
+    pcall(PK.upTry)
+    task.wait(2)
 end end)
 
--- ============ บอทฟาร์ม AFK: เดินไล่แรร์ (MoveTo ไม่วาป) + เลือกเป้าคุ้ม + กันหนาว + กันติด + ขายค้าง ============
-task.spawn(function() while alive() do
-    if cfg.farmBot then pcall(function()
-        local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid"); local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
-        if not (hum and hrp and hum.Health>0) then return end
-        local rv=ch:FindFirstChild("variables"); if rv and rv:FindFirstChild("ragdoll") and rv.ragdoll.Value then return end -- ragdoll อยู่ อย่าสั่งเดิน
-        -- มือว่าง (เช่น หลังขายชิ้นค้างอยู่) → หยิบพลั่วจาก Backpack เอง ไม่งั้น autodig นิ่ง
-        if not heldPickaxe(ch) then
-            local bp=LP:FindFirstChild("Backpack")
-            if bp then for _,t in ipairs(bp:GetChildren()) do
-                if t:IsA("Tool") and t:GetAttribute("Cooldown") and not t:GetAttribute("BagId") and not t:GetAttribute("RuneId") then hum:EquipTool(t) break end
-            end end
+-- ============ ⛏ ซื้อ+ใส่พลั่วที่ดีที่สุดที่เงินพอ (ราคา/พลัง/ระยะขุดจริงจาก PickaxeData — radius 7→30, power 25→3M) ============
+-- โปรโตคอลจริง (168_ShopClient): BuyPickaxe:FireServer(index,"cash") · EquipPickaxe:FireServer(index) · ShopState(owned[],equipped,err)
+-- เราเข้าเกมทีหลัง ไม่ทันรับ ShopState รอบแรก → อ่านสถานะที่ถือจริงจากการ์ดใน PickaxeShopGui (OwnedButton.Visible / Label="Equipped") แทน
+PK.pkTry={}; PK.pkLast=0
+function PK.pkRead()   -- → (owned{[i]=true}, equippedIndex) | nil
+    if not PK.PD then return nil end
+    local pg=LP:FindFirstChild("PlayerGui"); local g=pg and pg:FindFirstChild("PickaxeShopGui")
+    local win=g and g:FindFirstChild("Window"); local sh=win and win:FindFirstChild("Shelf")
+    if not sh then return nil end
+    local own,eq={},nil
+    for i=1,#PK.PD do
+        local c=sh:FindFirstChild("Card_"..i); local ob=c and c:FindFirstChild("OwnedButton")
+        if ob and ob.Visible then
+            own[i]=true
+            local l=ob:FindFirstChild("Label"); if l and l.Text=="Equipped" then eq=i end
         end
-        local my=hrp.Position; local now=os.clock()
-        if ch~=cfg._ch then cfg._ch=ch cfg._trail={} cfg._fled=nil end   -- เกิดใหม่ = ลืมเส้นทางหนีหนาวเก่า
-        -- เพดานความสูงปลอดภัย: สูตรจริงจาก 102_FreezeClient (Warmth*RuneWarmthMult*2.5 >= (Y-BaseY)*Scale)
-        local maxY=1e9
-        local okB,by=pcall(function() return RS.AltitudeBaseY.Value end)
-        local okS,sc=pcall(function() return RS.AltitudeScale.Value end)
-        if cfg.sub.botWarm and okB and okS and sc>0 then
-            local w=((LP:GetAttribute("Warmth") or 120)+(LP:GetAttribute("AbuseWarmthBonus") or 0))*(LP:GetAttribute("RuneWarmthMult") or 1)
-            maxY=by + w*2.5/sc - 8   -- เผื่อขอบ 8 studs ไม่ไปชนขอบหนาว
-            -- 🥶 หนาวเกินแล้วตอนนี้ → ทิ้งทุกเป้า หนีลงจุดอุ่นที่จำไว้ทันที (damage ฝั่ง server หนีอย่างเดียว)
-            if (my.Y-by)*sc > w*2.5 then
-                cfg._trail=cfg._trail or {}
-                local low=nil
-                for _,p in ipairs(cfg._trail) do if not low or p.Y<low.Y then low=p end end
-                if not low then
-                    local sp=workspace:FindFirstChildOfClass("SpawnLocation")
-                    low=(sp and sp.Position) or Vector3.new(0,by,0)
-                end
-                hum:MoveTo(low)
-                if not cfg._fled then cfg._fled=true if feedAdd then feedAdd("🥶 หนาวเกิน! หนีลงจุดอุ่น",Color3.fromRGB(140,200,255)) end end
+    end
+    return own,eq
+end
+function PK.pkState()   -- → best(สูงสุดที่มี), eq(ที่ใส่อยู่), own
+    local own,eq=PK.pkRead()
+    if not own then own=PK.pkOwn or {}; eq=PK.pkEq end
+    eq=math.max(eq or 0,tonumber(LP:GetAttribute("EquippedPickaxe")) or 1)   -- attr จาก server คือความจริง (การ์ดใน GUI อาจยังไม่ refresh)
+    local best=0 for i in pairs(own) do if i>best then best=i end end
+    if best<eq then best=eq end
+    return best,eq,own
+end
+function PK.pkNext(best)   -- พลั่วถัดไปที่ซื้อได้ด้วยเงิน (ข้ามของอีเวนต์ limited/ไม่มีราคา) → ราคา,index | nil
+    for i=(best or 0)+1,#PK.PD do
+        local d=PK.PD[i]
+        if d and not d.limited and type(d.price)=="number" and d.price>0 then return d.price,i end
+    end
+end
+function PK.coins() local ls=LP:FindFirstChild("leaderstats"); local cv=ls and ls:FindFirstChild("Coins"); return cv and cv.Value or 0 end
+function PK.pickTry()
+    if not (cfg.autoup and cfg.sub.upPick and PK.PD and PK.BuyPick) then return end
+    local now=os.clock(); if now-PK.pkLast<3 then return end
+    local best,eq,own=PK.pkState()
+    if best>eq and (own[best] or PK.pkOwn and PK.pkOwn[best]) and PK.EqPick then       -- มีของดีกว่าที่ยังไม่ได้ใส่ → ใส่
+        PK.pkLast=now; PK.EqPick:FireServer(best)
+        local d=PK.PD[best]; feedAdd("⛏ ใส่พลั่ว "..tostring(d and d.name or best),Color3.fromRGB(255,215,120)); slog("equip pickaxe "..best.." "..tostring(d and d.name))
+        return
+    end
+    local coins=PK.coins()
+    for i=#PK.PD,best+1,-1 do                                                           -- ซื้ออันที่ดีที่สุดที่เงินพอ (ไล่จากบน)
+        local d=PK.PD[i]
+        if d and not d.limited and type(d.price)=="number" and d.price>0 and coins>=d.price and (PK.pkTry[i] or 0)<now then
+            PK.pkTry[i]=now+60; PK.pkLast=now
+            PK.BuyPick:FireServer(i,"cash")
+            feedAdd(("⛏ ซื้อพลั่ว %s (radius %s · power %s)"):format(tostring(d.name),tostring(d.radius),tostring(d.power)),Color3.fromRGB(255,215,120))
+            slog(("buy pickaxe %d %s @%s price=%s"):format(i,tostring(d.name),tostring(coins),tostring(d.price)))
+            return
+        end
+    end
+end
+task.spawn(function()
+    while not PK.PickSt do task.wait(0.5) if not alive() then return end end
+    PK.PickSt.OnClientEvent:Connect(function(owned,eq,err)
+        if not alive() then return end
+        if err then slog("shop: "..tostring(err)) end
+        if type(owned)=="table" then PK.pkOwn={} for _,i in ipairs(owned) do PK.pkOwn[i]=true end end
+        if eq then PK.pkEq=eq end
+        PK.pkLast=math.min(PK.pkLast,os.clock()-2.5)                                 -- ได้สถานะใหม่ → ตรวจรอบถัดไปได้เร็ว
+    end)
+    slog("shop-hook")
+end)
+task.spawn(function() while alive() do pcall(PK.pickTry) task.wait(3) end end)
+
+-- ============ 🧪 กินยา (opt-in) — UsePotion(name) · server เช็คเองว่ามียา · Mining ใช้เวลาจริง MiningPotionUntil · Luck/Coins ไม่รู้ระยะเวลา → เว้น 15 นาที ============
+PK.potN={}; PK.potT={}
+function PK.potLoad(t) if type(t)=="table" then for k,v in pairs(t) do if type(v)=="number" then PK.potN[k]=v end end end end
+function PK.potTry()
+    if not (cfg.sub.autoPot and PK.UsePot) then return end
+    local now=os.time()
+    for _,n in ipairs({"MiningPotion","LuckPotion","CoinsPotion"}) do
+        local have=PK.potN[n] or tonumber(LP:GetAttribute("Potion"..(n:gsub("Potion",""))))  or 0   -- จำนวนยา: จาก GetPotions/UpdatePotions ไม่งั้น attr ผู้เล่น PotionMining/PotionLuck/PotionCoins (server ตั้ง)
+        local last=PK.potT[n] or 0
+        if have>0 and now-last>20 then
+            local active=(n=="MiningPotion") and now<(LP:GetAttribute("MiningPotionUntil") or 0) or (n~="MiningPotion" and now-last<(cfg._potGap or 900))
+            if not active then
+                PK.potT[n]=now; PK.potN[n]=have-1; PK.UsePot:FireServer(n)
+                feedAdd("🧪 กิน "..n.." (เหลือ "..(have-1)..")",Color3.fromRGB(200,150,255)); slog("use potion "..n.." left="..(have-1))
                 return
             end
-            cfg._fled=nil
         end
-        -- ปลอดภัย → จำเส้นทางย้อนหลัง (trail) ไว้เป็นจุดหนีหนาว (ทุก 15 studs สูงสุด 30 จุด)
-        if cfg.sub.botWarm then
-            cfg._trail=cfg._trail or {}
-            local lt=cfg._trail[#cfg._trail]
-            if not lt or (lt-my).Magnitude>15 then
-                cfg._trail[#cfg._trail+1]=my
-                if #cfg._trail>30 then table.remove(cfg._trail,1) end
-            end
-        end
-        -- โหมดนิ่ง: ไม่เดินไปไหน — ยืนขุดวงกลม+เก็บ≥tier+ขาย ตรงที่ยืน (ผู้เล่นเดินเอง)
-        -- ขายค้างทุก 20s (remote ไม่วาป — เต็มแล้ว loop autosell จัดการเอง)
-        if not selling and (LP:GetAttribute("BagKg") or 0)>0 and LP:GetAttribute("BagFull")~=true
-            and now-(cfg._botSell or 0)>20 and SellReq then
-            cfg._botSell=now; SellReq:FireServer("All")
-        end
-        -- กินยาบัฟทุก 60s (remote จริงจากปุ่ม USE — server เช็คว่ามียาในกระเป๋าเอง)
-        if cfg.sub.botPot and now-(cfg._botPot or 0)>60 then
-            cfg._botPot=now
-            local up=RS:FindFirstChild("UsePotion")
-            if up then for _,n in ipairs({"MiningPotion","LuckPotion","CoinsPotion"}) do up:FireServer(n) task.wait(0.3) end end
+    end
+end
+task.spawn(function()
+    task.wait(2)
+    if PK.GetPot then local ok,t=pcall(function() return PK.GetPot:InvokeServer() end) if ok then PK.potLoad(t) end end
+    if PK.UpdPot then PK.UpdPot.OnClientEvent:Connect(function(n,c) if alive() and type(n)=="string" and type(c)=="number" then PK.potN[n]=c end end) end
+    if PK.SyncPot then PK.SyncPot.OnClientEvent:Connect(function(t) if alive() then PK.potLoad(t) end end) end
+    while alive() do pcall(PK.potTry) task.wait(15) end
+end)
+
+-- ============ 🥶 หนาวจัด + เลือดต่ำ → วาปกลับฐาน (กันตายตอน AFK) — สูตรหนาวเดียวกับ FreezeClient.inTheCold ============
+function PK.isCold(hrp)
+    if not (AltY and AltS and hrp) then return false end
+    local w=((LP:GetAttribute("Warmth") or 120)+(LP:GetAttribute("AbuseWarmthBonus") or 0))*(LP:GetAttribute("RuneWarmthMult") or 1)*2.5
+    return w<=(hrp.Position.Y-AltY.Value)*AltS.Value
+end
+PK.homeT=-99
+task.spawn(function() while alive() do
+    if cfg.sub.coldHome and (cfg.autodig or cfg.autocollect or cfg.selfOn) then pcall(function()
+        local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid"); local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+        if not (hum and hrp and PK.THome) or hum.MaxHealth<=0 then return end
+        local hp=hum.Health/hum.MaxHealth
+        if hp>0 and hp<0.45 and PK.isCold(hrp) and not LP:GetAttribute("Ragdolled") and os.clock()-PK.homeT>25 then
+            PK.homeT=os.clock(); PK.THome:FireServer()
+            feedAdd(("🥶 หนาวจัด เลือด %d%% → วาปกลับฐานกันตาย"):format(hp*100),Color3.fromRGB(120,190,255))
+            slog(("cold-home hp=%d%% warmth=%s y=%d"):format(hp*100,tostring(LP:GetAttribute("Warmth")),hrp.Position.Y))
         end
     end) end
-    task.wait(0.9)
+    task.wait(1)
 end end)
+
+-- ============ 🛡 กันเกม rejoin ตอน AFK: AntiIdleClient ยิง AntiIdleRejoin เมื่อไม่มี input 1140s (19 นาที) → สคริปต์ตายตามไปด้วย ============
+-- bump() ของเกมผูกกับ InputBegan/InputChanged/TouchMoved/WindowFocused/Mouse.Move → ยิงเฉพาะ WindowFocused (ไม่มี arg ปลอดภัย) ทุก 3 นาที รีเซ็ตตัวนับของเกม
+function PK.antiIdle()
+    local n=0
+    if getconnections then
+        local ok,cs=pcall(getconnections,UIS.WindowFocused)
+        if ok and type(cs)=="table" then for _,c in ipairs(cs) do if pcall(function() c:Fire() end) then n+=1 end end end
+    end
+    if n==0 then pcall(function()   -- สำรอง: ขยับเมาส์ผ่าน VirtualInputManager → UIS.InputChanged → bump
+        local vim=game:GetService("VirtualInputManager"); local m=UIS:GetMouseLocation()
+        vim:SendMouseMoveEvent(m.X+1,m.Y,game); vim:SendMouseMoveEvent(m.X,m.Y,game); n+=1
+    end) end
+    PK.idleN=(PK.idleN or 0)+1
+    if PK.idleN<=2 or PK.idleN%20==0 then slog("anti-idle bump x"..n.." (#"..PK.idleN..")") end
+end
+task.spawn(function() task.wait(20) while alive() do pcall(PK.antiIdle) task.wait(180) end end)
 
 -- ============ กันเหวแบบเร็ว: เช็คพื้นข้างหน้าทุก 0.15s (ลูปหลัก 0.9s ช้าเกินตอนวิ่งไว 2x = พุ่ง 29 studs/รอบ) ============
 task.spawn(function() while alive() do
-    if cfg.farmBot then pcall(function()
+    if cfg.selfOn then pcall(function()
         local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid"); local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
         if not (hum and hrp) then return end
         local v=hrp.AssemblyLinearVelocity; local hv=Vector3.new(v.X,0,v.Z)
@@ -1595,11 +3701,36 @@ end end)
 
 -- ============ anti-AFK kick (Roblox 20 นาที) — VirtualUser มาตรฐาน ปลอดภัย ============
 do
-    LP.Idled:Connect(function() pcall(function() local VU=game:GetService("VirtualUser") VU:CaptureController() VU:ClickButton2(Vector2.new()) end) end)
+    LP.Idled:Connect(function() if alive() then pcall(function() local VU=game:GetService("VirtualUser") VU:CaptureController() VU:ClickButton2(Vector2.new()) end) end end)
+end
+
+-- ============ เจ็ทแพ็ค: เติมน้ำมันไม่จำกัด — เข้าถึง t9.fuel (upvalue ของสคริปต์เกมเอง) ============
+function PK.jetFuelMax()
+    if not cfg._jetMax then
+        local ok,m=pcall(function() return require(RS:WaitForChild("JetpackSystem"):WaitForChild("Config")) end)
+        cfg._jetMax=(ok and type(m)=="table" and m.FUEL_MAX) or false
+    end
+    return cfg._jetMax or nil
+end
+function PK.jetSess()                                                 -- หา session table (t9) ของ JetpackClient — สแกน signature ทุก Heartbeat connection (ไม่พึ่งรูปแบบ source)
+    local ok,conns=pcall(getconnections,RunS.Heartbeat)
+    if not ok or not conns then return end
+    for _,cn in conns do
+        local f=cn.Function or cn.func
+        if type(f)=="function" then
+            for i=1,30 do
+                local n,v=debug.getupvalue(f,i)
+                if not n then break end
+                if type(v)=="table" and rawget(v,"fuel")~=nil and rawget(v,"lv")~=nil and rawget(v,"conns")~=nil then return v end
+            end
+        end
+    end
 end
 
 -- ============ ตัวเรา: วิ่งไว (client-owned physics — จำค่าจริงก่อนแกะ ปิด→คืน) ============
+-- (ห่อ pcall: error ครั้งเดียวเคยฆ่าลูปนี้ถาวร → วิ่งไว/คืน WalkSpeed ค้าง)
 task.spawn(function() while alive() do
+    pcall(function()
     local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid")
     if hum then
         local want = cfg.selfOn and (cfg.sub.spd2 and 32 or (cfg.sub.spd15 and 24 or nil)) or nil
@@ -1609,8 +3740,116 @@ task.spawn(function() while alive() do
         elseif cfg._baseWS and hum.WalkSpeed~=cfg._baseWS then
             hum.WalkSpeed=cfg._baseWS; cfg._baseWS=nil
         end
+        if cfg.selfOn and cfg.sub.jet then
+            if not ch:FindFirstChild("Jetpack") then
+                local src=workspace:FindFirstChild("JetpackGamepass")
+                local pk=src and src:FindFirstChild("Jetpack")
+                local hrp2=ch:FindFirstChild("HumanoidRootPart")
+                if pk and hrp2 then
+                    local c=pk:Clone()
+                    c:SetAttribute("Display",false)                       -- ปิดโหมดตัวโชว์ (เอฟเฟกต์เต็ม)
+                    c:SetAttribute("StandIn",true)
+                    c:SetAttribute("FuelPct",1) c:SetAttribute("Thrusting",false)
+                    c:SetAttribute("_hzclone",true)
+                    for _,d in c:GetDescendants() do
+                        if d:IsA("BasePart") then d.Anchored=false d.CanCollide=false d.Massless=true
+                        elseif d:IsA("ParticleEmitter") or d:IsA("PointLight") or d:IsA("Sound") then d:Destroy() end
+                    end                                                -- ของเดิมเผาค้าง (ตัวโชว์ Thrusting=true) — visuals สร้างใหม่เองตามสถานะจริง
+                    local root=c:FindFirstChild("Root")
+                    if root then
+                        c:PivotTo(hrp2.CFrame*CFrame.new(0,0.15,0.9))     -- ย้าย "ทั้งโมเดล" มาหลัง — เดิมย้ายแค่ Root → part ลูกค้างที่ร้าน = bounding กาง = สเกลไฟพุ่งเป็นระเบิด
+                        for _,d in c:GetDescendants() do
+                            if d:IsA("BasePart") and d~=root then
+                                local w=Instance.new("WeldConstraint")    -- part ลูกเชื่อมเข้า root (ของเดิมอาศัย anchor อยู่นิ่ง ไม่มี weld กันเอง)
+                                w.Part0=root w.Part1=d w.Parent=d
+                            end
+                        end
+                        local w=Instance.new("WeldConstraint")            -- ติดหลังเหมือนของจริง
+                        w.Part0=hrp2 w.Part1=root w.Parent=root
+                    end
+                    c.Parent=ch        -- JetpackClient ของเกมจับ ChildAdded → startSession เอง = ระบบบิน+น้ำมันจริง
+                    cfg._jetPack=c     -- จำ ref ไว้ — ถ้าโดนย้าย parent FindFirstChild จะหาไม่เจอ
+                    feedAdd("🚀 เจ็ทแพ็คพร้อม — กดโดดค้างตอนอยู่กลางอากาศ (ทดลอง)",3,C.good)
+                end
+            end
+            local _,mx=pcall(PK.jetFuelMax)                              -- น้ำมันไม่จำกัด: เติม t9.fuel ให้เต็มทุก 0.2s
+            if not mx then mx=100 end                                   -- fallback ถ้า require Config ไม่ได้ (ค่าทั่วไป ~100)
+            local ok4,s=pcall(PK.jetSess)
+            if ok4 and s then
+                if s.fuel<mx then s.fuel=mx end
+                if not cfg._jetSessOK then cfg._jetSessOK=true feedAdd("⛽ น้ำมันไม่จำกัด เชื่อมแล้ว",3,C.good) end
+            elseif ok4 and not s and not cfg._jetSessMiss then
+                cfg._jetSessMiss=true feedAdd("⚠️ หาเซสชันเจ็ทไม่เจอ — น้ำมันยังจำกัด",4,Color3.fromRGB(255,180,60))
+            end
+            local pk2=ch:FindFirstChild("Jetpack")                        -- ซ่อนแพ็คตอนไม่บิน (ดีเลย์ 0.8s กันกะพริบ)
+            if pk2 and pk2:GetAttribute("_hzclone") then pcall(function()
+                local hrp3=ch:FindFirstChild("HumanoidRootPart")
+                local lv=hrp3 and hrp3:FindFirstChild("JetpackThrust")    -- LV ที่เกมสร้างจริง — Enabled = พ่นอยู่ตอนนี้เป๊ะ (ไม่พึ่ง attr ที่อาจค้าง)
+                local flying=(lv and lv.Enabled==true) or (pk2:GetAttribute("Thrusting")==true and hum.FloorMaterial==Enum.Material.Air)
+                if flying then cfg._jetOffT=os.clock() end
+                local hidew=(os.clock()-(cfg._jetOffT or 0))>0.8
+                if cfg._jetHideSt~=hidew then
+                    cfg._jetHideSt=hidew
+                    feedAdd(hidew and "🫥 ซ่อนแพ็ค" or "🚀 โชว์แพ็ค",1.5,C.dim)
+                    for _,d in pk2:GetDescendants() do
+                        if d:IsA("BasePart") then
+                            if hidew then
+                                if d:GetAttribute("_t0")==nil then d:SetAttribute("_t0",d.Transparency) end
+                                d.Transparency=1 d.LocalTransparencyModifier=1
+                            else
+                                d.Transparency=d:GetAttribute("_t0") or 0
+                                d.LocalTransparencyModifier=0
+                            end
+                        end
+                    end
+                end
+            end) end
+        else
+            if cfg._jetPack then pcall(function() cfg._jetPack:Destroy() end) cfg._jetPack=nil cfg._jetHideSt=nil end
+            local left=0
+            for _,d in ch:GetChildren() do
+                if d.Name=="Jetpack" then
+                    if d:GetAttribute("_hzclone") then d:Destroy() else left+=1 end   -- ของเรา=ลบ / ของเกมจริง=นับรายงาน
+                end
+            end
+            if left>0 and not cfg._jetWarn then cfg._jetWarn=true feedAdd("⚠️ เหลือ Jetpack "..left.." ตัวที่ไม่ใช่ของเรา — อาจเป็นของเกมให้จริง/ตัวโชว์ ลบไม่ได้",4,Color3.fromRGB(255,180,60)) end
+        end
     end
+    end)
     task.wait(0.2)
+end end)
+
+-- ============ สกิลเคียว/ค้างคาว: ยิงอัตโนมัติเมื่อถือ + cooldown พร้อม (Holding*/ReadyAt = server ตั้ง ยิงมั่วไม่ได้) ============
+task.spawn(function() while alive() do
+    if cfg.selfOn and cfg.sub.skillAuto then pcall(function()
+        local holdS=LP:GetAttribute("HoldingScythe")==true
+        local holdB=LP:GetAttribute("HoldingBatwing")==true
+        if holdS or holdB then
+            local now=workspace:GetServerTimeNow()
+            local dir
+            local ch=LP.Character; local hrp=ch and ch:FindFirstChild("HumanoidRootPart")
+            local sg=workspace:FindFirstChild("SpawnedGems")
+            local bd,bp=1/0,nil
+            if hrp and sg then
+                for _,g in sg:GetChildren() do
+                    local ok2,cf=pcall(function() return g:GetPivot() end)   -- PrimaryPart มักไม่ถูกตั้งในโมเดลแรร์ (เดิมข้ามหมด → เล็งกล้องแทน) → ใช้ pivot
+                    if ok2 and cf then local d=(cf.Position-hrp.Position).Magnitude if d<bd then bd=d bp=cf.Position end end
+                end
+            end
+            dir=(bp and hrp) and (bp-hrp.Position).Unit or (workspace.CurrentCamera and workspace.CurrentCamera.CFrame.LookVector) or Vector3.new(0,0,-1)
+            pcall(function()
+                if holdS and now>=(LP:GetAttribute("ScytheReadyAt") or 0) then
+                    RS:WaitForChild("ScytheRemotes"):WaitForChild("Shatter"):FireServer(dir)
+                    feedAdd("⚔️ Shatter → "..(bd<1e9 and math.floor(bd).."m" or "?"),2,C.good)
+                end
+                if holdB and now>=(LP:GetAttribute("BatwingReadyAt") or 0) then
+                    RS:WaitForChild("BatwingRemotes"):WaitForChild("Swarm"):FireServer(dir)
+                    feedAdd("🦇 Swarm → "..(bd<1e9 and math.floor(bd).."m" or "?"),2,C.good)
+                end
+            end)
+        end
+    end) end
+    task.wait(0.5)
 end end)
 
 -- ============ instaPick: HoldDuration=0 ทุก Pickup prompt (ทริคเดียวกับ Pass_InstantMine — client-side ล้วน) ============
@@ -1627,11 +3866,16 @@ end end)
 task.spawn(function() while alive() do
     task.wait(60)
     if not alive() then break end
+    pcall(function()
     fullScan(); scanRunes()
+    local nd=0 for m in pairs(known) do if m.Parent==nil then nd+=1 end end
+    if nd>2500 then   -- AFK เป็นชั่วโมง: known สะสมโมเดลที่หายไปแล้ว (ถือ reference โมเดลที่ถูกทำลาย = กินหน่วยความจำ) → ล้างตัวที่ไม่มีใน registry ping
+        for m in pairs(known) do if m.Parent==nil then known[m]=nil knownPos[m]=nil missK[m]=nil end end
+        slog("known trim "..nd)
+    end
     -- ตัวที่ unstream แต่อยู่ใกล้เรา (<180 studs): โซนนี้ server stream แน่ๆ → model หาย = โดนเก็บ/รีจริง → นับพลาด 2 รอบแล้วลบ
-    -- (เช็คเฉพาะตอน ReplicationFocus ว่าง — ตอนดึง stream ไกลของใกล้อาจหลุดชั่วคราว)
     local hrp=LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
-    if hrp and LP.ReplicationFocus==nil then
+    if hrp then
         local pp=hrp.Position
         local dropped=0
         for m in pairs(known) do
@@ -1656,16 +3900,15 @@ task.spawn(function() while alive() do
                 else
                     e.miss=(e.miss or 0)+1
                     if e.miss>=2 then
-                        pcall(function() e.ghost:Destroy() e.hl:Destroy() e.bb:Destroy() end)
-                        table.remove(pings,i) dropped+=1
+                        PK.rmFar(e) table.remove(pings,i) dropped+=1
                     end
                 end
             end
         end
         if dropped>0 then feedAdd("🧹 เคลียร์ของหายจริง "..dropped.." จุด",C.dim) slog("sweep dropped "..dropped) end
     end
+    end)
 end end)
 
-UIS.InputBegan:Connect(function(i,gpe) if not gpe and i.KeyCode==Enum.KeyCode.RightShift then sg.Enabled=not sg.Enabled end end)
 slog("ui ready")
 print("[HZMINE] ESP พร้อม")
