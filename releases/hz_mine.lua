@@ -1414,7 +1414,7 @@ end
 UI.section(P,"สวิตช์ด่วน — คลิก หรือกดปุ่มลัด")
 do
     local g=UI.grid(P,4,48,8)
-    for i,id in ipairs({"autodig","autocollect","autosell","autoup","garden","esp","selfOn","radarSnipe","bombSnipe","bombAuto","fusion","halloween"}) do
+    for i,id in ipairs({"autodig","autocollect","autosell","autoup","garden","esp","selfOn","radarSnipe","radClone","bombSnipe","bombAuto","fusion","halloween"}) do
         local m=UI.mBy[id]
         local t=mk("Frame",{BackgroundColor3=C.row,BorderSizePixel=0,LayoutOrder=i},g); corner(t,10)
         local st=stroke(t,C.edge,0.8)
