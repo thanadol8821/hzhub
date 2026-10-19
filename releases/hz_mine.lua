@@ -9,7 +9,54 @@ local CoreGui=(gethui and gethui()) or game:GetService("CoreGui")
 local G=(getgenv and getgenv()) or _G
 G.__HZMINE=(G.__HZMINE or 0)+1; local GEN=G.__HZMINE
 local function alive() return G.__HZMINE==GEN end
-for _,g in ipairs(CoreGui:GetChildren()) do if g.Name=="HZMineUI" or g.Name=="HZMineEsp" then pcall(function() g:Destroy() end) end end
+for _,g in ipairs(CoreGui:GetChildren()) do if g.Name=="HZMineUI" or g.Name=="HZMineEsp" or g.Name=="HZMineMaint" then pcall(function() g:Destroy() end) end end
+
+-- ===== HZ HUB backend: พิงสถิติ + kill-switch (ไม่มีคีย์ — admin เห็นแค่ว่าใครใช้) =====
+local HZ_API="https://dry-wave-054e.thanadol821.workers.dev"; local HZ_G="mine"
+local HZS=game:GetService("HttpService")
+local HZ={last=0,n=0,win=os.clock()}
+local function hzPing(ev)   -- throttle ≥2s/ครั้ง · ≤45/10นาที (worker cap 60) — executor ไม่มี request = เงียบ
+    local req=request or http_request or (syn and syn.request); if not req then return end
+    local now=os.clock()
+    if now-HZ.last<2 then return end
+    if now-HZ.win>600 then HZ.win=now HZ.n=0 end
+    if HZ.n>=45 then return end
+    HZ.last=now; HZ.n+=1
+    task.spawn(function() pcall(function()
+        req({Url=HZ_API.."/ping",Method="POST",Headers={["Content-Type"]="application/json"},
+            Body=HZS:JSONEncode({ev=ev,g=HZ_G,u=LP.Name,dn=LP.DisplayName,uid=LP.UserId,place=game.PlaceId})})
+    end) end)
+end
+local function hzMaint(msg)   -- kill-switch on:false → ฆ่าทุกลูป (GEN bump) + ปิด UI + หน้าบำรุงรักษา
+    G.__HZMINE=GEN+1
+    pcall(function() local o=CoreGui:FindFirstChild("HZMineUI") if o then o:Destroy() end end)
+    pcall(function() local o=CoreGui:FindFirstChild("HZMineEsp") if o then o:Destroy() end end)
+    local sg=Instance.new("ScreenGui") sg.Name="HZMineMaint" sg.ResetOnSpawn=false sg.DisplayOrder=9999
+    local tx=Instance.new("TextLabel") tx.AnchorPoint=Vector2.new(0.5,0.5) tx.Position=UDim2.fromScale(0.5,0.45)
+    tx.Size=UDim2.new(0,440,0,96) tx.BackgroundColor3=Color3.fromRGB(20,22,38) tx.TextColor3=Color3.fromRGB(240,240,255)
+    tx.Font=Enum.Font.GothamBold tx.TextSize=16 tx.TextWrapped=true
+    tx.Text="🛠 HZ HUB — ปิดปรับปรุงชั่วคราว\n"..(type(msg)=="string" and msg~="" and msg or "กลับมาใหม่เร็วๆ นี้")
+    Instance.new("UICorner",tx).CornerRadius=UDim.new(0,10)
+    local st=Instance.new("UIStroke",tx) st.Color=Color3.fromRGB(255,140,80) st.Thickness=1.5
+    tx.Parent=sg; sg.Parent=CoreGui
+    print("[HZMINE] maintenance: "..tostring(msg))
+end
+task.spawn(function()   -- status poll ทุก 60s — fail-open: เน็ต/worker พลาด = ใช้ต่อได้
+    local req=request or http_request or (syn and syn.request); if not req then return end
+    task.wait(3)
+    while alive() do
+        local ok,r=pcall(function() return req({Url=HZ_API.."/status?g="..HZ_G,Method="GET"}) end)
+        if ok and r and r.Body then
+            local ok2,d=pcall(function() return HZS:JSONDecode(r.Body) end)
+            if ok2 and type(d)=="table" and d.on==false then hzMaint(d.msg) return end
+        end
+        task.wait(60)
+    end
+end)
+hzPing("gate")
+task.spawn(function() task.wait(6) hzPing("loaded") end)
+task.spawn(function() while alive() do task.wait(240) hzPing("alive") end end)
+
 
 -- log: เก็บในหน่วยความจำ แล้วเขียนไฟล์ทีเดียว≤1 ครั้ง/วิ (เดิม readfile+writefile ทั้งไฟล์ทุกบรรทัด = I/O บวม กระตุกตอนยิง log ถี่) — Xeno appendfile ไม่เขียน จึงต้อง writefile ทั้งไฟล์
 -- บัฟเฟอร์เดียวใน G.__HZLOG ทุก generation ใช้ร่วมกัน: handler ของรอบเก่าที่ค้างอยู่ (เช่น WIPE ซ้ำ 22 รอบในล็อกจริง) ไม่เขียนทับด้วยบัฟเฟอร์เก่า
@@ -35,9 +82,10 @@ local C={bgTop=Color3.fromRGB(16,17,30),bgBot=Color3.fromRGB(10,11,20),edge=Colo
     row=Color3.fromRGB(24,26,42),rowH=Color3.fromRGB(33,36,58),opt=Color3.fromRGB(30,33,52),optH=Color3.fromRGB(40,44,68),
     sub=Color3.fromRGB(20,22,37),panel=Color3.fromRGB(19,21,34),deep=Color3.fromRGB(14,16,27),buy=Color3.fromRGB(44,128,72),opt2=Color3.fromRGB(40,44,66),
     good=Color3.fromRGB(120,255,160)}
--- ระดับ+สีตรง GemData.Rarity ของเกม (index 1-8 เท่านั้น — ไม่มี Divine/Empyrean/Infinity/Ultima/Eldritch ในเกม)
-local TIERS={"Common","Uncommon","Rare","Epic","Legendary","Mythic","Exotic","Zenith"}
-local PK={TH_R={Common="ธรรมดา",Uncommon="พิเศษ",Rare="หายาก",Epic="เอพิค",Legendary="ตำนาน",Mythic="มิธิค",Exotic="เอ็กโซติก",Zenith="ซีนิธ"},thNames={},nameRarity={},nameCard={},TR=false}
+-- ระดับ+สีตรง GemData.Rarity ของเกม (อัพเดต 2026-10-19: มี Eternal=index9 แล้ว — sync สดจาก module อีกชั้นด้านล่าง)
+-- ⚠️ Divine/Empyrean/Infinity/Ultima/Eldritch = ระดับ "พลั่ว" (PickaxeData.rarity) เท่านั้น ไม่ใช่ระดับคริสตัล
+local TIERS={"Common","Uncommon","Rare","Epic","Legendary","Mythic","Exotic","Zenith","Eternal"}
+local PK={TH_R={Common="ธรรมดา",Uncommon="พิเศษ",Rare="หายาก",Epic="เอพิค",Legendary="ตำนาน",Mythic="มิธิค",Exotic="เอ็กโซติก",Zenith="ซีนิธ",Eternal="อีเทอร์นัล"},thNames={},nameRarity={},nameCard={},TR=false}
 PK.ss={t0=os.clock(),n=0,val=0,sold=0}   -- 📈 สถิติรอบนี้ (เก็บ/ขาย/ต่อชั่วโมง) แสดงใน HUD
 function PK.thR(r) return PK.TH_R[r] or r or "?" end   -- โชว์ระดับเป็นไทย (ชื่อในเกมยังอังกฤษตาม server)
 function PK.isPick(t)   -- พลั่ว/สว่านจริง = Tool ที่มี Cooldown (พลั่วทั่วไป) หรือ DigCooldown (Plasma Drill ใน DrillTools/Hexfang) — ตัดคริสตัล(BagId)/รูน(RuneId)
@@ -48,7 +96,7 @@ function PK.t1(m,id,mut,fr)   -- ป้ายบรรทัดบนของ�
     return "◆ "..(own and "★ " or "")..PK.dispName(id)..(mut and (" ✦"..mut) or "")..(fr and "" or " ⛏ฝังอยู่")
 end
 function PK.dispName(id) local t=PK.thNames[id] if t then return t end return (tostring(id):gsub("(%l)(%u)","%1 %2")) end
-local TCOL={Common=Color3.fromRGB(205,148,92),Uncommon=Color3.fromRGB(95,220,105),Rare=Color3.fromRGB(70,155,255),Epic=Color3.fromRGB(180,95,255),Legendary=Color3.fromRGB(255,170,45),Mythic=Color3.fromRGB(255,70,70),Exotic=Color3.fromRGB(255,216,74),Zenith=Color3.fromRGB(110,235,255)}
+local TCOL={Common=Color3.fromRGB(205,148,92),Uncommon=Color3.fromRGB(95,220,105),Rare=Color3.fromRGB(70,155,255),Epic=Color3.fromRGB(180,95,255),Legendary=Color3.fromRGB(255,170,45),Mythic=Color3.fromRGB(255,70,70),Exotic=Color3.fromRGB(255,216,74),Zenith=Color3.fromRGB(110,235,255),Eternal=Color3.fromRGB(255,125,230)}
 local function tIdx(t) for i,v in ipairs(TIERS) do if v==t then return i end end return 0 end
 local function rIdx(t) local i=tIdx(t) return i>0 and i or 99 end  -- tier ไม่รู้จัก = สูงสุด (sort/เสียงแจ้ง)
 -- ขนาดคริสตัลตามเกมจริง (GemData.SizeClasses — maxKg ต่อชั้น)
@@ -135,11 +183,26 @@ task.spawn(function()
     PK.THome=bmr and bmr:WaitForChild("TeleportHome",30)   -- วาปกลับฐาน (108_BaseClient:209) — ใช้ตอนหนาวจัด
     PK.UsePot=RS:FindFirstChild("UsePotion")               -- UsePotion(name) · GetPotions() → {name=n} · UpdatePotions(name,n) · SyncAllPotions({..}) (156_ShopLocalHandler:478-819)
     PK.GetPot=RS:FindFirstChild("GetPotions"); PK.UpdPot=RS:FindFirstChild("UpdatePotions"); PK.SyncPot=RS:FindFirstChild("SyncAllPotions")
-    slog("remotes freed="..tostring(Freed~=nil).." sell="..tostring(SellReq~=nil).." met="..tostring(MetEv~=nil).." mt="..tostring(MtChoose~=nil).." w="..tostring(WState~=nil).." pick="..tostring(PK.BuyPick~=nil).." home="..tostring(PK.THome~=nil).." pot="..tostring(PK.UsePot~=nil))
+    -- ==== remotes อัพเดต 2026-10-19 (dump ใหม่) ====
+    local bmb=RS:WaitForChild("BombRemotes",30)
+    PK.BuyBomb=bmb and bmb:WaitForChild("BuyBomb",30)        -- ซื้อระเบิดด้วยเงินเกม: BuyBomb(id,"cash") (BombShopClient:334)
+    PK.BombSt=bmb and bmb:WaitForChild("ShopState",30)     -- push {stock={id=n}} ทุกรีสต็อก
+    local fur=RS:WaitForChild("FusionRemotes",30)
+    PK.FusOdds=fur and fur:WaitForChild("Odds",30)         -- เช็คอัตราก่อนเสียของ: Odds({BagId,BagId,BagId})
+    PK.FusFuse=fur and fur:WaitForChild("Fuse",30)         -- Fuse({BagId×3 ระดับเดียวกัน}) (FusionClient:2337)
+    PK.FusClaim=fur and fur:WaitForChild("Claim",30)
+    PK.FusStat=fur and fur:WaitForChild("Status",30)
+    local cwr=RS:WaitForChild("CauldronRemotes",30)
+    PK.Cauldron=cwr and cwr:WaitForChild("Donate",30)      -- เทแคนดี้เข้าหม้อเป้ารวมเซิร์ฟเวอร์: Donate(amount)
+    local crr=RS:WaitForChild("CrateRemotes",30)
+    PK.CrateOpen=crr and crr:WaitForChild("Open",30)       -- เปิด Haunted Crate: Open(n) n=1/3/5 (CrateShopClient:2638)
+    local drr=RS:WaitForChild("DailyRewardRemotes",30)
+    PK.Daily=drr and drr:WaitForChild("Claim",30)          -- เคลมรายวัน: Claim("claim")
+    slog("remotes freed="..tostring(Freed~=nil).." sell="..tostring(SellReq~=nil).." met="..tostring(MetEv~=nil).." mt="..tostring(MtChoose~=nil).." w="..tostring(WState~=nil).." pick="..tostring(PK.BuyPick~=nil).." home="..tostring(PK.THome~=nil).." pot="..tostring(PK.UsePot~=nil).." bomb="..tostring(PK.BuyBomb~=nil).." fus="..tostring(PK.FusFuse~=nil).." crate="..tostring(PK.CrateOpen~=nil).." caul="..tostring(PK.Cauldron~=nil).." daily="..tostring(PK.Daily~=nil))
 end)
 
 local cfg={esp=true,minTier=1,ttl=150,pickMode=false,players=true,autodig=false,autocollect=false,autosell=false,selfOn=false,botTier=1,
-    met=true,runes=true,mtn=true,autoup=false,garden=false,radarSnipe=false,
+    met=true,runes=true,mtn=true,autoup=false,garden=false,radarSnipe=false,bombSnipe=false,fusion=false,halloween=false,radClone=false,bombAuto=false,
     sub={espHl=true,espName=true,espAbove=true,espLuck=false,espSize=1,espFar=true,espBld=true,streamFar=false,   -- เรดาร์แรร์: ตัวทรง/ป้าย/≥ระดับ/ค่าโชค/ขนาด/มาร์กไกล/หิน
          pHl=true,pName=true,pDig=true,                            -- ผู้เล่น: ตัว/ป้าย/แท็กขุด
          smartDig=true,colRange=true,                              -- ขุด:เล็งแรร์ฝัง · เก็บ:เช็คระยะ
@@ -151,12 +214,18 @@ local cfg={esp=true,minTier=1,ttl=150,pickMode=false,players=true,autodig=false,
          skillAuto=true,                                           -- ⚔️ ยิงสกิล Shatter/Swarm อัตโนมัติเมื่อถือเคียว/ค้างคาว + cooldown พร้อม (gate ด้วย Holding attr ที่ server ตั้ง)
          hpBar=true,                                               -- แรร์: ❤HP ตอนโดนขุด
          snCrystal=false,snRarity=false,snBoulder=true,snRune=false,snMeteor=true,snZenith=true,  -- เรด้าสอยสต็อก: เลือกชนิดที่จะสอย
-         snEquip=true,snRadarHold=false,snRadarPin=true,
+         radCloneType="ZenithRadar",
          metMark=true,metFeed=true,                                -- เมเทียร์: ป้ายจุดตก/แจ้งเตือน
          runeHl=true,runeLbl=true,                                 -- รูน: ตัว/ป้าย
-         mtnAuto=false,mtnList=true,                              -- ภูเขา: auto-ขึ้นดีสุด/แผงเลือก
+         mtnAuto=false,                                           -- ภูเขา: auto-ขึ้นดีสุด
          upCarry=true,upWarm=true,upSoon=true,upPick=true,autoPot=false,coldHome=true,   -- อัพเกรด: carry/warmth · ซื้อทันที · พลั่ว · ยา | ตัวเรา: กันตายหนาว
-         gdSwap=true,gdTier=3,gdKeep=true,gdTrip=true}}            -- สวน: สลับชิ้นluckต่ำออก / วางเฉพาะ≥tier / เก็บชิ้นโชคกันขาย / วาปไปลงสวนเอง
+         gdSwap=true,gdTier=3,gdKeep=true,gdTrip=true,             -- สวน: สลับชิ้นluckต่ำออก / วางเฉพาะ≥tier / เก็บชิ้นโชคกันขาย / วาปไปลงสวนเอง
+         snB_ClassicBomb=true,snB_WindBomb=true,snB_IceBomb=true,  -- 💣 ระเบิดสอยสต็อก: ติ๊กแยกทีละลูก (เหมือนเรด้า) — default ถูก 3 ลูกแรก
+         snB_FireBomb=false,snB_PoisonBomb=false,snB_LightningBomb=false,
+         snB_VoidBomb=false,snB_NebulaBomb=false,snB_DivineBomb=false,
+         fusKeep=6,                                                -- ⚗️ ฟิวส์: เว้นชิ้นระดับ ≥Mythic(6) ไว้ ไม่ฟิวส์
+         autoDaily=true,crateAuto=false,crateN=1}                  -- 🎃 Halloween: เคลมรายวัน / เปิดกล่องผีอัตโน / ขนาดกล่อง (1/3/5)
+         }
 local picks={}     -- {gemName=true} — โหมดเฉพาะที่เลือก
 local tracked={}   -- [model]={hl,bb,txt,name,rarity,kg}
 local pings={}     -- {pos,rarity,kg,t,sticky?,id?,miss?} — registry พิกัดล้วน (เอา ghost visual ออกแล้ว)
@@ -630,8 +699,8 @@ end
 -- ───────── 💾 ตั้งค่าถาวร (hz_mine_cfg.json) ─────────
 cfg.ui={x=60,y=60,w=700,h=520,scale=1,opacity=0.04,tab="dash",sound=true,toast=true,pill=true,autosave=true,autostart=false,open={},
     keys={ui="RightShift",autodig="F1",autocollect="F2",autosell="F3",autoup="F4",garden="F5",esp="F6",selfOn="F7",panic="F8"}}
-local FLAGS={"esp","minTier","players","autodig","autocollect","autosell","selfOn","botTier","met","runes","mtn","autoup","garden","radarSnipe","pickMode"}
-local ACT={autodig=1,autocollect=1,autosell=1,selfOn=1,autoup=1,garden=1,radarSnipe=1}   -- สวิตช์ที่ "ลงมือทำ" — คืนค่าเฉพาะเมื่อเปิด autostart (ESP/ฟิลเตอร์คืนเสมอ)
+local FLAGS={"esp","minTier","players","autodig","autocollect","autosell","selfOn","botTier","met","runes","mtn","autoup","garden","radarSnipe","radClone","bombSnipe","bombAuto","fusion","halloween","pickMode"}
+local ACT={autodig=1,autocollect=1,autosell=1,selfOn=1,autoup=1,garden=1,radarSnipe=1,bombSnipe=1,bombAuto=1,fusion=1,halloween=1,radClone=1}   -- สวิตช์ที่ "ลงมือทำ" — คืนค่าเฉพาะเมื่อเปิด autostart (ESP/ฟิลเตอร์คืนเสมอ)
 UI.DEF={flags={},sub={},ui={}}
 for _,k in ipairs(FLAGS) do UI.DEF.flags[k]=cfg[k] end
 for k,v in pairs(cfg.sub) do UI.DEF.sub[k]=v end
@@ -641,7 +710,7 @@ UI.FILE="hz_mine_cfg.json"
 function UI.snapshot()
     local t={v=6,flags={},sub={},ui={},picks={}}
     for _,k in ipairs(FLAGS) do t.flags[k]=cfg[k] end
-    for k,v in pairs(cfg.sub) do if type(v)=="boolean" or type(v)=="number" then t.sub[k]=v end end
+    for k,v in pairs(cfg.sub) do local ty=type(v) if ty=="boolean" or ty=="number" or ty=="string" then t.sub[k]=v end end   -- string ด้วย (radCloneType)
     for k,v in pairs(cfg.ui) do if type(v)~="table" then t.ui[k]=v end end
     t.ui.keys={} for k,v in pairs(cfg.ui.keys) do t.ui.keys[k]=v end
     t.ui.open={} for k,v in pairs(cfg.ui.open) do if v then t.ui.open[k]=true end end
@@ -720,10 +789,18 @@ UI.M={
     get=function() return cfg.pickMode end,set=function(v) cfg.pickMode=v if UI.paintPick then UI.paintPick() end applyFilter() slogSet("pickMode",v) end},
  {id="radarSnipe",tab="radar",icon="📡",col=Color3.fromRGB(90,200,255),name="เรด้าสอยสต็อก",short="สอยเรด้า",desc="สต็อกเรด้ามา + เงินพอ = ซื้อทันที",
     get=function() return cfg.radarSnipe end,set=function(v) cfg.radarSnipe=v slogSet("radarSnipe",v) end},
- {id="radarFake",tab="radar",icon="📡",col=Color3.fromRGB(90,235,255),name="เรด้าเดิน ฟรี",short="เรด้าฟรี",desc="HUD เรด้าค้าง 60 นาที ขุดได้ตลอด",
-    get=function() return cfg.radarFake end,set=function(v) PK.fakeRadar(v) task.delay(0.7,function() if UI.syncAll then UI.syncAll() end end) end},
+ {id="radClone",tab="radar",icon="📡",col=Color3.fromRGB(90,235,255),name="เรด้าโคลน ใช้ฟรี",short="เรด้าโคลน",desc="โคลนเรด้าจริงจากเกม — HUD+สแกนทำงาน เวลาไม่หมด ขุดได้",
+    get=function() return cfg.radClone end,set=function(v) PK.radClone(v) task.delay(0.7,function() if UI.syncAll then UI.syncAll() end end) end},
  {id="met",tab="world",icon="☄",col=Color3.fromRGB(255,130,90),name="เมเทียร์ + ดาวตก",short="เมเทียร์",desc="ป้ายจุดตก + แจ้งเตือนอีเวนต์",
     get=function() return cfg.met end,set=function(v) cfg.met=v end},
+ {id="bombSnipe",tab="farm",icon="💣",col=Color3.fromRGB(255,140,70),name="ระเบิดสอยสต็อก",short="ระเบิด",desc="สต็อกระเบิดมา + เงินพอ = ซื้อทันที (ราคาจริง BombData 2026-10-19)",
+    get=function() return cfg.bombSnipe end,set=function(v) cfg.bombSnipe=v slogSet("bombSnipe",v) end},
+ {id="bombAuto",tab="farm",icon="💥",col=Color3.fromRGB(255,100,60),name="ระเบิดออโต้ (ซื้อ+โยนวน)",short="ระเบิดวน",desc="หมด → ซื้อลูกดีสุดเอง · มี → ถือ+โยนอัตโนมัติ วนไม่หยุด (ของจริงเท่านั้น)",
+    get=function() return cfg.bombAuto end,set=function(v) cfg.bombAuto=v slogSet("bombAuto",v) end},
+ {id="fusion",tab="farm",icon="⚗",col=Color3.fromRGB(140,200,255),name="ฟิวส์คริสตัลออโต้",short="ฟิวส์",desc="รวมชิ้นระดับเดียวกัน 3 ชิ้นที่เล็กสุด → ชิ้นใหม่ดีกว่า (เว้นระดับสูง+⭐)",
+    get=function() return cfg.fusion end,set=function(v) cfg.fusion=v slogSet("fusion",v) end},
+ {id="halloween",tab="world",icon="🎃",col=Color3.fromRGB(255,150,60),name="อีเวนต์ Halloween",short="🎃",desc="เคลมรายวัน · เปิดกล่องผีอัตโน · เทหม้อแคนดี้",
+    get=function() return cfg.halloween end,set=function(v) cfg.halloween=v slogSet("halloween",v) end},
 }
 UI.mBy={} for _,m in ipairs(UI.M) do UI.mBy[m.id]=m end
 function UI.setM(id,v)
@@ -734,7 +811,7 @@ function UI.setM(id,v)
     sfx("pop"); UI.syncAll(); UI.dirty()
 end
 function UI.panic()   -- ⛔ ปิดสวิตช์ที่ "ลงมือทำ" ทั้งหมดทันที (ปุ่มลัดฉุกเฉิน)
-    for _,m in ipairs(UI.M) do if (ACT[m.id] or m.id=="radarFake") and m.get() then m.set(false) end end
+    for _,m in ipairs(UI.M) do if (ACT[m.id] or m.id=="radClone") and m.get() then m.set(false) end end
     sfx("pop"); UI.syncAll(); UI.dirty(); feedAdd("⛔ หยุดทุกระบบแล้ว",C.bad)
 end
 function UI.farmOn()   -- ▶ เปิดชุดฟาร์มหลัก (ขุด+เก็บ+ขาย)
@@ -743,7 +820,7 @@ function UI.farmOn()   -- ▶ เปิดชุดฟาร์มหลัก (
 end
 local function activeCount()
     local n=0
-    for _,id in ipairs({"autodig","autocollect","autosell","autoup","garden","selfOn","radarSnipe","radarFake"}) do if UI.mBy[id].get() then n+=1 end end
+    for _,id in ipairs({"autodig","autocollect","autosell","autoup","garden","selfOn","radarSnipe","radClone"}) do if UI.mBy[id].get() then n+=1 end end
     return n
 end
 
@@ -1296,7 +1373,7 @@ qClr.Activated:Connect(function() q.Text="" UI.search("") end)
 -- ───────── สถานะรวม (ชิปหัว · ป้ายแท็บ · สรุปตอนย่อ) ─────────
 function UI.updMini()
     local ic={}
-    for _,m in ipairs(UI.M) do if m.get() and m.tab~="radar" and m.tab~="world" or (m.id=="radarFake" and m.get()) then ic[#ic+1]=m.icon end end
+    for _,m in ipairs(UI.M) do if m.get() and m.tab~="radar" and m.tab~="world" or (m.id=="radClone" and m.get()) then ic[#ic+1]=m.icon end end
     local h=UI.last
     local money=h and ("  💰 $"..comma(h.coins)) or ""
     local hr=(h and h.hrate and h.hrate>0) and string.format("  ⚔ %.1f/วิ",h.hrate) or ""
@@ -1337,7 +1414,7 @@ end
 UI.section(P,"สวิตช์ด่วน — คลิก หรือกดปุ่มลัด")
 do
     local g=UI.grid(P,4,48,8)
-    for i,id in ipairs({"autodig","autocollect","autosell","autoup","garden","esp","selfOn","radarSnipe"}) do
+    for i,id in ipairs({"autodig","autocollect","autosell","autoup","garden","esp","selfOn","radarSnipe","bombSnipe","bombAuto","fusion","halloween"}) do
         local m=UI.mBy[id]
         local t=mk("Frame",{BackgroundColor3=C.row,BorderSizePixel=0,LayoutOrder=i},g); corner(t,10)
         local st=stroke(t,C.edge,0.8)
@@ -1502,6 +1579,51 @@ do
     cfg._gLbl=cg.descL
 end
 
+-- 💣 ระเบิด + ☢️ นิวเคลียร์ (อัพเดต 2026-10-19 — BombData จริง)
+do
+    local m=UI.mBy.bombSnipe
+    UI.card(P,{id="bombSnipe",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="bombSnipe",kw="bomb ระเบิด ซื้อ",
+        subs=function(sub)
+            for i,b in ipairs(PK.BOMBS) do   -- ติ๊กแยกทีละลูกเหมือนเรด้าสอยสต็อก
+                UI.opt(sub,"💣 "..b.n.." · "..({"50K","400K","2M","8M","12M","25M","1B","10B","25B"})[i],"snB_"..b.id,nil,
+                    "สต็อกมา + เงินพอ → BuyBomb ทันที (server คุม stock/ราคาเอง)"..(b.id=="DivineBomb" and " — การันตี Legendary×4/ลูก" or ""))
+            end
+            UI.note(sub,"☢️ EXTREME NUKE = DevProduct 699R$ เท่านั้น (server เช็คของจริง เงินเกม/โคลนไม่ได้)",C.dim)
+            UI.button(sub,"💣 ใช้ระเบิดลูกแรงสุดในกระเป๋า",Color3.fromRGB(200,90,50),function() task.spawn(PK.useBomb) end,"ถือระเบิดจริงลูกแพงสุดแล้วกระตุ้น — script server ใน tool ระเบิดเอง (ต้องซื้อจริงก่อน)",26)
+            UI.bomStat=UI.note(sub,"📦 สต็อก: —",C.accent)
+            UI.button(sub,"📦 log สต็อกลงบันทึก",C.opt2,function()
+                local parts={} for _,b in ipairs(PK.BOMBS) do parts[#parts+1]=b.n.."="..(PK.bombStock[b.id] or "?") end
+                feedAdd("💣 "..table.concat(parts," · "),C.dim)
+            end,"เขียนสต็อกล่าสุดทั้งหมดลงบันทึก",28)
+        end})
+end
+
+-- 💥 ระเบิดออโต้ — แยกจากสอยสต็อก: วนถือ+โยนระเบิดจริงเอง หมดแล้วซื้อลูกดีสุดอัตโนมัติ
+do
+    local m=UI.mBy.bombAuto
+    UI.card(P,{id="bombAuto",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="bombAuto",kw="bomb auto throw ระเบิด ออโต้ โยน วน ฟาร์ม",
+        tip="วนจริง: กระเป๋ามีระเบิด → ถือลูกแรงสุด+Activate (server ระเบิดเอง) → คืนพลั่วขุดต่อ → รอ fuse ~2-4s → วน · หมด → ซื้อลูกดีสุดที่ติ๊กไว้+สต็อกมี+เงินพอเอง",
+        subs=function(sub)
+            UI.note(sub,"⚠️ ระเบิดโคลนใช้ไม่ได้ (server เช็คของจริง) — ระบบนี้ใช้ของจริงเท่านั้น · ลูกที่ซื้อ = ติ๊กแยกลูกในการ์ดสอยสต็อกด้านบน",C.dim)
+            UI.note(sub,"ระเบิดดีดตัว (knockback) เป็นของเกม — ถ้าถูกดีดไกลเกินลองลดระดับ หรือปิดกลุ่มแพง",C.dim)
+            UI.button(sub,"💣 โยนลูกแรงสุดตอนนี้ (มือ)",Color3.fromRGB(200,90,50),function() task.spawn(PK.useBomb) end,"ถือ+กระตุ้นลูกแพงสุดทันที ไม่รอลูป",26)
+        end})
+end
+
+-- ⚗️ ฟิวส์คริสตัล (FusionClient: 3 ชิ้นระดับเดียวกัน → ชิ้นใหม่)
+do
+    local m=UI.mBy.fusion
+    UI.card(P,{id="fusion",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="fusion",kw="fusion fuse ฟิวส์ รวม",
+        subs=function(sub)
+            UI.note(sub,"อัตโน: มีชิ้นระดับเดียวกันครบ 3 → ฟิวส์ชุดต่ำสุดเองทุก 20 วิ (เว้น ⭐)",C.dim)
+            local g=UI.group(sub,"🛡 เว้นชิ้นระดับ ≥ นี้ไว้ (ไม่ฟิวส์)")
+            UI.chips(g,tierItems(),function() return cfg.sub.fusKeep or 6 end,function(i) cfg.sub.fusKeep=i end,4,26)
+            local r=UI.row2(sub,30)
+            UI.half(r,"⚗ ฟิวส์ชุดต่ำสุดตอนนี้",C.buy,function() task.spawn(PK.fuseOnce) end,"Fuse({BagId×3 ระดับเดียวกัน เล็กสุด}) → Claim ทันที")
+            UI.half(r,"📊 เช็คสถานะเครื่อง",C.opt2,function() task.spawn(PK.fuseStatus) end,"Status:InvokeServer() — ดูว่าเครื่องค้างผลไว้ไหม")
+        end})
+end
+
 -- ═════════════ 🛰 เรดาร์ ═════════════
 P=addTab("radar","🛰","เรดาร์","ESP แรร์/ผู้เล่น/รูน · เรด้า · เจาะจงชื่อ")
 UI.pageHead(P,"🛰","เรดาร์ & ESP","เห็นแรร์/ผู้เล่น/รูน ทะลุกำแพง · เรด้าซื้อ/เดินฟรี · เจาะจงชื่อแรร์")
@@ -1624,12 +1746,16 @@ do
             cfg._rLab.CrystalRadar=UI.opt(sub,"คริสตัล · 300K","snCrystal",nil,"เรด้าคริสตัล (300K · สต็อกสูงสุด 10)",UI.radarIcon("CrystalRadar"))
             for id,l in pairs(cfg._rLab) do PK.RBASE[id]=l.Text end
         end})
-    m=UI.mBy.radarFake
-    UI.card(P,{id="radarFake",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="radarFake",kw="radar fake เรด้า ฟรี hud",
-        tip="เปิด HUD เรด้าโดยไม่ถือจริง = TimeLeft ไม่ไหม้ + พลั่วยังถืออยู่ = ขุดได้ตลอด (ต้องมีเรด้าในกระเป๋า)",
+    m=UI.mBy.radClone
+    UI.card(P,{id="radClone",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="radClone",kw="clone radar โคลน เรด้า ฟรี hud",iconImg=UI.radarIcon("ZenithRadar"),
+        tip="โคลน template จริง RS.RadarTools → RadarClient ของเกมหยิบไปใช้เอง: HUD+ping+สแกนทำงานจริง · server ไม่รู้จักของโคลน = เวลาไม่มีวันหมด · ฆ่า stop() ให้ปล่อยทูลแล้ว HUD ค้าง ขุดได้ตลอด",
         subs=function(sub)
-            UI.opt(sub,"📡 ถือเรด้าตลอด (scan + power จริง)","snRadarHold",nil,"ถือเรด้าจริงเพื่อให้ scan/power ทำงาน (เวลาจะไหม้ตอนถือ)")
-            UI.opt(sub,"🔒 ล็อกเวลา 60 นาทีบน HUD","snRadarPin",nil,"สลับ TimeLeft 3600/3601 ให้ตัวเลขบน HUD ค้าง (เฉพาะฝั่งเรา — เวลาจริงที่ server ไม่เปลี่ยน)")
+            UI.note(sub,"⚠️ ที่ไม่ได้: buff ฝั่ง server (luck surge/spawn ×2/จุดขุดส่วนตัว) — ที่ได้จริง: HUD+beep+สแกนคริสตัล/หิน/รูน/อุกกาบาตทั้งหมด",C.dim)
+            UI.chips(sub,{{"ซีนิธ",Color3.fromRGB(255,215,90)},{"อุกกาบาต",Color3.fromRGB(90,235,255)},{"หินใหญ่",C.accent},{"รูน",Color3.fromRGB(190,130,255)},{"หายาก",C.accent},{"คริสตัล",C.accent}},
+                function() local ids={"ZenithRadar","MeteorRadar","BoulderRadar","RuneRadar","RarityRadar","CrystalRadar"}
+                    for i,v in ipairs(ids) do if cfg.sub.radCloneType==v then return i end end return 1 end,
+                function(i) cfg.sub.radCloneType=({"ZenithRadar","MeteorRadar","BoulderRadar","RuneRadar","RarityRadar","CrystalRadar"})[i] end,3,26)
+            UI.button(sub,"🧪 โคลนเข้ากระเป๋าเฉยๆ (ถือเอง)",C.opt2,function() PK.cloneRadar(cfg.sub.radCloneType or "ZenithRadar") end,"โคลนไว้ในกระเป๋าโดยไม่เปิดระบบ — ถือเองเมื่ออยากใช้",26)
         end})
 end
 
@@ -1646,6 +1772,7 @@ do
             UI.opt(sub,"🚀 เจ็ทแพ็ค = ตัวโชว์ร้าน (ทดลอง)","jet",nil,"โคลนโมเดลเจ็ทแพ็คตัวโชว์เข้าตัวให้ JetpackClient ของเกมหยิบไปใช้ + น้ำมันไม่จำกัด (กดโดดค้างกลางอากาศ)")
             UI.opt(sub,"⚔️ สกิลเคียว/ค้างคาวออโต้ (ถ้ามีของ)","skillAuto",nil,"ยิง Shatter/Swarm เมื่อถืออยู่และ cooldown พร้อม (อ่านจาก attr ที่ server ตั้ง ไม่ยิงมั่ว)")
             UI.note(sub,"ต้องเปิดสวิตช์หลักของการ์ดนี้ก่อน ตัวเลือกข้างบนถึงจะทำงาน (รวมระบบกันตกเหวตอนวิ่งไว)")
+
         end})
 end
 UI.section(P,"ความปลอดภัย")
@@ -1669,6 +1796,20 @@ do
         subs=function(sub)
             UI.opt(sub,"ป้ายจุดตกบนแมพ","metMark",nil,"ปักป้ายจุดเมเทียร์/ดาวตกบนโลก (เห็นทะลุกำแพง)")
             UI.opt(sub,"แจ้งเตือนในบันทึก/มุมจอ","metFeed",nil,"แจ้งตอนเมเทียร์กำลังตก/ตกแล้ว (โซนโชค x5)")
+        end})
+end
+do
+    local m=UI.mBy.halloween
+    UI.card(P,{id="halloween",icon=m.icon,col=m.col,title=m.name,desc=m.desc,get=m.get,set=m.set,act="halloween",kw="halloween candy crate cauldron ฮาโลวีน แคนดี้ กล่อง หม้อ daily",
+        subs=function(sub)
+            UI.opt(sub,"🎁 เคลมรางวัลรายวันอัตโนมัติ","autoDaily",nil,"Claim:InvokeServer(\"claim\") หลังเข้าเกม 25 วิ + ตรวจทุก 5 นาที")
+            UI.opt(sub,"📦 เปิด Haunted Crate อัตโนมัติ","crateAuto",nil,"แคนดี้พอ → Open:InvokeServer(n) เองทุก 8 วิ")
+            local g=UI.group(sub,"ขนาดกล่อง (CrateData: 1=2,000 · 3=5,700 · 5=9,000 แคนดี้)")
+            UI.chips(g,{{"×1",C.accent},{"×3",C.accent},{"×5",C.accent}},function() return cfg.sub.crateN==3 and 2 or cfg.sub.crateN==5 and 3 or 1 end,function(i) cfg.sub.crateN=({1,3,5})[i] end,3,26)
+            UI.candyStat=UI.note(sub,"🍬 แคนดี้: —",C.accent)
+            local r=UI.row2(sub,30)
+            UI.half(r,"🍬 เทเข้าหม้อ 10%",Color3.fromRGB(200,110,40),function() task.spawn(PK.cauldronPour,0.10) end,"หม้อ = เป้ารวมทั้งเซิร์ฟเวอร์ (~350M CandyCorn) — เทของเราเข้าตาม % · server คืน accepted")
+            UI.half(r,"🍬 เท 50%",Color3.fromRGB(160,80,30),function() task.spawn(PK.cauldronPour,0.50) end,"เทแคนดี้ครึ่งหนึ่งเข้าหม้อ — ระวังหมด")
         end})
 end
 UI.section(P,"ภูเขา")
@@ -1795,7 +1936,7 @@ function UI.applyWindow()
     PK.mute=(cfg.ui.sound==false)
 end
 function UI.reset()
-    for _,m in ipairs(UI.M) do if (ACT[m.id] or m.id=="radarFake") and m.get() then m.set(false) end end
+    for _,m in ipairs(UI.M) do if (ACT[m.id] or m.id=="radClone") and m.get() then m.set(false) end end
     for k,v in pairs(UI.DEF.flags) do if not ACT[k] then cfg[k]=v end end
     for k,v in pairs(UI.DEF.sub) do cfg.sub[k]=v end
     for k in pairs(picks) do picks[k]=nil end
@@ -1987,135 +2128,59 @@ PK.fireEq=function(t)
     end
     return n
 end
--- ชั้น 2: ถือจริงชั่วคราว (game start() เอง = HUD ขึ้นแน่) → ตัด Unequipped conn → ปล่อย → คืนพลั่ว
-PK.severCycle=function()
-    local t=PK.radBest()
-    if not t then cfg._sevNil=(cfg._sevNil or 0)+1 if cfg._sevNil%15==1 then slog("sever: no radar x"..cfg._sevNil) end return end
-    local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid")
-    if not hum then cfg._sevNil=(cfg._sevNil or 0)+1 if cfg._sevNil%15==1 then slog("sever: no hum x"..cfg._sevNil) end return end
-    cfg._sevNil=0
-    cfg._sevN=(cfg._sevN or 0)+1
+-- 📡 เรด้าโคลนเต็มระบบ: cloneRadar (รีเฟรช TimeLeft เอง = เวลาไม่หมด) → ฆ่า stop() → ถือครั้งเดียว → ปล่อย → HUD+scan ค้าง ขุดได้
+-- ของโคลน server ไม่รู้จัก → ไม่เผาเวลาอยู่แล้ว · watchdog รีโคลนถ้าทูลหาย/HUD หล่น (respawn)
+function PK.radCloneGo()
+    local id=cfg.sub.radCloneType or "ZenithRadar"
+    local t=cfg._rcT; if not (t and t.Parent) then t=PK.cloneRadar(id) end
+    if not t then return false end
+    cfg._rcT=t
+    local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid"); if not hum then return false end
+    PK.hookRadarStop()                                             -- ฆ่า stop() (Panel สร้างตอน RadarClient บูต → hook ได้ตลอด)
+    if not cfg._stopFn and getconnections then PK.sever(t) end     -- hookfunction ไม่มี → ตัด conn Unequipped ของโคลนแทน
     pcall(function() hum:EquipTool(t) end)
-    task.wait(0.15)
-    local h1=PK.hudVis()
-    -- dedupe log: conn detail+สรุปเฉพาะรอบที่ผลเปลี่ยน/ทุก 15 รอบ (~18s) — เดิม 5 บรรทัด/วิ ทำ ring 3000 บรรทัดอยู่ได้แค่ ~10 นาที
-    local pre=tostring(t:GetAttribute("RadarType") or t.Name).."|"..tostring(h1)   -- ใช้ RadarType ไม่ใช่ t.Name — ชื่อมี countdown เปลี่ยนทุกวิ (Meteor Radar 2x 119s→118s) ทำ dedupe ไม่ทำงาน
-    cfg._sevQuiet=(pre==cfg._sevPre) and (cfg._sevN%15~=0)
-    local s=PK.sever(t)
-    pcall(function() hum:UnequipTools() end)
-    task.wait(0.1)
-    local h2=PK.hudVis(); cfg._lastSev=t   -- _lastSev: ChildAdded handler ข้ามทูลที่เราปล่อยกลับเอง (ไม่ใช่ของใหม่)
-    cfg._sevPre=pre
-    for _,tt in ipairs((LP:FindFirstChild("Backpack") or LP):GetChildren()) do
-        if PK.isPick(tt) then
-            pcall(function() hum:EquipTool(tt) end) break
+    task.wait(0.35)
+    if PK.hudVis() then
+        pcall(function() hum:UnequipTools() end)
+        task.wait(0.15)
+        local bp=LP:FindFirstChild("Backpack")
+        for _,tt in ipairs((bp and bp:GetChildren()) or {}) do
+            if PK.isPick(tt) then pcall(function() hum:EquipTool(tt) end) break end   -- คืนพลั่ว ขุดต่อได้
         end
+        cfg._rcHud=true   -- HUD เคยขึ้นแล้ว → watchdog มีสิทธิ์ซ่อมเมื่อหล่น
+        return true
     end
-    cfg._radMode="severed"
-    local sig=pre.."|"..tostring(h2).."|"..s
-    if not cfg._sevQuiet or sig~=cfg._sevSig then
-        slog(("sever#%d eq=%s → uneq=%s s=%d %s"):format(cfg._sevN,tostring(h1),tostring(h2),s,t.Name))
-    end
-    cfg._sevSig=sig
-    if feedAdd and not cfg._sevFed then cfg._sevFed=true feedAdd("📡 โหมดตัดสาย — HUD ค้าง ขุดได้ตลอด",Color3.fromRGB(90,235,255)) end
+    cfg._rcHud=false      -- HUD ไม่เคยขึ้น → อย่าให้ watchdog ดีดพลั่วจากมือทุก 2.5s
+    return false   -- HUD ไม่ขึ้น = ทูลยังถืออยู่ในมือ ใช้ได้อยู่ดีแค่ขุดไม่ได้ชั่วคราว
 end
-function PK.fakeRadar(on)
-    if not getconnections then if feedAdd then feedAdd("❌ executor ไม่มี getconnections — ใช้โหมดถือจริงแทน",Color3.fromRGB(255,120,120)) end return end
+function PK.radClone(on)
     if on then
-        local t=PK.radBest()
-        if not t then
-            cfg.radarFake=false
-            if feedAdd then feedAdd("❌ ไม่มีเรด้าในกระเป๋า — ซื้อก่อน",Color3.fromRGB(255,120,120)) end
-            return
-        end
-        -- ถ้ามีเรด้าถือจริงอยู่ (เผาเวลาอยู่) → ปล่อยก่อน จะได้เผา 0 ตลอด
-        local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid")
-        if hum then for _,tt in ipairs(ch:GetChildren()) do
-            if tt:IsA("Tool") and tt:GetAttribute("RadarType") then pcall(function() hum:UnequipTools() end) break end
-        end end
-        cfg._radT=t; cfg._radTL=t:GetAttribute("TimeLeft"); cfg._radTD=t:GetAttribute("Duration")
-        cfg._sevN=0; cfg._sevPre=nil; cfg._sevSig=nil; cfg._sevFed=nil; cfg._lastSev=nil; cfg._sevNil=0   -- รีเซ็ต dedupe ของ severCycle ทุกครั้งที่เปิด
-        pcall(function() t:SetAttribute("Duration",3600) t:SetAttribute("TimeLeft",3600) end)   -- HUD เต็มแถบ 60 นาที
-        -- 🎯 ลองโหมดถาวรจริงก่อน: ฆ่า stop() → ถือ/ปล่อยจริงครั้งเดียว = HUD+scan ค้างตลอด ไม่เผาเวลา
+        cfg.radClone=true
         task.spawn(function()
-            local hum2=LP.Character and LP.Character:FindFirstChildOfClass("Humanoid")
-            if not hum2 or not PK.hookRadarStop() then return end
-            pcall(function() hum2:EquipTool(t) end)
-            task.wait(0.25)
-            local h1=PK.hudVis()
-            pcall(function() hum2:UnequipTools() end)
-            task.wait(0.15)
-            local h2=PK.hudVis()
-            if h1 and h2 then
-                cfg._radMode="gc"
-                if feedAdd then feedAdd("📡 เรด้าเดิน ON — HUD ค้างถาวรจริง ปล่อยทูลแล้ว ไม่เผาเวลา",Color3.fromRGB(90,235,255)) end
-                slog("radar gc: ทำงานจริง (eq=true uneq=true → HUD ค้าง)")
-            else
-                PK.unhookRadarStop()
-                slog(("radar gc: hook ไม่ติด (eq=%s uneq=%s) → fallback ตัดสาย"):format(tostring(h1),tostring(h2)))
-            end
+            local ok=PK.radCloneGo()
+            if feedAdd then feedAdd(ok and "📡 เรด้าโคลน ON — HUD+scan ทำงาน เวลาไม่หมด ขุดได้ตลอด" or "📡 โคลนเรด้าแล้ว — HUD ไม่ขึ้น ถือเรด้าค้างใช้เอง",4,ok and Color3.fromRGB(90,235,255) or C.dim) end
+            slog("radClone on hud="..tostring(ok))
         end)
-        local n=PK.fireEq(t)
-        -- ถ้า 0.6s แล้ว HUD ยังไม่ขึ้น (Fire ไม่ทำงานบน Xeno + gc ไม่สำเร็จ) → ชั้น 2: ถือจริงแล้วตัดสาย
-        task.delay(0.65,function()
-            if alive() and cfg.radarFake and cfg._radMode~="gc" and not PK.hudVis() then PK.severCycle() end
-        end)
-        -- watchdog+pin ตลอดเปิด: HUD หาย → ลอง fire; ยังไม่ขึ้น → sever ใหม่. TimeLeft สลับ 3600/3601 = ChangedSignal ยิงตลอด → ตัวเลขค้าง 60 นาที
-        if not cfg._radLoop then cfg._radLoop=true
+        if not cfg._rcLoop then cfg._rcLoop=true   -- watchdog: ทูลโคลนหาย (respawn)/HUD หล่น → โคลน+เปิดใหม่
             task.spawn(function()
-                local alt=0; local miss=0
                 while alive() do
-                    if cfg.radarFake and getconnections then pcall(function()
-                        alt=1-alt; local tl=3600+alt
-                        if cfg.sub.snRadarPin~=false then
-                        local bp=LP:FindFirstChild("Backpack"); local ch=LP.Character
-                        for _,pa in ipairs({bp,ch}) do if pa then for _,tt in ipairs(pa:GetChildren()) do
-                            if tt:IsA("Tool") and tt:GetAttribute("RadarType") then
-                                tt:SetAttribute("Duration",3600) tt:SetAttribute("TimeLeft",tl)
-                            end
-                        end end end
-                        end
-                        if not PK.hudVis() then
-                            if cfg._radMode=="gc" and cfg._stopFn then
-                                -- โหมดถาวร: HUD หล่น (respawn/ทูลโดนลบ) → ถือ+ปล่อยใหม่ = start() รอบใหม่ (stop เป็น no-op อยู่แล้ว)
-                                local t2=PK.radBest(); local h2=LP.Character and LP.Character:FindFirstChildOfClass("Humanoid")
-                                if t2 and h2 then
-                                    pcall(function() h2:EquipTool(t2) end) task.wait(0.25)
-                                    pcall(function() h2:UnequipTools() end)
-                                end
-                            else
-                                miss+=1
-                                local t2=PK.radBest()
-                                if t2 then PK.fireEq(t2) end
-                                if miss>=3 then miss=0 PK.severCycle() end   -- fire ไม่ได้จริง → ตัดสาย
-                            end
-                        else miss=0 end
-                    end) end
-                    task.wait(0.4)
+                    local t=cfg._rcT
+                    if cfg.radClone and (not (t and t.Parent) or (cfg._rcHud and not PK.hudVis())) then PK.radCloneGo() end
+                    task.wait(2.5)
                 end
             end)
         end
-        cfg.radarFake=true
-        if feedAdd then feedAdd(string.format("📡 เรด้าเดิน ON — %s (เวลาแช่แข็ง ขุดได้)",(PK.RTH and PK.RTH[t:GetAttribute("RadarType")]) or t.Name),Color3.fromRGB(90,235,255)) end
-        sfx("pop"); slog("fakeRadar on "..t.Name.." hooks="..n)
+        sfx("pop")
     else
-        local t=cfg._radT
-        -- โหมดถาวร: คืน stop() ตัวจริงแล้วเรียกให้เกมซ่อน HUD เอง (hookfunction คืนฟังก์ชันเดิม)
-        local origStop=cfg._stopOrig
-        PK.unhookRadarStop()
-        if origStop then pcall(origStop) end
-        -- เปิด conn ที่ตัดคืน + ยิง Unequipped ให้เกม stop HUD เอง
-        for _,c in ipairs(cfg._radSevered or {}) do pcall(function() c:Enable() end) end
-        cfg._radSevered=nil; cfg._radMode=nil; cfg._lastSev=nil
-        if t then
-            for _,c in pairs(getconnections(t.Unequipped)) do pcall(function() c:Fire() end) pcall(function() local f=c.Function if f then f() end end) end
-            pcall(function()
-                if cfg._radTL then t:SetAttribute("TimeLeft",cfg._radTL) end
-                if cfg._radTD then t:SetAttribute("Duration",cfg._radTD) end
-            end)
-            cfg._radT=nil
+        cfg.radClone=false
+        local orig=cfg._stopOrig; PK.unhookRadarStop()
+        if orig then pcall(orig) end   -- คืน stop จริง → เกมปิด HUD เอง
+        for _,pa in ipairs({LP:FindFirstChild("Backpack"),LP.Character}) do
+            if pa then for _,t in ipairs(pa:GetChildren()) do
+                if t:IsA("Tool") and t:GetAttribute("_hzclone") and t:GetAttribute("RadarType") then pcall(function() t:Destroy() end) end
+            end end
         end
-        cfg.radarFake=false; slog("fakeRadar off")
+        cfg._rcT=nil; cfg._rcHud=nil; slog("radClone off"); if feedAdd then feedAdd("📡 เรด้าโคลน OFF",C.dim) end
     end
 end
 
@@ -2672,6 +2737,23 @@ local function heldPickaxe(ch)
     end
     return nil
 end
+function PK.cloneRadar(id)   -- โคลนเรด้าจริงจาก RS.RadarTools — RadarClient hook RadarType เอง → HUD+scan ทำงานฝั่ง client · TimeLeft รีเฟรชเองไม่หมด (server ไม่รู้จัก = ไม่เผาเวลา)
+    local src=RS:FindFirstChild("RadarTools") and RS.RadarTools:FindFirstChild(id)
+    if not src then feedAdd("📡 ไม่มี template "..tostring(id).." ใน RS.RadarTools",C.dim) return nil end
+    local bp=LP:FindFirstChild("Backpack"); if not bp then return nil end
+    for _,t in ipairs(bp:GetChildren()) do   -- เคลียร์โคลนเก่าชนิดเดียวกันกันซ้ำ
+        if t:IsA("Tool") and t:GetAttribute("_hzclone") and t:GetAttribute("RadarType")==id then pcall(function() t:Destroy() end) end
+    end
+    local c=src:Clone(); c:SetAttribute("_hzclone",true)
+    local dur=c:GetAttribute("Duration") or 90
+    c:SetAttribute("TimeLeft",dur) c:SetAttribute("Count",1)
+    c.Parent=bp
+    task.spawn(function()   -- server ไม่เขียน TimeLeft ให้ของโคลน → เรารีเฟรชเอง ทำให้ client countdown ไม่มีวันหมด
+        while alive() and c.Parent do pcall(function() c:SetAttribute("TimeLeft",dur) end) task.wait(45) end
+    end)
+    feedAdd("📡 โคลน "..id.." เข้ากระเป๋า — ถือแล้ว HUD+สแกนทำงานจริง (เวลาไม่หมด)",4,Color3.fromRGB(90,235,255))
+    slog("cloneRadar "..id) return c
+end
 -- เรด้าตัวดีสุดในกระเป๋าที่ยังเหลือเวลา (จัดลำดับ Zenith→Crystal) — ถือเฉพาะตอนเดิน = TimeLeft ไหม้แค่ตอนเดิน
 function PK.radBest()
     local bp=LP:FindFirstChild("Backpack"); if not bp then return nil end
@@ -3054,52 +3136,7 @@ task.spawn(function()
     while alive() do task.wait(15) if cfg._eqR then cfg._eqR=nil end end
 end)
 
--- 📡 ถือเรด้าตลอด (ใช้ได้จริง: server ดีดชาร์จเอง Count→TimeLeft — ขุดไม่ได้ขณะถือ ใช้ตอนไม่บอท/ไม่เรด้าเดินฟรี)
--- ถือเรด้าตลอดแบบประหยัด: sever HUD ไม่ตาย + สลับ ถือ2วิ/ปล่อย8วิ → server ไหม้เวลาแค่ ~18%
--- power finds ยัง roll ตอนถือ · scan ทำงานต่อทั้งสองช่วง (t3 ไม่ถูก stop)
-task.spawn(function()
-    cfg._severed={}
-    while alive() do
-    if cfg.sub.snRadarHold and not cfg.radarFake then
-        pcall(function()
-            local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid")
-            if not hum then return end
-            local held=nil
-            for _,t in ipairs(ch:GetChildren()) do
-                if t:IsA("Tool") and t:GetAttribute("RadarType") then held=t break end
-            end
-            local t=held or PK.radBest()
-            if t and getconnections and not cfg._severed[t] then
-                cfg._severed[t]=true
-                local s=PK.sever(t); slog("radar-hold sever "..s)
-            end
-            if t and not held then pcall(function() hum:EquipTool(t) end) slog("radar-hold equip") end
-        end)
-        task.wait(2)   -- ช่วงถือ (server ไหม้ + power finds roll)
-        pcall(function()
-            local ch=LP.Character; local hum=ch and ch:FindFirstChildOfClass("Humanoid")
-            if hum then for _,t in ipairs(ch:GetChildren()) do
-                if t:IsA("Tool") and t:GetAttribute("RadarType") then hum:UnequipTools() break end
-            end end
-        end)
-        task.wait(8)   -- ช่วงปล่อย (server แช่แข็งเวลา · scan ยังทำงานผ่าน t3)
-    else task.wait(0.6) end
-end end)
 
--- 📡 radar ของใหม่เข้ากระเป๋าตอนเรด้าเดินฟรีเปิด → fake-equip ให้เอง (เผา 0 ตลอดเหมือนกัน)
-task.spawn(function()
-    local bp=LP:WaitForChild("Backpack",30); if not bp then return end
-    bp.ChildAdded:Connect(function(t)
-        if not alive() or not cfg.radarFake or not getconnections then return end
-        if not (t:IsA("Tool") and t:GetAttribute("RadarType")) then return end
-        if cfg._radMode=="severed" and cfg._lastSev==t then return end   -- ทูลที่ severCycle เพิ่งปล่อยกลับเอง = churn ไม่ใช่ของใหม่ (กัน log/fire ซ้ำทุกวิ)
-        task.wait(0.4)
-        pcall(function() t:SetAttribute("Duration",3600) t:SetAttribute("TimeLeft",3600) end)
-        for _,c in pairs(getconnections(t.Equipped)) do pcall(function() c:Fire() end) end
-        if feedAdd then feedAdd("📡 เรด้าใหม่เข้า — fake-equip เผา 0 ตลอด",Color3.fromRGB(90,235,255)) end
-        slog("fakeRadar new "..t.Name)
-    end)
-end)
 
 -- ============ 📡 PowerFired: buried impact waypoint เฉพาะเจ้าของเรด้า (intel เดียวที่ ESP แทนไม่ได้) ============
 task.spawn(function()
@@ -3705,6 +3742,40 @@ do
 end
 
 -- ============ เจ็ทแพ็ค: เติมน้ำมันไม่จำกัด — เข้าถึง t9.fuel (upvalue ของสคริปต์เกมเอง) ============
+function PK.makeJet(hrp2)   -- สร้างเจ็ทแพ็คเองจาก primitives — เกมเลิกขายแล้ว (JetpackGamepass หายจากแมพ 2026-10-19) · โครงตามของจริงใน dump_2026-10-14/03_tree_workspace.txt
+    local m=Instance.new("Model"); m.Name="Jetpack"
+    local function part(n,size,cf,col,shape)
+        local p=Instance.new("Part"); p.Name=n; p.Size=size; p.CFrame=cf
+        p.Color=col; p.Material=Enum.Material.Metal; if shape then p.Shape=shape end
+        p.Anchored=false; p.CanCollide=false; p.Massless=true; p.Parent=m; return p
+    end
+    local base=hrp2.CFrame*CFrame.new(0,0.15,0.9)
+    local root=part("Root",Vector3.new(1.5,2.2,0.55),base,Color3.fromRGB(52,55,62))
+    local cy=Enum.PartType.Cylinder; local tk=Color3.fromRGB(88,92,105); local up=CFrame.Angles(0,0,math.rad(90))
+    part("TankL",Vector3.new(1.9,0.85,0.85),base*CFrame.new(-0.55,0,0.28)*up,tk,cy)
+    part("TankR",Vector3.new(1.9,0.85,0.85),base*CFrame.new(0.55,0,0.28)*up,tk,cy)
+    part("BandL",Vector3.new(0.3,0.92,0.92),base*CFrame.new(-0.55,0.5,0.28)*up,Color3.fromRGB(255,140,40),cy)
+    part("BandR",Vector3.new(0.3,0.92,0.92),base*CFrame.new(0.55,0.5,0.28)*up,Color3.fromRGB(255,140,40),cy)
+    local ball=Enum.PartType.Ball
+    part("Light_Green", Vector3.new(0.24,0.24,0.24),base*CFrame.new(-0.5,1.3,0.2),Color3.fromRGB(80,255,120),ball)
+    part("Light_Orange",Vector3.new(0.24,0.24,0.24),base*CFrame.new(0,1.33,0.2),   Color3.fromRGB(255,170,60),ball)
+    part("Light_Red",   Vector3.new(0.24,0.24,0.24),base*CFrame.new(0.5,1.3,0.2),  Color3.fromRGB(255,80,80),ball)
+    for i,x in ipairs({-0.55,0.55}) do   -- หัวพ่นใต้ถัง — JetpackVisuals emit Bottom → ไฟพุ่งลง
+        local a=Instance.new("Attachment"); a.Name=i==1 and "NozzleL" or "NozzleR"
+        a.WorldCFrame=base*CFrame.new(x,-1.15,0.28); a.Parent=root
+    end
+    local bm=Instance.new("Attachment"); bm.Name="BackMount"; bm.Parent=root
+    for _,d in m:GetDescendants() do
+        if d:IsA("BasePart") and d~=root then
+            local w=Instance.new("WeldConstraint"); w.Part0=root w.Part1=d w.Parent=d
+        end
+    end
+    local w=Instance.new("WeldConstraint"); w.Part0=hrp2 w.Part1=root w.Parent=root
+    m.PrimaryPart=root
+    m:SetAttribute("Display",false); m:SetAttribute("StandIn",true)
+    m:SetAttribute("FuelPct",1); m:SetAttribute("Thrusting",false); m:SetAttribute("_hzclone",true)
+    return m
+end
 function PK.jetFuelMax()
     if not cfg._jetMax then
         local ok,m=pcall(function() return require(RS:WaitForChild("JetpackSystem"):WaitForChild("Config")) end)
@@ -3741,22 +3812,55 @@ task.spawn(function() while alive() do
             hum.WalkSpeed=cfg._baseWS; cfg._baseWS=nil
         end
         if cfg.selfOn and cfg.sub.jet then
-            if not ch:FindFirstChild("Jetpack") then
-                local src=workspace:FindFirstChild("JetpackGamepass")
-                local pk=src and src:FindFirstChild("Jetpack")
+            local exJ=ch:FindFirstChild("Jetpack")
+            if exJ and exJ:GetAttribute("_hzclone") and not exJ:FindFirstChildWhichIsA("BasePart",true) then
+                pcall(function() exJ:Destroy() end) exJ=nil   -- เจ็ทเปล่าค้างจากรอบก่อน → ลบแล้วหาโมเดลจริงใหม่
+            end
+            if not exJ then
+                -- หาโมเดลเจ็ทแพ็คจริงจากหลายแหล่ง (อัพเดต 2026-10-19: JetpackGamepass = folder → .Model ข้างใน)
+                local pk=nil
+                local jg=workspace:FindFirstChild("JetpackGamepass")
+                if jg then
+                    pk=jg:FindFirstChild("Jetpack")
+                    if not pk then
+                        local mdl=jg:FindFirstChild("Model")
+                        if mdl and mdl:IsA("Model") then
+                            pk=mdl:FindFirstChild("Jetpack",true) or mdl
+                        end
+                    end
+                    if not pk then pk=jg:FindFirstChildWhichIsA("Model",true) end
+                end
+                if not pk then   -- ขโมยจากผู้เล่นคนอื่นที่สวมเจ็ทจริงอยู่
+                    for _,pl in ipairs(Players:GetPlayers()) do
+                        if pl~=LP and pl.Character then
+                            local j=pl.Character:FindFirstChild("Jetpack")
+                            if j and j:IsA("Model") then pk=j break end
+                        end
+                    end
+                end
+                if not pk then pk=RS:FindFirstChild("Jetpack",true) end   -- template ใน ReplicatedStorage ถ้ามี
                 local hrp2=ch:FindFirstChild("HumanoidRootPart")
-                if pk and hrp2 then
+                if not pk and hrp2 then
+                    -- เกมเลิกขายแล้ว → สร้างเจ็ทแพ็คเองจาก primitives (ถังคู่+ไฟ+หัวพ่น) — visuals ของเกมวาดไฟให้
+                    local m=PK.makeJet(hrp2)
+                    m.Parent=ch; cfg._jetPack=m
+                    pcall(function() game:GetService("CollectionService"):AddTag(m,"Jetpack") end)
+                    feedAdd("🚀 สร้างเจ็ทแพ็คเอง (ร้านปิดแล้ว — โมเดลปลอม+ไฟจริง)",3,C.good)
+                elseif pk and hrp2 then
                     local c=pk:Clone()
+                    c.Name="Jetpack"   -- client เช็คชื่อเป๊ะ "Jetpack" + IsA Model (JetpackClient:tryPack)
                     c:SetAttribute("Display",false)                       -- ปิดโหมดตัวโชว์ (เอฟเฟกต์เต็ม)
                     c:SetAttribute("StandIn",true)
                     c:SetAttribute("FuelPct",1) c:SetAttribute("Thrusting",false)
                     c:SetAttribute("_hzclone",true)
                     for _,d in c:GetDescendants() do
                         if d:IsA("BasePart") then d.Anchored=false d.CanCollide=false d.Massless=true
-                        elseif d:IsA("ParticleEmitter") or d:IsA("PointLight") or d:IsA("Sound") then d:Destroy() end
-                    end                                                -- ของเดิมเผาค้าง (ตัวโชว์ Thrusting=true) — visuals สร้างใหม่เองตามสถานะจริง
-                    local root=c:FindFirstChild("Root")
+                        elseif d:IsA("ParticleEmitter") or d:IsA("PointLight") or d:IsA("Sound") then d:Destroy()
+                        elseif d:IsA("ProximityPrompt") or d:IsA("Script") or d:IsA("LocalScript") or d:IsA("BillboardGui") or d:IsA("SurfaceGui") then d:Destroy() end
+                    end                                                -- ของเดิมเผาค้าง + prompt/GUI ร้านตัวโชว์ออก (ไม่งั้นป้ายซื้อลอยติดหลัง)
+                    local root=c:FindFirstChild("Root") or c.PrimaryPart or c:FindFirstChildWhichIsA("BasePart",true)
                     if root then
+                        if not c.PrimaryPart then pcall(function() c.PrimaryPart=root end) end
                         c:PivotTo(hrp2.CFrame*CFrame.new(0,0.15,0.9))     -- ย้าย "ทั้งโมเดล" มาหลัง — เดิมย้ายแค่ Root → part ลูกค้างที่ร้าน = bounding กาง = สเกลไฟพุ่งเป็นระเบิด
                         for _,d in c:GetDescendants() do
                             if d:IsA("BasePart") and d~=root then
@@ -3768,6 +3872,7 @@ task.spawn(function() while alive() do
                         w.Part0=hrp2 w.Part1=root w.Parent=root
                     end
                     c.Parent=ch        -- JetpackClient ของเกมจับ ChildAdded → startSession เอง = ระบบบิน+น้ำมันจริง
+                    pcall(function() game:GetService("CollectionService"):AddTag(c,"Jetpack") end)   -- JetpackVisuals วาดไฟผ่าน tag (0134:316)
                     cfg._jetPack=c     -- จำ ref ไว้ — ถ้าโดนย้าย parent FindFirstChild จะหาไม่เจอ
                     feedAdd("🚀 เจ็ทแพ็คพร้อม — กดโดดค้างตอนอยู่กลางอากาศ (ทดลอง)",3,C.good)
                 end
@@ -3909,6 +4014,210 @@ task.spawn(function() while alive() do
     end
     end)
 end end)
+
+-- ============ 💣 ระเบิดสอยสต็อก + ☢️ นิวเคลียร์ (อัพเดต 2026-10-19 — ค่าจริง BombData/BombShopClient) ============
+-- ระเบิด 9 แบบซื้อด้วยเงินเกม: BuyBomb:FireServer(id,"cash") · stock จำกัด push ผ่าน ShopState {stock={id=n}} · restock ทุก 3600s
+-- Nuke = DevProduct 699R$ เท่านั้น (price=0 stock=0 ในตาราง) — ซื้อ/ใช้ด้วยเงินเกมไม่ได้ (server เช็คของจริง)
+PK.BOMBS={
+    {id="ClassicBomb",  n="คลาสสิค",    price=50000,   g="lo"},
+    {id="WindBomb",     n="หิมะ",       price=400000,  g="lo"},
+    {id="IceBomb",      n="น้ำแข็ง",    price=2000000, g="lo"},
+    {id="FireBomb",     n="ไฟ",         price=8000000, g="mid"},
+    {id="PoisonBomb",   n="พิษ",        price=12000000,g="mid"},
+    {id="LightningBomb",n="สายฟ้า",     price=25000000,g="mid"},
+    {id="VoidBomb",     n="โวิด",       price=1e9,     g="hi"},
+    {id="NebulaBomb",   n="เนบิวลา",    price=1e10,    g="hi"},
+    {id="DivineBomb",   n="ศักดิ์สิทธิ์", price=2.5e10,  g="hi"},
+}
+PK.bombStock={}; PK.bombTry={}
+task.spawn(function()
+    while not PK.BombSt do task.wait(0.5) if not alive() then return end end
+    PK.BombSt.OnClientEvent:Connect(function(st)
+        if not alive() or type(st)~="table" then return end
+        local sk=st.stock or st.Stock
+        if type(sk)~="table" then return end
+        for k,v in pairs(sk) do if type(v)=="number" then PK.bombStock[k]=v end end
+        if UI.bomStat then
+            local parts={}
+            for _,b in ipairs(PK.BOMBS) do if (PK.bombStock[b.id] or 0)>0 then parts[#parts+1]=b.n.."×"..PK.bombStock[b.id] end end
+            UI.bomStat.Text="📦 สต็อกล่าสุด: "..(#parts>0 and table.concat(parts," · ") or "หมดทุกชนิด")
+        end
+        pcall(PK.bombTick)   -- สต็อกเพิ่งเข้า → สอยทันที (เร็วกว่ารอ poll)
+    end)
+    slog("bomb-hook")
+end)
+function PK.bombTick()
+    if not (cfg.bombSnipe and PK.BuyBomb) then return end
+    local coins=PK.coins(); local now=os.clock()
+    for _,b in ipairs(PK.BOMBS) do
+        local on=cfg.sub["snB_"..b.id]
+        if on and (PK.bombStock[b.id] or 0)>0 and coins>=b.price and (PK.bombTry[b.id] or 0)<now then
+            PK.bombTry[b.id]=now+15
+            pcall(function() PK.BuyBomb:FireServer(b.id,"cash") end)
+            feedAdd("💣 สอยระเบิด "..b.n.." ($"..comma(b.price)..")",Color3.fromRGB(255,160,80)); slog("buy bomb "..b.id.." @"..coins)
+        end
+    end
+end
+task.spawn(function() while alive() do pcall(PK.bombTick) task.wait(3) end end)
+
+-- 💣 ระเบิดออโต้ (ซื้อ+โยนเอง) — ของจริงเท่านั้น: โคลนใช้ไม่ได้ (server แนบ Script ตอนให้ของจริง / ไม่มี client path)
+PK.BOMBMAP={} for _,b in ipairs(PK.BOMBS) do PK.BOMBMAP[b.id]=b end
+function PK.bombBest()   -- → Tool | nil — ระเบิดจริงลูกแพงสุดในกระเป๋า/มือ (ข้าม _hzclone)
+    local best,bs=nil,-1; local bp=LP:FindFirstChild("Backpack"); local ch=LP.Character
+    for _,pa in ipairs({bp,ch}) do if pa then for _,c in ipairs(pa:GetChildren()) do
+        if c:IsA("Tool") then local bt=c:GetAttribute("BombType")
+            local p=(PK.BOMBMAP[bt] and PK.BOMBMAP[bt].price) or (bt=="Nuke" and 9e18) or 0
+            if bt and not c:GetAttribute("_hzclone") and p>bs then best,bs=c,p end
+        end
+    end end end
+    return best
+end
+function PK.bombBuyBest()   -- → id | nil — ซื้อลูกแพงสุดที่ติ๊กไว้+สต็อกมี+เงินพอ (ใช้กลุ่มเดียวกับสอยสต็อก)
+    if not PK.BuyBomb then return nil end
+    local coins=PK.coins(); local now=os.clock()
+    for i=#PK.BOMBS,1,-1 do local b=PK.BOMBS[i]
+        local on=cfg.sub["snB_"..b.id]
+        if on and (PK.bombStock[b.id] or 0)>0 and coins>=b.price and (PK.bombTry[b.id] or 0)<now then
+            PK.bombTry[b.id]=now+15
+            pcall(function() PK.BuyBomb:FireServer(b.id,"cash") end)
+            feedAdd("💣 ซื้อระเบิด "..b.n.." ($"..comma(b.price)..")",Color3.fromRGB(255,160,80)); slog("bombAuto buy "..b.id.." @"..coins)
+            return b.id
+        end
+    end
+    return nil
+end
+function PK.useBomb()   -- ถือ+กระตุ้นระเบิดจริงลูกแพงสุด → server script ใน tool ระเบิดเอง · คืนพลั่วหลังโยน
+    local best=PK.bombBest()
+    if not best then feedAdd("💣 ไม่มีระเบิดในกระเป๋า — เปิด 💣 ระเบิดสอยสต็อก/ออโต้ให้ซื้อเอง",C.dim) return false end
+    local hum=LP.Character and LP.Character:FindFirstChildOfClass("Humanoid")
+    if hum and best.Parent~=LP.Character then pcall(function() hum:EquipTool(best) end) task.wait(0.2) end
+    local ok,err=pcall(function() best:Activate() end)
+    feedAdd("💣 กระตุ้น "..tostring(best:GetAttribute("BombType")).." "..(ok and "" or "พลาด:"..tostring(err)),3,ok and C.good or C.bad)
+    slog("useBomb "..tostring(best:GetAttribute("BombType")).." ok="..tostring(ok))
+    if hum then task.delay(0.4,function()   -- คืนพลั่วให้ขุดต่อ (ระเบิดไม่ต้องถือค้าง)
+        local bp=LP:FindFirstChild("Backpack")
+        for _,tt in ipairs((bp and bp:GetChildren()) or {}) do if PK.isPick(tt) then pcall(function() hum:EquipTool(tt) end) break end end
+    end) end
+    return ok
+end
+task.spawn(function()   -- ลูปออโต้: มีของ → โยนวน · ไม่มี → ซื้อลูกดีสุดเอง (รอ fuse ก่อนช็อตถัดไป)
+    while alive() do
+        if cfg.bombAuto then pcall(function()
+            local t=PK.bombBest()
+            if not t then PK.bombBuyBest() task.wait(3)
+            else
+                PK.useBomb()
+                local w=0; while t.Parent and w<9 do task.wait(0.5) w+=0.5 end   -- รอ server กิน tool หลัง fuse (2-4s)
+            end
+        end) else task.wait(1) end
+        task.wait(0.5)
+    end
+end)
+
+-- ============ ⚗️ ฟิวส์คริสตัล (FusionClient: Fuse({BagId,BagId,BagId} ระดับเดียวกัน) → Claim() · Status() เช็คเครื่อง) ============
+PK.fusBusy=false
+function PK.bagGems()
+    local bp=LP:FindFirstChild("Backpack"); local out={}
+    if not bp then return out end
+    for _,t in ipairs(bp:GetChildren()) do
+        if t:IsA("Tool") then
+            local id,g=t:GetAttribute("BagId"),t:GetAttribute("GemName")
+            if id and g then out[#out+1]={id=id,name=g,rarity=t:GetAttribute("Rarity") or "Common",kg=t:GetAttribute("Kg") or 0,
+                fav=t:GetAttribute("Favorited")==true,t=t} end   -- Favorited = attr ⭐จริงของเกม (HotbarClient:1180 / FusionClient:1301)
+        end
+    end
+    return out
+end
+function PK.fusePick()   -- → {BagId×3},rarity | nil — ชิ้นระดับเดียวกัน ≥3, เล็กสุดก่อน, เว้น ⭐ และระดับ ≥fusKeep
+    local keep=cfg.sub.fusKeep or 6; local by={}
+    for _,g in ipairs(PK.bagGems()) do
+        local ri=tIdx(g.rarity)
+        if not g.fav and ri>0 and ri<keep then by[g.rarity]=by[g.rarity] or {} table.insert(by[g.rarity],g) end
+    end
+    local bestR,bestL=nil,nil
+    for r,l in pairs(by) do
+        if #l>=3 and (not bestL or tIdx(r)<tIdx(bestR)) then bestR,bestL=r,l end
+    end
+    if not bestL then return nil end
+    table.sort(bestL,function(a,b) return (a.kg or 0)<(b.kg or 0) end)
+    return {bestL[1].id,bestL[2].id,bestL[3].id},bestR
+end
+function PK.fuseOnce()
+    if PK.fusBusy then return end
+    if not PK.FusFuse then feedAdd("⚗️ ไม่มี remote ฟิวส์",C.bad) return end
+    local ids,r=PK.fusePick()
+    if not ids then feedAdd("⚗️ ไม่มี 3 ชิ้นระดับเดียวกันที่ฟิวส์ได้",C.dim) return end
+    PK.fusBusy=true
+    local ok,res=pcall(function() return PK.FusFuse:InvokeServer(ids) end)
+    if ok and type(res)=="table" and res.ok then
+        feedAdd("⚗️ ฟิวส์ "..PK.thR(r).." สำเร็จ!",C.good); slog("fuse ok "..tostring(r))
+        task.wait(0.8)
+        if PK.FusClaim then
+            local ok2,r2=pcall(function() return PK.FusClaim:InvokeServer() end)
+            if ok2 and type(r2)=="table" and r2.ok then feedAdd("⚗️ เก็บผลฟิวส์แล้ว",C.good) end
+        end
+    else
+        feedAdd("⚗️ ฟิวส์ไม่ผ่าน: "..tostring(type(res)=="table" and (res.err or res.reason) or res),C.bad)
+        slog("fuse fail "..tostring(res))
+    end
+    PK.fusBusy=false
+end
+function PK.fuseStatus()
+    if not PK.FusStat then feedAdd("⚗️ ไม่มี remote Status",C.bad) return end
+    local ok,res=pcall(function() return PK.FusStat:InvokeServer() end)
+    local txt="?"
+    if ok and type(res)=="table" then
+        txt=res.pending and ("ค้างผล: "..tostring(res.pending)) or res.stage and ("ขั้น: "..tostring(res.stage)) or "ว่าง"
+    elseif ok then txt=tostring(res) end
+    feedAdd("⚗️ เครื่องฟิวส์: "..txt,C.dim); slog("fusStatus "..tostring(res))
+end
+task.spawn(function() while alive() do    -- โหมดอัตโน: มีชิ้นซ้ำฟิวส์ได้ → ฟิวส์เองทุก 20s
+    if cfg.fusion and not PK.fusBusy and PK.FusFuse and PK.fusePick() then pcall(PK.fuseOnce) end
+    task.wait(20)
+end end)
+
+-- ============ 🎃 Halloween 2026 (CrateData/CauldronClient/CrateShopClient จริง) ============
+PK.CRATE_COST={[1]=2000,[3]=5700,[5]=9000}   -- แคนดี้ต่อกล่อง (Haunted Crate · อีเวนต์ถึง ~Nov 3)
+function PK.candy() return math.floor(tonumber(LP:GetAttribute("CandyCorn")) or 0) end
+function PK.cauldronPour(frac)
+    if not PK.Cauldron then feedAdd("🍬 ไม่มี remote หม้อ",C.bad) return end
+    local amt=math.floor(PK.candy()*(frac or 0.1))
+    if amt<1 then feedAdd("🍬 แคนดี้ไม่พอเท",C.dim) return end
+    local ok,res=pcall(function() return PK.Cauldron:InvokeServer(amt) end)
+    if ok and type(res)=="table" and res.ok then
+        feedAdd("🍬 เท "..comma(res.accepted or amt).." เข้าหม้อ"..(res.filled and " — เต็มแล้ว!" or ""),Color3.fromRGB(255,170,80))
+    else
+        feedAdd("🍬 เทไม่ได้: "..tostring(type(res)=="table" and res.reason or res),C.dim)
+    end
+end
+task.spawn(function() while alive() do    -- อัปเดตยอดแคนดี้ + เปิดกล่องอัตโน (เฉพาะเมื่อแคนดี้พอ — server คุมราคา/ผลเอง)
+    if UI.candyStat then pcall(function() UI.candyStat.Text="🍬 แคนดี้: "..comma(PK.candy()) end) end
+    if cfg.halloween and cfg.sub.crateAuto and PK.CrateOpen then
+        local n=cfg.sub.crateN or 1; local cost=PK.CRATE_COST[n] or 2000
+        if PK.candy()>=cost then
+            local ok,res=pcall(function() return PK.CrateOpen:InvokeServer(n) end)
+            if ok and type(res)=="table" and res.ok~=false then
+                feedAdd("📦 กล่องผี ×"..n.." → "..tostring(res.name or res.item or res.rarity or res.ok or "เปิดแล้ว"),Color3.fromRGB(255,170,80))
+                slog("crate x"..n.." "..tostring(res.name or res.item or res.rarity or res.ok))
+            elseif not ok then slog("crate err "..tostring(res))
+            else slog("crate denied "..tostring(res.reason or res.err or res.ok)) end
+        end
+    end
+    task.wait(8)
+end end)
+task.spawn(function()    -- 🎁 เคลมรางวัลรายวัน: Claim("claim") — รอเกมโหลดแล้วเคลม + ตรวจทุก 5 นาที
+    task.wait(25)
+    while alive() do
+        if cfg.halloween and cfg.sub.autoDaily and PK.Daily then
+            local ok,res=pcall(function() return PK.Daily:InvokeServer("claim") end)
+            if ok and type(res)=="table" and res.ok then
+                feedAdd("🎁 เคลมรางวัลรายวัน: "..tostring(res.reward or res.name or res.day or "สำเร็จ"),Color3.fromRGB(255,200,90))
+                slog("daily claim "..tostring(res.reward or res.name or res.day))
+            end
+        end
+        task.wait(300)
+    end
+end)
 
 slog("ui ready")
 print("[HZMINE] ESP พร้อม")
