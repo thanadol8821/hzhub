@@ -87,6 +87,20 @@ local C={bgTop=Color3.fromRGB(16,17,30),bgBot=Color3.fromRGB(10,11,20),edge=Colo
 local TIERS={"Common","Uncommon","Rare","Epic","Legendary","Mythic","Exotic","Zenith","Eternal"}
 local PK={TH_R={Common="ธรรมดา",Uncommon="พิเศษ",Rare="หายาก",Epic="เอพิค",Legendary="ตำนาน",Mythic="มิธิค",Exotic="เอ็กโซติก",Zenith="ซีนิธ",Eternal="อีเทอร์นัล"},thNames={},nameRarity={},nameCard={},TR=false}
 PK.ss={t0=os.clock(),n=0,val=0,sold=0}   -- 📈 สถิติรอบนี้ (เก็บ/ขาย/ต่อชั่วโมง) แสดงใน HUD
+-- 💣 ตารางระเบิด — ต้องนิยามก่อน UI build (subs การ์ดรันทันทีตอนสร้าง ไม่ใช่ตอนกาง)
+PK.BOMBS={
+    {id="ClassicBomb",  n="คลาสสิค",    price=50000,   g="lo"},
+    {id="WindBomb",     n="หิมะ",       price=400000,  g="lo"},
+    {id="IceBomb",      n="น้ำแข็ง",    price=2000000, g="lo"},
+    {id="FireBomb",     n="ไฟ",         price=8000000, g="mid"},
+    {id="PoisonBomb",   n="พิษ",        price=12000000,g="mid"},
+    {id="LightningBomb",n="สายฟ้า",     price=25000000,g="mid"},
+    {id="VoidBomb",     n="โวิด",       price=1e9,     g="hi"},
+    {id="NebulaBomb",   n="เนบิวลา",    price=1e10,    g="hi"},
+    {id="DivineBomb",   n="ศักดิ์สิทธิ์", price=2.5e10,  g="hi"},
+}
+PK.BOMBMAP={} for _,b in ipairs(PK.BOMBS) do PK.BOMBMAP[b.id]=b end
+PK.bombStock={}; PK.bombTry={}
 function PK.thR(r) return PK.TH_R[r] or r or "?" end   -- โชว์ระดับเป็นไทย (ชื่อในเกมยังอังกฤษตาม server)
 function PK.isPick(t)   -- พลั่ว/สว่านจริง = Tool ที่มี Cooldown (พลั่วทั่วไป) หรือ DigCooldown (Plasma Drill ใน DrillTools/Hexfang) — ตัดคริสตัล(BagId)/รูน(RuneId)
     return t:IsA("Tool") and (t:GetAttribute("Cooldown") or t:GetAttribute("DigCooldown")) and not t:GetAttribute("BagId") and not t:GetAttribute("RuneId") and true or false
@@ -1268,7 +1282,8 @@ function UI.card(page,s)
         sub=mk("Frame",{Name="Sub",Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,LayoutOrder=2,Visible=false},fr)
         mk("UIListLayout",{Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder},sub)
         mk("UIPadding",{PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8),PaddingTop=UDim.new(0,2),PaddingBottom=UDim.new(0,10)},sub)
-        UI.curCard=c; s.subs(sub,c); UI.curCard=nil
+        UI.curCard=c; local ok,e=pcall(s.subs,sub,c); UI.curCard=nil
+        if not ok then lbl(sub,{Text="⚠ subs error: "..tostring(e),TextColor3=C.bad,TextSize=11}) end   -- card พังอย่าลากทั้งหน้า
     end
     c.frame=fr; c.home=page; c.ord=fr.LayoutOrder; c.title=title; c.descL=desc; c.sub=sub; c.head=head
     function c.setOpen(v,temp)
@@ -4018,18 +4033,6 @@ end end)
 -- ============ 💣 ระเบิดสอยสต็อก + ☢️ นิวเคลียร์ (อัพเดต 2026-10-19 — ค่าจริง BombData/BombShopClient) ============
 -- ระเบิด 9 แบบซื้อด้วยเงินเกม: BuyBomb:FireServer(id,"cash") · stock จำกัด push ผ่าน ShopState {stock={id=n}} · restock ทุก 3600s
 -- Nuke = DevProduct 699R$ เท่านั้น (price=0 stock=0 ในตาราง) — ซื้อ/ใช้ด้วยเงินเกมไม่ได้ (server เช็คของจริง)
-PK.BOMBS={
-    {id="ClassicBomb",  n="คลาสสิค",    price=50000,   g="lo"},
-    {id="WindBomb",     n="หิมะ",       price=400000,  g="lo"},
-    {id="IceBomb",      n="น้ำแข็ง",    price=2000000, g="lo"},
-    {id="FireBomb",     n="ไฟ",         price=8000000, g="mid"},
-    {id="PoisonBomb",   n="พิษ",        price=12000000,g="mid"},
-    {id="LightningBomb",n="สายฟ้า",     price=25000000,g="mid"},
-    {id="VoidBomb",     n="โวิด",       price=1e9,     g="hi"},
-    {id="NebulaBomb",   n="เนบิวลา",    price=1e10,    g="hi"},
-    {id="DivineBomb",   n="ศักดิ์สิทธิ์", price=2.5e10,  g="hi"},
-}
-PK.bombStock={}; PK.bombTry={}
 task.spawn(function()
     while not PK.BombSt do task.wait(0.5) if not alive() then return end end
     PK.BombSt.OnClientEvent:Connect(function(st)
@@ -4061,7 +4064,6 @@ end
 task.spawn(function() while alive() do pcall(PK.bombTick) task.wait(3) end end)
 
 -- 💣 ระเบิดออโต้ (ซื้อ+โยนเอง) — ของจริงเท่านั้น: โคลนใช้ไม่ได้ (server แนบ Script ตอนให้ของจริง / ไม่มี client path)
-PK.BOMBMAP={} for _,b in ipairs(PK.BOMBS) do PK.BOMBMAP[b.id]=b end
 function PK.bombBest()   -- → Tool | nil — ระเบิดจริงลูกแพงสุดในกระเป๋า/มือ (ข้าม _hzclone)
     local best,bs=nil,-1; local bp=LP:FindFirstChild("Backpack"); local ch=LP.Character
     for _,pa in ipairs({bp,ch}) do if pa then for _,c in ipairs(pa:GetChildren()) do
