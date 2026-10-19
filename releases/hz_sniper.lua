@@ -37,6 +37,53 @@ local RS2 = game:GetService("ReplicatedStorage")
 local TPS = game:GetService("TeleportService")
 local lp = Players.LocalPlayer
 
+-- ===== HZ HUB backend: พิงสถิติ + kill-switch (ไม่มีคีย์ — admin เห็นแค่ว่าใครใช้) =====
+local HZ_API = "https://dry-wave-054e.thanadol821.workers.dev"; local HZ_G = "sniper"
+local HZS = game:GetService("HttpService")
+local HZ = { last = 0, n = 0, win = os.clock() }
+local function hzPing(ev)   -- throttle ≥2s/ครั้ง · ≤45/10นาที (worker cap 60) — executor ไม่มี request = เงียบ
+    local req = request or http_request or (syn and syn.request); if not req then return end
+    local now = os.clock()
+    if now - HZ.last < 2 then return end
+    if now - HZ.win > 600 then HZ.win = now; HZ.n = 0 end
+    if HZ.n >= 45 then return end
+    HZ.last = now; HZ.n += 1
+    task.spawn(function() pcall(function()
+        req({ Url = HZ_API .. "/ping", Method = "POST", Headers = { ["Content-Type"] = "application/json" },
+            Body = HZS:JSONEncode({ ev = ev, g = HZ_G, u = lp.Name, dn = lp.DisplayName, uid = lp.UserId, place = game.PlaceId }) })
+    end) end)
+end
+local function hzMaint(msg)   -- kill-switch on:false → ฆ่าทุกลูป (GEN bump) + ปิด UI + หน้าบำรุงรักษา
+    G.__HZESP_GEN = GEN + 1
+    local gr = (gethui and gethui()) or game:GetService("CoreGui")
+    pcall(function() local o = gr:FindFirstChild("HZESPUI") if o then o:Destroy() end end)
+    pcall(function() o = lp.PlayerGui and lp.PlayerGui:FindFirstChild("HZESPUI") if o then o:Destroy() end end)
+    local sg2 = Instance.new("ScreenGui"); sg2.Name = "HZESPMaint"; sg2.ResetOnSpawn = false; sg2.DisplayOrder = 9999
+    local tx = Instance.new("TextLabel"); tx.AnchorPoint = Vector2.new(0.5, 0.5); tx.Position = UDim2.fromScale(0.5, 0.45)
+    tx.Size = UDim2.new(0, 440, 0, 96); tx.BackgroundColor3 = Color3.fromRGB(20, 22, 38); tx.TextColor3 = Color3.fromRGB(240, 240, 255)
+    tx.Font = Enum.Font.GothamBold; tx.TextSize = 16; tx.TextWrapped = true
+    tx.Text = "🛠 HZ HUB — ปิดปรับปรุงชั่วคราว\n" .. (type(msg) == "string" and msg ~= "" and msg or "กลับมาใหม่เร็วๆ นี้")
+    Instance.new("UICorner", tx).CornerRadius = UDim.new(0, 10)
+    local st = Instance.new("UIStroke", tx); st.Color = Color3.fromRGB(255, 140, 80); st.Thickness = 1.5
+    tx.Parent = sg2; sg2.Parent = (gethui and gethui()) or game:GetService("CoreGui")
+    print("[HZESP] maintenance: " .. tostring(msg))
+end
+task.spawn(function()   -- status poll ทุก 60s — fail-open: เน็ต/worker พลาด = ใช้ต่อได้
+    local req = request or http_request or (syn and syn.request); if not req then return end
+    task.wait(3)
+    while G.__HZESP_GEN == GEN do
+        local ok, r = pcall(function() return req({ Url = HZ_API .. "/status?g=" .. HZ_G, Method = "GET" }) end)
+        if ok and r and r.Body then
+            local ok2, d = pcall(function() return HZS:JSONDecode(r.Body) end)
+            if ok2 and type(d) == "table" and d.on == false then hzMaint(d.msg) return end
+        end
+        task.wait(60)
+    end
+end)
+hzPing("gate")
+task.spawn(function() task.wait(6) hzPing("loaded") end)
+task.spawn(function() while G.__HZESP_GEN == GEN do task.wait(240) hzPing("alive") end end)
+
 -- ===== auto-retry teleport: วาปพลาดแล้วเกมไม่ลองใหม่ → ลองเอง (กันเด้งตอนย้ายเซิร์ฟ) =====
 pcall(function()
     local retrying = false
@@ -614,6 +661,8 @@ local function clickFire()
         end)
     end)
 end
+
+
 
 -- ===== TargetDetect debug: เกมบอกเองว่าเล็งชี้ใคร (ทุก 3 วิ) =====
 task.spawn(function()
